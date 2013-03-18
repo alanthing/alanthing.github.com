@@ -9,7 +9,7 @@
   <meta name="author" content="Alan Ivey">
 
   
-  <meta name="description" content="In addition to hosting Drupal sites, we also host a number of WordPress sites. Similar to (checking all of our Drupal core versions)[http:// &hellip;">
+  <meta name="description" content="I had previously written a post on one method of upgrading PHP from 5.1 to 5.2 on CentOS and Red Hat servers by creating new RPMs. Since then, I have &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -77,6 +77,169 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2011/01/25/easy-php-5-dot-2-rpms-on-centos/">Easy PHP 5.2 RPMs on CentOS</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-01-25T10:13:00-05:00" pubdate data-updated="true">Jan 25<span>th</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>I had previously <a href="http://echodittolabs.org/blog/2009/05/all-i-want-php-52-centosrhel">written a post</a> on one method of upgrading PHP from 5.1 to 5.2 on CentOS and Red Hat servers by creating new RPMs. Since then, I have found a much better way to create PHP 5.2.17 (or newer) RPMs to easily upgrade (and later remove, if you want) the older version available by default. I&#39;ll presume you have no prior experience building PHP RPMs.</p>
+
+<p>We start by adding the <a href="http://fedoraproject.org/wiki/EPEL">Extra Packages for Enterprise Linux (EPEL) repository</a> to our server. EPEL is safe to add as an additional repository and leave enabled because it <a href="http://fedoraproject.org/wiki/EPEL/FAQ#How_is_EPEL_different_from_other_third_party_repositories_for_RHEL_and_derivatives.3F">provides complementary packages only</a> and will not conflict with the CentOS or Red Hat repositories. Since their installation method may change, I won&#39;t reproduce it here; instead head over to the <a href="http://fedoraproject.org/wiki/EPEL/FAQ#howtouse">installation portion of the FAQ</a> and it&#39;s just one line to get started with EPEL.</p>
+
+<p>With EPEL enabled, we will need just one new package to build RPMs: <a href="http://fedoraproject.org/wiki/Projects/Mock">Mock</a>. Mock will create a chroot, download what&#39;s necessary to build your RPM, build, and cleanup afterwards. Mock only requires a couple of python packages as dependencies; it will not require a compiler or anything like that since mock will grab them as needed during operation. I will presume you are not running as root so I will use sudo as necessary. To install mock:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>sudo yum install mock
+</span></code></pre></td></tr></table></div></figure>
+
+<p>That&#39;s it. You can run all mock operations with the &#39;sudo&#39; command to run as root, but your packages will be built inside the chroot as a non-root user. Or, if you prefer to not use sudo when running mock, add your user to the mock group (where username is your user):</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>sudo /usr/sbin/usermod -G mock username
+</span></code></pre></td></tr></table></div></figure>
+
+<p>Using the source code from php.net and creating a RPM spec file from scratch would be a lot of work, so we&#39;ll grab a source RPM for PHP 5.2. I&#39;ve found that <a href="http://blog.famillecollet.com/">Remi</a> has the most up-to-date RPM spec with the latest patches and robust install scripts. <a href="http://rpms.famillecollet.com/SRPMS/">Browse Remi&#39;s SRPMS</a> and download the latest PHP 5.2 file. As of this writing, it&#39;s php-5.2.17-1.remi.src.rpm. On your system, download it with wget in your home directory:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">cd</span> ~
+</span><span class='line'>wget http://rpms.famillecollet.com/SRPMS/php-5.2.17-1.remi.src.rpm
+</span></code></pre></td></tr></table></div></figure>
+
+<p>Now, we could just run mock and rebuild this source RPM and hopefully install the results, but it would fail due to not having sqlite2-devel installed. Remi provides sqlite2 and sqlite2-devel, so you could add Remi&#39;s yum repository to your mock settings, but then it would grab Remi&#39;s other updated packages like MySQL 5.5 and others during the PHP build. My goal here is to only build PHP against Base CentOS and EPEL packages. So, we have to edit the spec file and rebuild the source RPM before passing it off to mock. Don&#39;t worry; while there are a few steps, it&#39;s not very difficult if you follow closely.</p>
+
+<p>To unpack the source RPM we just downloaded into our home directory, we&#39;ll need to set up the .rpmmacros file in our home directory. Why? Without it, it will attempt to extract to /usr/src/redhat, and only root can use that directory, and you should <a href="http://wiki.centos.org/HowTos/SetupRpmBuildEnvironment">never build any packages as a privileged user</a>. We&#39;ll create the macros file and the directories it needs from your home directory:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">cd</span> ~
+</span><span class='line'><span class="nb">echo</span> <span class="s1">&#39;%_topdir %(echo $HOME)/rpmbuild&#39;</span> &gt; ~/.rpmmacros
+</span><span class='line'>mkdir -p ~/rpmbuild/<span class="o">{</span>SOURCES,SPECS,SRPMS<span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+<p>Unpack the source RPM. This will extract the PHP 5.2.17 source and any patches and configuration files into ~/rpmbuild/SOURCES, and the spec file will be in ~/rpmbuild/SPECS:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>rpm -ivh php-5.2.17-1.remi.src.rpm
+</span></code></pre></td></tr></table></div></figure>
+
+<p>Now we need to make a couple of changes to the spec file. We&#39;ll change to the SPECS directory and make a copy of Remi&#39;s spec file so we can keep it for reference:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">cd</span> ~/rpmbuild/SPECS
+</span><span class='line'>cp -a php52.spec php.spec
+</span></code></pre></td></tr></table></div></figure>
+
+<p>Open up php.spec in your favorite text editor and let&#39;s have the PHP configure script use the bundled SQLite2 libraries instead of searching for ones on your system:</p>
+
+<ol>
+<li>Find the line &quot;BuildRequires: sqlite2-devel &gt;= 2.8.0&quot; and delete it</li>
+<li>Find &quot;&#8211;with-sqlite=shared,%{_prefix} \&quot; and replace it with &quot;&#8211;with-sqlite=shared \&quot;</li>
+<li>Optionally: Add your own lines to the %changelog describing that you removed the sqlite2-devel build requirement</li>
+<li>Optionally: Remove the first 4 lines after &quot;%pre common&quot; to remove Remi&#39;s note about their forums</li>
+</ol>
+
+<p>It took 2 small tweaks to remove the sqlite2-devel RPM requirement not found in our standard repositories. See <a href="http://paste.ly/4Yrx">php.spec.diff</a> to see only the changes we made; or <a href="http://paste.ly/4Ys5">php.spec</a> for the complete file if you do not want to edit it yourself.</p>
+
+<p>The hard part is now over! It&#39;s easy from here on out. First step is to build the newly-edited spec into your own source RPM. But first, if you don&#39;t have &quot;rpmbuild&quot; available, it&#39;s a quick install via yum:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>sudo yum install rpm-build
+</span></code></pre></td></tr></table></div></figure>
+
+<p>It&#39;s possible your system may have already had the yum package rpm-build installed. We&#39;ll build our source RPM with &quot;-bs&quot; to <strong>b</strong>uild the <strong>s</strong>ource, and &quot;&#8211;nodeps&quot; to prevent our system from checking all of the &quot;Requires&quot; in the spec since we&#39;re just building the source:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>rpmbuild --nodeps -bs php.spec
+</span><span class='line'>Wrote: /home/username/rpmbuild/SRPMS/php-5.2.17-1.src.rpm
+</span></code></pre></td></tr></table></div></figure>
+
+<p>rpmbuild will show you where it wrote your source RPM. All we have to do is provide it to mock; &quot;-v&quot; will give us verbose output and &quot;-r epel-5-x86_64&quot; will use the mock profile at &quot;/etc/mock/epel-5-x86_64.cfg&quot;. If you&#39;re on a 32-bit system, change &quot;epel-5-x86_64&quot; to &quot;epel-5-i386&quot;:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">cd</span> ~/rpmbuild/SRPMS
+</span><span class='line'>mock -v -r epel-5-x86_64 php-5.2.17-1.src.rpm
+</span></code></pre></td></tr></table></div></figure>
+
+<p>The output shows you that mock is creating a chroot, downloading the bare essentials needed for a chroot and compiling tools, ccache to speed up compilation, and the packages in all &quot;Requires&quot; lines in the spec file. When mock is finished with the build after several minutes, you&#39;ll see output similar to:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>INFO: Done<span class="o">(</span>php-5.2.17-1.src.rpm<span class="o">)</span> Config<span class="o">(</span>epel-5-x86_64<span class="o">)</span> 10 minutes 20 seconds
+</span><span class='line'>INFO: Results and/or logs in: /var/lib/mock/epel-5-x86_64/result
+</span></code></pre></td></tr></table></div></figure>
+
+<p>The /var/lib/mock/epel-5-x86_64/results/ folder will contain all of your PHP RPMs, including another source RPM. You can now either install these PHP packages by hand, or you can dump them into <a href="http://www.techrepublic.com/blog/opensource/create-your-own-yum-repository/609">your own Yum repository</a> and install with yum.</p>
+
+<h3 id="toc_0">TL;DR</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>sudo yum install mock
+</span><span class='line'>sudo /usr/sbin/usermod -G mock username
+</span><span class='line'><span class="nb">cd</span> ~
+</span><span class='line'>wget http://rpms.famillecollet.com/SRPMS/php-5.2.17-1.remi.src.rpm
+</span><span class='line'><span class="nb">echo</span> <span class="s1">&#39;%_topdir %(echo $HOME)/rpmbuild&#39;</span> &gt; ~/.rpmmacros
+</span><span class='line'>mkdir -p ~/rpmbuild/<span class="o">{</span>SOURCES,SPECS,SRPMS<span class="o">}</span>
+</span><span class='line'>rpm -ivh php-5.2.17-1.remi.src.rpm
+</span><span class='line'><span class="nb">cd</span> ~/rpmbuild/SPECS
+</span><span class='line'>cp -a php52.spec php.spec
+</span><span class='line'>sed -i <span class="s2">&quot;/BuildRequires\: sqlite2-devel/d&quot;</span> php.spec
+</span><span class='line'>sed -i <span class="s2">&quot;s/--with-sqlite=shared,%{_prefix}/--with-sqlite=shared/&quot;</span> php.spec
+</span><span class='line'>sudo yum install rpm-build
+</span><span class='line'>rpmbuild --nodeps -bs php.spec
+</span><span class='line'><span class="nb">cd</span> ~/rpmbuild/SRPMS
+</span><span class='line'>mock -v -r epel-5-x86_64 php-5.2.17-1.src.rpm
+</span></code></pre></td></tr></table></div></figure>
+
+<p>Resulting RPMs will be in /var/lib/epel-5-x86_64/results. If on a 32-bit system, replace epel-5-x86_64 with epel-5-i386.</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>

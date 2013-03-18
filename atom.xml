@@ -4,7 +4,7 @@
   <title><![CDATA[alanthing]]></title>
   <link href="http://alanthing.com/atom.xml" rel="self"/>
   <link href="http://alanthing.com/"/>
-  <updated>2013-03-17T23:24:58-04:00</updated>
+  <updated>2013-03-17T23:33:16-04:00</updated>
   <id>http://alanthing.com/</id>
   <author>
     <name><![CDATA[Alan Ivey]]></name>
@@ -623,6 +623,30 @@ Reference 2: <a href="http://jsdelfino.blogspot.com/2012/08/autoconf-and-automak
 <p>Go into System Preferences, open the Sharing preference pane, and check the box for Web Sharing. If you have trouble getting the check to &quot;stick,&quot; you can run the following in Terminal: <code>sudo apachectl restart</code></p>
 
 <p>Now if you go in your browser and hit a domain you have defined in <em>/etc/hosts</em>, like <strong><a href="http://drupal.local/">http://drupal.local/</a></strong>, you&#39;ll automatically be redirected to <strong><a href="http://drupal.local:8080/">http://drupal.local:8080/</a></strong></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Node.js and NPM on CentOS]]></title>
+    <link href="http://alanthing.com/blog/2012/02/10/nodejs-and-npm-centos/"/>
+    <updated>2012-02-10T17:23:00-05:00</updated>
+    <id>http://alanthing.com/blog/2012/02/10/nodejs-and-npm-centos</id>
+    <content type="html"><![CDATA[<p><strong><em>Update:</em> This no longer appears to be necessary as of nodejs 0.8.0.</strong> It may have been fixed earlier but I noticed neither of these changes are necessary anymore. Something new though, I had problems with node-gyp, and the solution was to install python26 with yum and then re-run the npm command with <code>PYTHON=&quot;/usr/bin/python26&quot; npm install -deps</code> or similar.</p>
+
+<p>The preferred way to install node and NPM seems to be installing from source, but I&#39;m a perennial fan of using packages to keep things tidy, especially if I need to uninstall something. I started by going to the <a href="http://nodejs.org/#download">Node.js download page</a>, and through to <a href="https://github.com/joyent/node/wiki/Installing-Node.js-via-package-manager">Installing with a package manager</a>. I installed the yum release RPM for the <a href="http://nodejs.tchol.org/">tchol.org</a> repository as directed and installed <strong>nodejs</strong> and <strong>npm</strong> with yum. From there, I ran into two problems but thankfully they were fairly easy to resolve.</p>
+
+<p>The first thing I wanted to do was install <a href="https://github.com/nodejitsu/forever">forever</a> globally so I could use it to keep applications running persistently. But running <code>npm install forever -g</code> kept stalling. The npm RPM installed from the tchol.org repository creates the symlink /usr/lib/node_modules to /usr/lib/nodejs. That&#39;s fine, but /usr/lib/nodejs is owned by root:root. Running a npm install command with sudo attempted to set the ownership of the NPM modules as nobody:user, and NPM wasn&#39;t exiting due to permissions for some reason.</p>
+
+<p>I have ACLs enabled on my file system, so I fixed this by allowing nobody write access to /usr/lib/nodejs:</p>
+<div class="highlight"><pre><code class="text">sudo setfacl -m u:nobody:rwx /usr/lib/nodejs
+</code></pre></div>
+<p>If you don&#39;t have ACLs enabled on your filesystem, you could allow nobody to be the folder owner:</p>
+<div class="highlight"><pre><code class="text">sudo chown nobody:nobody /usr/lib/nodejs
+</code></pre></div>
+<p>The second problem I ran into was, after installing forever, it wouldn&#39;t run. The nodejs package installed the binary as /usr/bin/nodejs but /usr/bin/forever begins with <strong>#!/usr/bin/env node</strong>, which will not return a valid interpreter. I wanted to install a symlink into /usr/local/bin, but some users don&#39;t always have that in their path, so I created a link via:</p>
+<div class="highlight"><pre><code class="text">sudo ln -s /usr/bin/nodejs /usr/bin/node
+</code></pre></div>
+<p>Now I&#39;m able to install anything I need to with NPM and run my Node.js applications with Forever. I&#39;m still very new to Node, so if you think I should be doing things a better way, let me know in the comments!</p>
 ]]></content>
   </entry>
   

@@ -35,6 +35,10 @@
         <lastmod>2013-03-17T23:20:39-04:00</lastmod>
     </url>
     <url>
+        <loc>http://alanthing.com/blog/2012/02/10/nodejs-and-npm-centos/</loc>
+        <lastmod>2013-03-17T23:31:43-04:00</lastmod>
+    </url>
+    <url>
         <loc>http://alanthing.com/blog/2012/04/23/redirect-all-port-80-requests-port-8080/</loc>
         <lastmod>2013-03-17T22:40:07-04:00</lastmod>
     </url>
@@ -66,11 +70,11 @@
     </url>
     <url>
         <loc>http://alanthing.com/blog/archives/</loc>
-        <lastmod>2013-03-17T23:24:58-04:00</lastmod>
+        <lastmod>2013-03-17T23:31:43-04:00</lastmod>
     </url>
     <url>
         <loc>http://alanthing.com/</loc>
-        <lastmod>2013-03-17T23:24:58-04:00</lastmod>
+        <lastmod>2013-03-17T23:31:43-04:00</lastmod>
     </url>
     <url>
         <loc>http://alanthing.com/robots.txt</loc>
