@@ -33,6 +33,7 @@ destination: public
 plugins: plugins
 code_dir: downloads/code
 category_dir: blog/categories
+#markdown: redcarpet # Also Gemfile, see: http://stackoverflow.com/questions/10759577/underscore-issues-jekyll-redcarpet-github-flavored-markdown#comment20803685_10790731
 markdown: rdiscount
 rdiscount:
   extensions:
