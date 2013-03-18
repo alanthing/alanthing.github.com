@@ -41,15 +41,17 @@ These log entries are the same as the typical “combined” LogType but with th
 
 But what about the ErrorLog? There is no way to define a LogType for the ErrorLog, and it would be helpful to know which server originated error, say, if MaxClients was reached, or there is a misconfiguration in a configuration file. Since we’re piping the ErrorLog output to /bin/cat, we can instead pipe it to a script that simply adds the server hostname on the end (I chose not to use an IP address because 1) some servers have multiple IP addresses, and 2) I cannot insert the VirtualHost’s IP address automatically. Better to know the server and then determine the IP address is necessary). We’ll start by creating a simple script at /usr/local/bin/httpd_errors (I’m not using bash since I was not able to get it to write to the log file in real time, it would only write once Apache was reloaded. I did not spend much time to determine why, and I knew it would work in PHP):
 
-	#!/usr/bin/php -q
-	<?php
-	$stdin = fopen (‘php://stdin’, ‘r’);
-	ob_implicit_flush (true); // Use unbuffered output
-	while ($line = fgets ($stdin))
-	{
-	    print chop($line).” - “.system(‘hostname -f’).”\n”;
-	}
-	?>
+```php
+#!/usr/bin/php -q
+<?php
+$stdin = fopen (‘php://stdin’, ‘r’);
+ob_implicit_flush (true); // Use unbuffered output
+while ($line = fgets ($stdin))
+{
+    print chop($line).” - “.system(‘hostname -f’).”\n”;
+}
+?>
+```
 
 Make the script executable with “chmod +x /usr/local/bin/httpd_errors”, and then change your ErrorLog in your Apache configuration:
 

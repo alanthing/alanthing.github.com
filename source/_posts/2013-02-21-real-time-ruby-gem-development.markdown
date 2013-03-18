@@ -19,14 +19,14 @@ I'm using [RVM](http://rvm.io/) to keep my gem development isolated from the res
 You'll obviously need to start in a gem development directory. In my case, I start with fog:
 
 ```
-$ git clone git@github.com:fog/fog.git
-$ cd fog
+git clone git@github.com:fog/fog.git
+cd fog
 ```
 
 I'm going to switch to ruby 1.9.3 and use a new gemset called fogdev:
 
 ```
-$ rvm use 1.9.3 && rvm gemset create fogdev && rvm use 1.9.3@fogdev
+rvm use 1.9.3 && rvm gemset create fogdev && rvm use 1.9.3@fogdev
 ```
 
 You may want to create a `.rvmrc` file so you don't have to use `rvm use` constantly.
@@ -34,32 +34,32 @@ You may want to create a `.rvmrc` file so you don't have to use `rvm use` consta
 Install the prerequesite gems as listed in the gemspec file with bundler:
 
 ```
-$ bundle install
+bundle install
 ```
 
 I'm going to grab the version number of fog from the gemspec file so I can reuse it later (if there are multiple '.gemspec' files in your directory, change '*.gemspec' to 'name.gemspec' as appropriate):
 
 ```
-$ export GEMVERSION=$(grep -E '^[ \t]+s.version' *.gemspec | awk '{print $3}' | sed 's/'\''//g')
+export GEMVERSION=$(grep -E '^[ \t]+s.version' *.gemspec | awk '{print $3}' | sed 's/'\''//g')
 ```
 
 Now at this point, you can build and install the gem with `rake build && gem install pkg/fog-${GEMVERSION}.gem` or `gem build` or any other tools as most tutorials advise, but then whenever you edit the source files you'll have to repeat. Let's create some symbolic links instead. Start by going to the rvm gemset folder (this may be a different location for your environment):
 
 ```
-$ cd ~/.rvm/gems/ruby-1.9.3-p286\@fogdev/
+cd ~/.rvm/gems/ruby-1.9.3-p286\@fogdev/
 ```
 
 It seems as though the earlier `bundle install` command created the file bin/fog for me, but it doesn't work without either installing a gem or running the remaining commands below. Particularly for fog, if this bin/fog file is missing and you need it, you can grab it with the following:
 
 ```
-$ [ ! -f bin/fog ] && curl --silent --output bin/fog https://gist.github.com/alanthing/5004411/raw/13f748f1cc19df7511ea2a01de6824eac3358905/fog && chmod +x bin/fog
+[ ! -f bin/fog ] && curl --silent --output bin/fog https://gist.github.com/alanthing/5004411/raw/13f748f1cc19df7511ea2a01de6824eac3358905/fog && chmod +x bin/fog
 ```
 
 Let's add our development gem with symbolic links (again, change as appropriate for your gem):
 
 ```
-$ ln -s ~/fog/fog.gemspec specifications/fog-${GEMVERSION}.gemspec
-$ ln -s ~/fog gems/fog-${GEMVERSION}
+ln -s ~/fog/fog.gemspec specifications/fog-${GEMVERSION}.gemspec
+ln -s ~/fog gems/fog-${GEMVERSION}
 ```
 
 Now if you run `gem list` you should see your gem listed:
