@@ -1,0 +1,602 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Usable MAMP on OS X 10.8 Mountain Lion - Linux and other things</title>
+  <meta name="author" content="Alan Ivey">
+
+  
+  <meta name="description" content="Install MAMP Download the latest MAMP from http://mamp.info/en/downloads/index.html and run the installer. Choose APC Cache Open the MAMP app, open &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://alanthing.com/blog/2012/12/19/usable-mamp-os-x-108-mountain-lion">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Linux and other things" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-34327970-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Linux and other things</a></h1>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:alanthing.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Usable MAMP on OS X 10.8 Mountain Lion</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-12-19T11:18:00-05:00" pubdate data-updated="true">Dec 19<span>th</span>, 2012</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><h2 id="toc_0">Install MAMP</h2>
+
+<p>Download the latest MAMP from <a href="http://mamp.info/en/downloads/index.html">http://mamp.info/en/downloads/index.html</a> and run the installer.</p>
+
+<h2 id="toc_1">Choose APC Cache</h2>
+
+<p>Open the MAMP app, open <strong>Preferences&#8230;</strong>, click the <strong>PHP</strong> tab, and change <strong>Cache</strong> to <strong>APC</strong>. Click <strong>OK</strong> to close Preferences and <strong>Quit</strong> MAMP.</p>
+
+<p><img src="http://i46.tinypic.com/2wltqpw.png" alt="MAMP Screenshot"></p>
+
+<h2 id="toc_2">PATH variable</h2>
+
+<p>Put MAMP binaries, including PHP, in the front of your $PATH (this is a single command):</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">echo</span> <span class="s1">&#39;export PATH=&quot;/Applications/MAMP/bin:/Applications/MAMP/Library/bin:$(find /Applications/MAMP/bin/php -type d -name &quot;php5.4*&quot; | sort | tail -1)/bin:$PATH&quot;&#39;</span> &gt;&gt; ~/.bash_profile <span class="o">&amp;&amp;</span> <span class="nb">source</span> ~/.bash_profile
+</span></code></pre></td></tr></table></div></figure>
+
+<h2 id="toc_3">MySQL</h2>
+
+<p>Set up MySQL and stop it (default MySQL password is <strong>root</strong>, you do not have to change it when running <code>mysql_secure_installation</code>, though I recommend all of the other defaults):</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>cp -va /Applications/MAMP/Library/support-files/my-small.cnf /Applications/MAMP/conf/my.cnf
+</span><span class='line'>
+</span><span class='line'>sed -i <span class="s1">&#39;&#39;</span> <span class="s2">&quot;s/^\(max_allowed_packet =\) [0-9]*M/\1 1G/g&quot;</span> /Applications/MAMP/conf/my.cnf
+</span><span class='line'>
+</span><span class='line'>egrep <span class="s2">&quot;^# Uncomment the following if you are using InnoDB tables$&quot;</span> /Applications/MAMP/conf/my.cnf &amp;&gt;/dev/null <span class="o">&amp;&amp;</span> sed -i <span class="s1">&#39;&#39;</span> <span class="s2">&quot;s/^\(# Uncomment the following if you are using InnoDB tables\)$/\1@innodb_file_per_table/; y/@/\n/; s/^#\(innodb_.*\)/\1/g&quot;</span> /Applications/MAMP/conf/my.cnf
+</span><span class='line'>
+</span><span class='line'>/Applications/MAMP/bin/startMysql.sh &amp;
+</span><span class='line'>
+</span><span class='line'><span class="c"># Secure MySQL setup:</span>
+</span><span class='line'>/Applications/MAMP/Library/bin/mysql_secure_installation
+</span><span class='line'><span class="c"># -- OR --</span>
+</span><span class='line'><span class="c"># Less secure MySQL setup:</span>
+</span><span class='line'><span class="c">#/Applications/MAMP/Library/bin/mysql -uroot -proot -e&quot;DELETE FROM mysql.user WHERE User=&#39;&#39;; DELETE FROM mysql.user WHERE User=&#39;root&#39; AND Host!=&#39;localhost&#39;; FLUSH PRIVILEGES;&quot;</span>
+</span><span class='line'>
+</span><span class='line'>/Applications/MAMP/bin/stopMysql.sh
+</span></code></pre></td></tr></table></div></figure>
+
+<h2 id="toc_4">PHP</h2>
+
+<p>Set timezone, and increase timeouts and memory values:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>sed -i <span class="s1">&#39;-default&#39;</span> <span class="s2">&quot;s|^;*\(date\.timezone[[:space:]]*=\).*|\1 \&quot;`systemsetup -gettimezone|awk -F&quot;</span><span class="se">\:</span> <span class="s2">&quot; &#39;{print $2}&#39;`\&quot;|; s|^\(memory_limit[[:space:]]*=\).*\(\;.*\)|\1 256M \2|; s|^\(post_max_size[[:space:]]*=\).*|\1 200M|; s|^\(upload_max_filesize[[:space:]]*=\).*|\1 100M|; s|^\(default_socket_timeout[[:space:]]*=\).*|\1 600|; s|^\(max_execution_time[[:space:]]*=\).*\(\;.*\)|\1 300 \2|; s|^\(max_input_time[[:space:]]*=\).*\(\;.*\)|\1 600 \2|;&quot;</span> <span class="k">$(</span>find /Applications/MAMP/bin/php -type d -name <span class="s2">&quot;php5.4*&quot;</span> | sort | tail -1<span class="k">)</span>/conf/php.ini
+</span><span class='line'>
+</span><span class='line'><span class="nb">echo</span> -e <span class="s2">&quot;\n[apc]\napc.shm_size = 192M\napc.rfc1867 = 1&quot;</span> &gt;&gt; <span class="k">$(</span>find /Applications/MAMP/bin/php -type d -name <span class="s2">&quot;php5.4*&quot;</span> | sort | tail -1<span class="k">)</span>/conf/php.ini
+</span></code></pre></td></tr></table></div></figure>
+
+<h3 id="toc_5">PECL Uploadprogress</h3>
+
+<p><strong>Feel free to skip:</strong> This is quite involved when <code>apc.rfc1867=1</code> does the job in most cases. This is mostly an exercise in building PHP modules for MAMP. </p>
+
+<p><strong>You&#39;ll need to install Xcode Command Line Tools from <a href="http://develop.apple.com/downloads">http://develop.apple.com/downloads</a> in order to complete all of the steps below.</strong></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>mkdir -p <span class="k">$(</span>find /Applications/MAMP/bin/php -type d -name <span class="s2">&quot;php5.4*&quot;</span> | sort | tail -1<span class="k">)</span>/include
+</span><span class='line'><span class="nb">cd</span> <span class="k">$(</span>find /Applications/MAMP/bin/php -type d -name <span class="s2">&quot;php5.4*&quot;</span> | sort | tail -1<span class="k">)</span>/include
+</span><span class='line'><span class="nb">export </span><span class="nv">PHPVER</span><span class="o">=</span><span class="k">$(</span><span class="nb">cd</span> /Applications/MAMP/bin/php <span class="o">&amp;&amp;</span> find * -type d -name <span class="s2">&quot;php5.4*&quot;</span> | sort | tail -1 | sed <span class="s1">&#39;s/php//&#39;</span><span class="k">)</span> <span class="o">&amp;&amp;</span> curl -L -o php-<span class="k">${</span><span class="nv">PHPVER</span><span class="k">}</span>.tar.bz2 http://us3.php.net/get/php-<span class="k">${</span><span class="nv">PHPVER</span><span class="k">}</span>.tar.bz2/from/us3.php.net/mirror <span class="o">&amp;&amp;</span> <span class="nb">unset </span>PHPVER
+</span><span class='line'>ls php-5.4*bz2 | xargs -L1 tar jxpf <span class="o">&amp;&amp;</span> rm php-5.4*bz2
+</span><span class='line'>mv -v <span class="k">$(</span>find * -type d -name <span class="s2">&quot;php-5.4*&quot;</span><span class="k">)</span> php
+</span><span class='line'><span class="nb">cd </span>php
+</span><span class='line'>./configure
+</span><span class='line'><span class="nb">cd</span> ..
+</span><span class='line'>
+</span><span class='line'><span class="c">## Build automake and related tools</span>
+</span><span class='line'><span class="nb">export </span><span class="nv">build</span><span class="o">=</span><span class="s2">&quot;$PWD/build&quot;</span>
+</span><span class='line'>mkdir -p <span class="nv">$build</span>
+</span><span class='line'><span class="nb">cd</span> <span class="nv">$build</span>
+</span><span class='line'>curl -OL http://ftpmirror.gnu.org/autoconf/autoconf-2.68.tar.gz
+</span><span class='line'>tar xzf autoconf-2.68.tar.gz
+</span><span class='line'><span class="nb">cd </span>autoconf-2.68
+</span><span class='line'>./configure --prefix<span class="o">=</span><span class="nv">$build</span>/autotools-bin
+</span><span class='line'>make
+</span><span class='line'>make install
+</span><span class='line'><span class="nb">export </span><span class="nv">PATH</span><span class="o">=</span><span class="nv">$PATH</span>:<span class="nv">$build</span>/autotools-bin/bin
+</span><span class='line'><span class="nb">cd</span> <span class="nv">$build</span>
+</span><span class='line'>curl -OL http://ftpmirror.gnu.org/automake/automake-1.11.tar.gz
+</span><span class='line'>tar xzf automake-1.11.tar.gz
+</span><span class='line'><span class="nb">cd </span>automake-1.11
+</span><span class='line'>./configure --prefix<span class="o">=</span><span class="nv">$build</span>/autotools-bin
+</span><span class='line'>make
+</span><span class='line'>make install
+</span><span class='line'><span class="nb">cd</span> <span class="nv">$build</span>
+</span><span class='line'>curl -OL http://ftpmirror.gnu.org/libtool/libtool-2.4.tar.gz
+</span><span class='line'>tar xzf libtool-2.4.tar.gz
+</span><span class='line'><span class="nb">cd </span>libtool-2.4
+</span><span class='line'>./configure --prefix<span class="o">=</span><span class="nv">$build</span>/autotools-bin
+</span><span class='line'>make
+</span><span class='line'>make install
+</span><span class='line'><span class="nb">cd</span> <span class="nv">$build</span>
+</span><span class='line'><span class="nb">unset </span>build
+</span><span class='line'>rm autoconf-2.68.tar.gz automake-1.11.tar.gz libtool-2.4.tar.gz
+</span><span class='line'>rm -rf autoconf-2.68 automake-1.11 libtool-2.4
+</span><span class='line'><span class="nb">cd</span> ..
+</span><span class='line'>
+</span><span class='line'>pecl download uploadprogress
+</span><span class='line'>ls uploadprogress*z | xargs -L1 tar zxpf <span class="o">&amp;&amp;</span> rm -v uploadprogress*z package*xml
+</span><span class='line'>mv -v <span class="k">$(</span>find * -type d -name <span class="s2">&quot;uploadprogress*&quot;</span><span class="k">)</span> uploadprogress
+</span><span class='line'><span class="nb">cd </span>uploadprogress
+</span><span class='line'>phpize
+</span><span class='line'>./configure --with-php-config<span class="o">=</span><span class="k">$(</span>find /Applications/MAMP/bin/php -type d -name <span class="s2">&quot;php5.4*&quot;</span> | sort | tail -1<span class="k">)</span>/bin/php-config
+</span><span class='line'>make
+</span><span class='line'>make install
+</span><span class='line'>
+</span><span class='line'><span class="nb">echo</span> -e <span class="s2">&quot;\n[uploadprogress]\nextension=uploadprogress.so&quot;</span> &gt;&gt; <span class="k">$(</span>find /Applications/MAMP/bin/php -type d -name <span class="s2">&quot;php5.4*&quot;</span> | sort | tail -1<span class="k">)</span>/conf/php.ini
+</span></code></pre></td></tr></table></div></figure>
+
+<p>Reference 1: <a href="http://www.lullabot.com/articles/installing-php-pear-and-pecl-extensions-on-mamp-mac-os-x-107-lion">http://www.lullabot.com/articles/installing-php-pear-and-pecl-extensions-on-mamp-mac-os-x-107-lion</a><br>
+Reference 2: <a href="http://jsdelfino.blogspot.com/2012/08/autoconf-and-automake-on-mac-os-x.html">http://jsdelfino.blogspot.com/2012/08/autoconf-and-automake-on-mac-os-x.html</a></p>
+
+<h2 id="toc_6">Apache</h2>
+
+<p>Set up VirtualHosts in <strong>~/Sites/mamp-vhosts.conf</strong> so it&#39;s easy to edit later:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>cp -av /Applications/MAMP/conf/apache/httpd.conf<span class="o">{</span>,-default<span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nb">export </span><span class="nv">USERHOME</span><span class="o">=</span><span class="k">$(</span>dscl . -read /Users/<span class="sb">`</span>whoami<span class="sb">`</span> NFSHomeDirectory | awk -F<span class="s2">&quot;\: &quot;</span> <span class="s1">&#39;{print $2}&#39;</span><span class="k">)</span> <span class="o">&amp;&amp;</span> <span class="nb">echo</span> -e <span class="s2">&quot;\n# User VirtualHosts file (added after MAMP installer)\nInclude ${USERHOME}/Sites/mamp-vhosts.conf&quot;</span> &gt;&gt; /Applications/MAMP/conf/apache/httpd.conf <span class="o">&amp;&amp;</span> <span class="nb">unset </span>USERHOME
+</span><span class='line'>
+</span><span class='line'><span class="o">[</span> ! -d ~/Sites/logs <span class="o">]</span> <span class="o">&amp;&amp;</span> mkdir -pv ~/Sites/logs
+</span></code></pre></td></tr></table></div></figure>
+
+<p><strong><em>IMPORTANT!</em></strong> Be sure to copy and paste the lines containing <code>PORTNUM</code> through the last <code>EOF</code> as a <strong><em>single</em></strong> command (this entire block is a single copy+paste):</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">PORTNUM</span><span class="o">=</span><span class="k">$(</span>egrep <span class="s1">&#39;^Listen [0-9]*&#39;</span> /Applications/MAMP/conf/apache/httpd.conf | awk <span class="s1">&#39;{print $2}&#39;</span><span class="k">)</span> <span class="nv">USERHOME</span><span class="o">=</span><span class="k">$(</span>dscl . -read /Users/<span class="sb">`</span>whoami<span class="sb">`</span> NFSHomeDirectory | awk -F<span class="s2">&quot;\: &quot;</span> <span class="s1">&#39;{print $2}&#39;</span><span class="k">)</span> cat &gt; ~/Sites/mamp-vhosts.conf <span class="s">&lt;&lt;EOF</span>
+</span><span class='line'><span class="s">#</span>
+</span><span class='line'><span class="s"># Use name-based virtual hosting.</span>
+</span><span class='line'><span class="s">#</span>
+</span><span class='line'><span class="s">NameVirtualHost *:${PORTNUM}</span>
+</span><span class='line'>
+</span><span class='line'><span class="s">#</span>
+</span><span class='line'><span class="s"># Set up permissions for VirtualHosts in ~/Sites</span>
+</span><span class='line'><span class="s">#</span>
+</span><span class='line'><span class="s">&lt;Directory &quot;${USERHOME}/Sites&quot;&gt;</span>
+</span><span class='line'><span class="s">    Options Indexes FollowSymLinks MultiViews</span>
+</span><span class='line'><span class="s">    AllowOverride All</span>
+</span><span class='line'><span class="s">    Order allow,deny</span>
+</span><span class='line'><span class="s">    Allow from all</span>
+</span><span class='line'><span class="s">&lt;/Directory&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="s"># For http://localhost in the MAMP default location</span>
+</span><span class='line'><span class="s">&lt;VirtualHost _default_:${PORTNUM}&gt;</span>
+</span><span class='line'><span class="s">    ServerName localhost</span>
+</span><span class='line'><span class="s">    DocumentRoot &quot;/Applications/MAMP/htdocs&quot;</span>
+</span><span class='line'><span class="s">&lt;/VirtualHost&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="s">#</span>
+</span><span class='line'><span class="s"># VirtualHosts</span>
+</span><span class='line'><span class="s">#</span>
+</span><span class='line'>
+</span><span class='line'><span class="s">## VirtualHost template</span>
+</span><span class='line'><span class="s">#&lt;VirtualHost *:${PORTNUM}&gt;</span>
+</span><span class='line'><span class="s">#  ServerName domain.local</span>
+</span><span class='line'><span class="s">#  CustomLog &quot;${USERHOME}/Sites/logs/domain.local-access_log&quot; combined</span>
+</span><span class='line'><span class="s">#  ErrorLog &quot;${USERHOME}/Sites/logs/domain.local-error_log&quot;</span>
+</span><span class='line'><span class="s">#  DocumentRoot &quot;${USERHOME}/Sites/domain.local&quot;</span>
+</span><span class='line'><span class="s">#&lt;/VirtualHost&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="s">#</span>
+</span><span class='line'><span class="s"># Automatic VirtualHosts</span>
+</span><span class='line'><span class="s"># A directory at ${USERHOME}/Sites/webroot can be accessed at http://webroot.dev</span>
+</span><span class='line'><span class="s"># In Drupal, uncomment the line in .htaccess with: RewriteBase /</span>
+</span><span class='line'><span class="s">#</span>
+</span><span class='line'><span class="s"># This log format will display the per-virtual-host as the first field followed by a typical log line</span>
+</span><span class='line'><span class="s">LogFormat &quot;%V %h %l %u %t \&quot;%r\&quot; %&gt;s %b \&quot;%{Referer}i\&quot; \&quot;%{User-Agent}i\&quot;&quot; combinedmassvhost</span>
+</span><span class='line'><span class="s">&lt;VirtualHost *:${PORTNUM}&gt;</span>
+</span><span class='line'><span class="s">  ServerName dev</span>
+</span><span class='line'><span class="s">  ServerAlias *.dev</span>
+</span><span class='line'>
+</span><span class='line'><span class="s">  CustomLog &quot;${USERHOME}/Sites/logs/dev-access_log&quot; combinedmassvhost</span>
+</span><span class='line'><span class="s">  ErrorLog &quot;${USERHOME}/Sites/logs/dev-error_log&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="s">  VirtualDocumentRoot ${USERHOME}/Sites/%-2+</span>
+</span><span class='line'><span class="s">&lt;/VirtualHost&gt;</span>
+</span><span class='line'><span class="s">EOF</span>
+</span></code></pre></td></tr></table></div></figure>
+
+<p>If you read that closely, you&#39;ll see that it&#39;s set up to do <a href="http://httpd.apache.org/docs/2.2/vhosts/mass.html">MassVirtualHosts</a> using the <code>*.dev</code> tld. For example, set up a web root at <code>$HOME/Sites/project</code> and you will be able to view it at <a href="http://project.dev:8888">http://project.dev:8888</a> without needing to create a separate VirtualHost. A custom log format is used, putting the domain name at the beginning of the line, so you can easily see the output as it related to a project.</p>
+
+<h2 id="toc_7">Finishing Up</h2>
+
+<p>Open the MAMP application to <strong>Start Servers</strong>. Note that if you ever change the Apache port number, you&#39;ll need to edit <code>~/Sites/mamp-vhosts.conf</code> appropriately.</p>
+
+<p>As always with MAMP, you can work out of <a href="http://localhost:8888/">http://localhost:8888/</a> by putting files in <code>/Applications/MAMP/htdocs</code>. For example, the folder <code>/Applications/MAMP/drupal</code> will be accessible at <a href="http://localhost:8888/drupal">http://localhost:8888/drupal</a>. You can find other MAMP tools at <a href="http://localhost:8888/MAMP">http://localhost:8888/MAMP</a>.</p>
+
+<p>If you&#39;re having trouble connecting to MySQL with Sequel Pro or another utility, use <code>/Applications/MAMP/tmp/mysql/mysql.sock</code> as the socket path. If MAMP&#39;s MySQL is the only service running mysqld, this should not be necessary but YMMV&#8230;</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Alan Ivey</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-12-19T11:18:00-05:00" pubdate data-updated="true">Dec 19<span>th</span>, 2012</time>
+      
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://alanthing.com/blog/2012/12/19/usable-mamp-os-x-108-mountain-lion/" data-via="alanthing" data-counturl="http://alanthing.com/blog/2012/12/19/usable-mamp-os-x-108-mountain-lion/" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
+    <div class="fb-like" data-send="true" data-width="450" data-show-faces="false"></div>
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2012/09/04/apache-modules-on-os-x-with-homebrew/" title="Previous Post: Apache modules on OS X with Homebrew">&laquo; Apache modules on OS X with Homebrew</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2013/02/21/real-time-ruby-gem-development/" title="Next Post: "Real-time" Ruby Gem Development">"Real-time" Ruby Gem Development &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/03/17/virtualbox-extension-pack-with-one-line/">VirtualBox Extension Pack With One Line</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/02/21/real-time-ruby-gem-development/">"Real-time" Ruby Gem Development</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/12/19/usable-mamp-os-x-108-mountain-lion/">Usable MAMP on OS X 10.8 Mountain Lion</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/09/04/apache-modules-on-os-x-with-homebrew/">Apache modules on OS X with Homebrew</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/08/29/three-ways-get-drush-os-x/">Three ways to get Drush on OS X</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/alanthing">@alanthing</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'alanthing',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - Alan Ivey -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'alanthing';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://alanthing.com/blog/2012/12/19/usable-mamp-os-x-108-mountain-lion/';
+        var disqus_url = 'http://alanthing.com/blog/2012/12/19/usable-mamp-os-x-108-mountain-lion/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id; js.async = true;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

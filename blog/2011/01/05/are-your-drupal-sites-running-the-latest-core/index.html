@@ -101,9 +101,9 @@
   </header>
 
 
-<div class="entry-content"><p>At <a href="http://www.echoditto.com">EchoDitto</a>, we host a lot of Drupal sites. Just about all of our web servers contain more than one completely separate Drupal cores since we develop most of our websites independently. We also keep an eye out on <a href="http://drupal.org/security">Drupal Security</a> and when to apply core updates. Since we&#8217;re not using Aegir, nor do we run every site off of a single multi-site core install, we need a quick and easy way to see what versions we&#8217;re running.</p>
+<div class="entry-content"><p>At <a href="http://www.echoditto.com">EchoDitto</a>, we host a lot of Drupal sites. Just about all of our web servers contain more than one completely separate Drupal cores since we develop most of our websites independently. We also keep an eye out on <a href="http://drupal.org/security">Drupal Security</a> and when to apply core updates. Since we&#39;re not using Aegir, nor do we run every site off of a single multi-site core install, we need a quick and easy way to see what versions we&#39;re running.</p>
 
-<p>Here&#8217;s a shell script we recently developed to report the Drupal Core versions for all of our sites under a single parent folder. It works on Drupal 4 through 7. It&#8217;s not been tested outside of our platform, or non-RHEL systems, but it should be universal as long as you have bash, find, awk, and grep. I decided not to use <a href="http://drupal.org/project/drush">Drush</a> because it would involve bootstrapping every site and invoking PHP; this is just more lightweight. Drush also would not work for Drupal 4 sites, which we surprisingly still have a couple kicking around still.</p>
+<p>Here&#39;s a shell script we recently developed to report the Drupal Core versions for all of our sites under a single parent folder. It works on Drupal 4 through 7. It&#39;s not been tested outside of our platform, or non-RHEL systems, but it should be universal as long as you have bash, find, awk, and grep. I decided not to use <a href="http://drupal.org/project/drush">Drush</a> because it would involve bootstrapping every site and invoking PHP; this is just more lightweight. Drush also would not work for Drupal 4 sites, which we surprisingly still have a couple kicking around still.</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -175,8 +175,7 @@
 </span><span class='line'><span class="k">done</span>
 </span></code></pre></td></tr></table></div></figure>
 
-
-<p>As a result, you&#8217;ll see the directory tree after <code>$WEBHOME</code> where the root of the site is and the version number. Below is an example:</p>
+<p>As a result, you&#39;ll see the directory tree after <code>$WEBHOME</code> where the root of the site is and the version number. Below is an example:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -190,8 +189,7 @@
 </span><span class='line'>blah.org/trunk - 7.0
 </span></code></pre></td></tr></table></div></figure>
 
-
-<p>If you have suggestions, please send them over. This script is still young and I&#8217;d love to see if anyone has any better ideas.</p>
+<p>If you have suggestions, please send them over. This script is still young and I&#39;d love to see if anyone has any better ideas.</p>
 </div>
 
 
@@ -267,15 +265,15 @@
       </li>
     
       <li class="post">
+        <a href="/blog/2012/12/19/usable-mamp-os-x-108-mountain-lion/">Usable MAMP on OS X 10.8 Mountain Lion</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2012/09/04/apache-modules-on-os-x-with-homebrew/">Apache modules on OS X with Homebrew</a>
       </li>
     
       <li class="post">
-        <a href="/blog/2011/01/25/easy-php-5-dot-2-rpms-on-centos/">Easy PHP 5.2 RPMs on CentOS</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2011/01/05/are-your-wordpress-sites-running-the-latest-core/">Are your WordPress sites running the latest core?</a>
+        <a href="/blog/2012/08/29/three-ways-get-drush-os-x/">Three ways to get Drush on OS X</a>
       </li>
     
   </ul>

@@ -101,11 +101,9 @@
   </header>
 
 
-<div class="entry-content"><p>Just installed <a href="http://www.virtualbox.org">VirtualBox</a> on OS X and need the <a href="http://www.virtualbox.org/wiki/Downloads">Extension Pack</a>? This (really long) one-liner will download and install it for you. Run in terminal and enter your password once and you&#8217;re off to the races!</p>
-
-<pre><code>export version=$(/usr/bin/vboxmanage -v) &amp;&amp; export var1=$(echo ${version} | cut -d 'r' -f 1) &amp;&amp; export var2=$(echo ${version} | cut -d 'r' -f 2) &amp;&amp; export file="Oracle_VM_VirtualBox_Extension_Pack-${var1}-${var2}.vbox-extpack" &amp;&amp; curl --silent --location http://download.virtualbox.org/virtualbox/${var1}/${file} -o ~/Downloads/${file} &amp;&amp; VBoxManage extpack install ~/Downloads/${file} --replace &amp;&amp; rm ~/Downloads/${file} &amp;&amp; unset version var1 var2 file
-</code></pre>
-
+<div class="entry-content"><p>Just installed <a href="http://www.virtualbox.org">VirtualBox</a> on OS X and need the <a href="http://www.virtualbox.org/wiki/Downloads">Extension Pack</a>? This (really long) one-liner will download and install it for you. Run in terminal and enter your password once and you&#39;re off to the races!</p>
+<div class="highlight"><pre><code class="text">export version=$(/usr/bin/vboxmanage -v) &amp;&amp; export var1=$(echo ${version} | cut -d &#39;r&#39; -f 1) &amp;&amp; export var2=$(echo ${version} | cut -d &#39;r&#39; -f 2) &amp;&amp; export file=&quot;Oracle_VM_VirtualBox_Extension_Pack-${var1}-${var2}.vbox-extpack&quot; &amp;&amp; curl --silent --location http://download.virtualbox.org/virtualbox/${var1}/${file} -o ~/Downloads/${file} &amp;&amp; VBoxManage extpack install ~/Downloads/${file} --replace &amp;&amp; rm ~/Downloads/${file} &amp;&amp; unset version var1 var2 file
+</code></pre></div>
 <p>Note that VirtualBox must be installed first :)</p>
 </div>
 
@@ -180,15 +178,15 @@
       </li>
     
       <li class="post">
+        <a href="/blog/2012/12/19/usable-mamp-os-x-108-mountain-lion/">Usable MAMP on OS X 10.8 Mountain Lion</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2012/09/04/apache-modules-on-os-x-with-homebrew/">Apache modules on OS X with Homebrew</a>
       </li>
     
       <li class="post">
-        <a href="/blog/2011/01/25/easy-php-5-dot-2-rpms-on-centos/">Easy PHP 5.2 RPMs on CentOS</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2011/01/05/are-your-wordpress-sites-running-the-latest-core/">Are your WordPress sites running the latest core?</a>
+        <a href="/blog/2012/08/29/three-ways-get-drush-os-x/">Three ways to get Drush on OS X</a>
       </li>
     
   </ul>

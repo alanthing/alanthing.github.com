@@ -4,7 +4,7 @@
   <title><![CDATA[Linux and other things]]></title>
   <link href="http://alanthing.com/atom.xml" rel="self"/>
   <link href="http://alanthing.com/"/>
-  <updated>2013-03-17T21:25:24-04:00</updated>
+  <updated>2013-03-17T22:34:32-04:00</updated>
   <id>http://alanthing.com/</id>
   <author>
     <name><![CDATA[Alan Ivey]]></name>
@@ -18,11 +18,9 @@
     <link href="http://alanthing.com/blog/2013/03/17/virtualbox-extension-pack-with-one-line/"/>
     <updated>2013-03-17T20:46:00-04:00</updated>
     <id>http://alanthing.com/blog/2013/03/17/virtualbox-extension-pack-with-one-line</id>
-    <content type="html"><![CDATA[<p>Just installed <a href="http://www.virtualbox.org">VirtualBox</a> on OS X and need the <a href="http://www.virtualbox.org/wiki/Downloads">Extension Pack</a>? This (really long) one-liner will download and install it for you. Run in terminal and enter your password once and you&#8217;re off to the races!</p>
-
-<pre><code>export version=$(/usr/bin/vboxmanage -v) &amp;&amp; export var1=$(echo ${version} | cut -d 'r' -f 1) &amp;&amp; export var2=$(echo ${version} | cut -d 'r' -f 2) &amp;&amp; export file="Oracle_VM_VirtualBox_Extension_Pack-${var1}-${var2}.vbox-extpack" &amp;&amp; curl --silent --location http://download.virtualbox.org/virtualbox/${var1}/${file} -o ~/Downloads/${file} &amp;&amp; VBoxManage extpack install ~/Downloads/${file} --replace &amp;&amp; rm ~/Downloads/${file} &amp;&amp; unset version var1 var2 file
-</code></pre>
-
+    <content type="html"><![CDATA[<p>Just installed <a href="http://www.virtualbox.org">VirtualBox</a> on OS X and need the <a href="http://www.virtualbox.org/wiki/Downloads">Extension Pack</a>? This (really long) one-liner will download and install it for you. Run in terminal and enter your password once and you&#39;re off to the races!</p>
+<div class="highlight"><pre><code class="text">export version=$(/usr/bin/vboxmanage -v) &amp;&amp; export var1=$(echo ${version} | cut -d &#39;r&#39; -f 1) &amp;&amp; export var2=$(echo ${version} | cut -d &#39;r&#39; -f 2) &amp;&amp; export file=&quot;Oracle_VM_VirtualBox_Extension_Pack-${var1}-${var2}.vbox-extpack&quot; &amp;&amp; curl --silent --location http://download.virtualbox.org/virtualbox/${var1}/${file} -o ~/Downloads/${file} &amp;&amp; VBoxManage extpack install ~/Downloads/${file} --replace &amp;&amp; rm ~/Downloads/${file} &amp;&amp; unset version var1 var2 file
+</code></pre></div>
 <p>Note that VirtualBox must be installed first :)</p>
 ]]></content>
   </entry>
@@ -32,61 +30,54 @@
     <link href="http://alanthing.com/blog/2013/02/21/real-time-ruby-gem-development/"/>
     <updated>2013-02-21T08:08:00-05:00</updated>
     <id>http://alanthing.com/blog/2013/02/21/real-time-ruby-gem-development</id>
-    <content type="html"><![CDATA[<p>Recently, I&#8217;ve been working on adding functionality for <a href="http://www.stormondemand.com">Storm on Demand</a>&#8217;s <a href="https://www.stormondemand.com/api/docs/1.0/">API</a> to the excellent <a href="http://fog.io">fog</a> library. There didn&#8217;t seem to be a clear way, that I could find, to work on a Ruby gem in real-time, meaning I save the file in my editor and immediately run some code. Most <a href="http://gembundler.com/rubygems.html">guides</a> I <a href="http://blog.thepete.net/2010/11/creating-and-publishing-your-first-ruby.html">found</a> tended to advise to create the gem file and install it. <a href="http://rakeroutes.com/blog/lets-write-a-gem-part-two/">Stephen Ball demostrates</a> the use of <code>bundle console</code> which drops you into <code>irb</code> for testing, but I was looking for a way to test my own scripts outside of a shell with my recently-saved gem files.</p>
+    <content type="html"><![CDATA[<p>Recently, I&#39;ve been working on adding functionality for <a href="http://www.stormondemand.com">Storm on Demand</a>&#39;s <a href="https://www.stormondemand.com/api/docs/1.0/">API</a> to the excellent <a href="http://fog.io">fog</a> library. There didn&#39;t seem to be a clear way, that I could find, to work on a Ruby gem in real-time, meaning I save the file in my editor and immediately run some code. Most <a href="http://gembundler.com/rubygems.html">guides</a> I <a href="http://blog.thepete.net/2010/11/creating-and-publishing-your-first-ruby.html">found</a> tended to advise to create the gem file and install it. <a href="http://rakeroutes.com/blog/lets-write-a-gem-part-two/">Stephen Ball demostrates</a> the use of <code>bundle console</code> which drops you into <code>irb</code> for testing, but I was looking for a way to test my own scripts outside of a shell with my recently-saved gem files. </p>
 
-<p>Thankfully this isn&#8217;t too difficult to set up and this will allow you to work on your gem in &#8220;real-time;&#8221; save and test, without <code>bundle console</code> or installing lots of dev gems.</p>
+<p>Thankfully this isn&#39;t too difficult to set up and this will allow you to work on your gem in &quot;real-time;&quot; save and test, without <code>bundle console</code> or installing lots of dev gems.</p>
 
-<p>I should note two things here: I&#8217;m not a Ruby developer, and I&#8217;ve really only tested this thoroughly with fog, no others. If this ends up being a terrible way to do things, please let me know.</p>
+<p>I should note two things here: I&#39;m not a Ruby developer, and I&#39;ve really only tested this thoroughly with fog, no others. If this ends up being a terrible way to do things, please let me know.</p>
 
-<p>I&#8217;m using <a href="http://rvm.io/">RVM</a> to keep my gem development isolated from the rest of my system. If you haven&#8217;t already, <a href="https://rvm.io/rvm/install/">set up rvm</a> on your system. If you&#8217;re using <a href="https://github.com/sstephenson/rbenv">rbenv</a> instead, use <a href="https://github.com/jamis/rbenv-gemset">applicable commands</a>.</p>
+<p>I&#39;m using <a href="http://rvm.io/">RVM</a> to keep my gem development isolated from the rest of my system. If you haven&#39;t already, <a href="https://rvm.io/rvm/install/">set up rvm</a> on your system. If you&#39;re using <a href="https://github.com/sstephenson/rbenv">rbenv</a> instead, use <a href="https://github.com/jamis/rbenv-gemset">applicable commands</a>.</p>
 
-<p>You&#8217;ll obviously need to start in a gem development directory. In my case, I start with fog:</p>
+<p>You&#39;ll obviously need to start in a gem development directory. In my case, I start with fog:</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 </pre></td><td class='code'><pre><code class=''><span class='line'>$ git clone git@github.com:fog/fog.git
 </span><span class='line'>$ cd fog</span></code></pre></td></tr></table></div></figure>
 
-
-<p>I&#8217;m going to switch to ruby 1.9.3 and use a new gemset called fogdev:</p>
+<p>I&#39;m going to switch to ruby 1.9.3 and use a new gemset called fogdev:</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class=''><span class='line'>$ rvm use 1.9.3 && rvm gemset create fogdev && rvm use 1.9.3@fogdev</span></code></pre></td></tr></table></div></figure>
 
-
-<p>You may want to create a <code>.rvmrc</code> file so you don&#8217;t have to use <code>rvm use</code> constantly.</p>
+<p>You may want to create a <code>.rvmrc</code> file so you don&#39;t have to use <code>rvm use</code> constantly.</p>
 
 <p>Install the prerequesite gems as listed in the gemspec file with bundler:</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class=''><span class='line'>$ bundle install</span></code></pre></td></tr></table></div></figure>
 
-
-<p>I&#8217;m going to grab the version number of fog from the gemspec file so I can reuse it later (if there are multiple &#8216;.gemspec&#8217; files in your directory, change &#8216;*.gemspec&#8217; to &#8216;name.gemspec&#8217; as appropriate):</p>
+<p>I&#39;m going to grab the version number of fog from the gemspec file so I can reuse it later (if there are multiple &#39;.gemspec&#39; files in your directory, change &#39;*.gemspec&#39; to &#39;name.gemspec&#39; as appropriate):</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class=''><span class='line'>$ export GEMVERSION=$(grep -E '^[ \t]+s.version' *.gemspec | awk '{print $3}' | sed 's/'\''//g')</span></code></pre></td></tr></table></div></figure>
 
-
-<p>Now at this point, you can build and install the gem with <code>rake build &amp;&amp; gem install pkg/fog-${GEMVERSION}.gem</code> or <code>gem build</code> or any other tools as most tutorials advise, but then whenever you edit the source files you&#8217;ll have to repeat. Let&#8217;s create some symbolic links instead. Start by going to the rvm gemset folder (this may be a different location for your environment):</p>
+<p>Now at this point, you can build and install the gem with <code>rake build &amp;&amp; gem install pkg/fog-${GEMVERSION}.gem</code> or <code>gem build</code> or any other tools as most tutorials advise, but then whenever you edit the source files you&#39;ll have to repeat. Let&#39;s create some symbolic links instead. Start by going to the rvm gemset folder (this may be a different location for your environment):</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class=''><span class='line'>$ cd ~/.rvm/gems/ruby-1.9.3-p286\@fogdev/</span></code></pre></td></tr></table></div></figure>
 
-
-<p>It seems as though the earlier <code>bundle install</code> command created the file bin/fog for me, but it doesn&#8217;t work without either installing a gem or running the remaining commands below. Particularly for fog, if this bin/fog file is missing and you need it, you can grab it with the following:</p>
+<p>It seems as though the earlier <code>bundle install</code> command created the file bin/fog for me, but it doesn&#39;t work without either installing a gem or running the remaining commands below. Particularly for fog, if this bin/fog file is missing and you need it, you can grab it with the following:</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class=''><span class='line'>$ [ ! -f bin/fog ] && curl --silent --output bin/fog https://gist.github.com/alanthing/5004411/raw/13f748f1cc19df7511ea2a01de6824eac3358905/fog && chmod +x bin/fog</span></code></pre></td></tr></table></div></figure>
 
-
-<p>Let&#8217;s add our development gem with symbolic links (again, change as appropriate for your gem):</p>
+<p>Let&#39;s add our development gem with symbolic links (again, change as appropriate for your gem):</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 </pre></td><td class='code'><pre><code class=''><span class='line'>$ ln -s ~/fog/fog.gemspec specifications/fog-${GEMVERSION}.gemspec
 </span><span class='line'>$ ln -s ~/fog gems/fog-${GEMVERSION}</span></code></pre></td></tr></table></div></figure>
-
 
 <p>Now if you run <code>gem list</code> you should see your gem listed:</p>
 
@@ -107,7 +98,6 @@
 </span><span class='line'>jekyll (0.12.0)
 </span><span class='line'>...snip...</span></code></pre></td></tr></table></div></figure>
 
-
 <p>And, in my case, running <code>fog</code> uses the gemset file bin/fog and drops me into a fog-ised irb:</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
@@ -119,8 +109,323 @@
 </span><span class='line'>  :default provides VirtualBox and Vmfusion
 </span><span class='line'>&gt;&gt; </span></code></pre></td></tr></table></div></figure>
 
-
 <p>If you see any mistakes or have any questions, let me know!</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Usable MAMP on OS X 10.8 Mountain Lion]]></title>
+    <link href="http://alanthing.com/blog/2012/12/19/usable-mamp-os-x-108-mountain-lion/"/>
+    <updated>2012-12-19T11:18:00-05:00</updated>
+    <id>http://alanthing.com/blog/2012/12/19/usable-mamp-os-x-108-mountain-lion</id>
+    <content type="html"><![CDATA[<h2 id="toc_0">Install MAMP</h2>
+
+<p>Download the latest MAMP from <a href="http://mamp.info/en/downloads/index.html">http://mamp.info/en/downloads/index.html</a> and run the installer.</p>
+
+<h2 id="toc_1">Choose APC Cache</h2>
+
+<p>Open the MAMP app, open <strong>Preferences&#8230;</strong>, click the <strong>PHP</strong> tab, and change <strong>Cache</strong> to <strong>APC</strong>. Click <strong>OK</strong> to close Preferences and <strong>Quit</strong> MAMP.</p>
+
+<p><img src="http://i46.tinypic.com/2wltqpw.png" alt="MAMP Screenshot"></p>
+
+<h2 id="toc_2">PATH variable</h2>
+
+<p>Put MAMP binaries, including PHP, in the front of your $PATH (this is a single command):</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">echo</span> <span class="s1">&#39;export PATH=&quot;/Applications/MAMP/bin:/Applications/MAMP/Library/bin:$(find /Applications/MAMP/bin/php -type d -name &quot;php5.4*&quot; | sort | tail -1)/bin:$PATH&quot;&#39;</span> &gt;&gt; ~/.bash_profile <span class="o">&amp;&amp;</span> <span class="nb">source</span> ~/.bash_profile
+</span></code></pre></td></tr></table></div></figure>
+
+<h2 id="toc_3">MySQL</h2>
+
+<p>Set up MySQL and stop it (default MySQL password is <strong>root</strong>, you do not have to change it when running <code>mysql_secure_installation</code>, though I recommend all of the other defaults):</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>cp -va /Applications/MAMP/Library/support-files/my-small.cnf /Applications/MAMP/conf/my.cnf
+</span><span class='line'>
+</span><span class='line'>sed -i <span class="s1">&#39;&#39;</span> <span class="s2">&quot;s/^\(max_allowed_packet =\) [0-9]*M/\1 1G/g&quot;</span> /Applications/MAMP/conf/my.cnf
+</span><span class='line'>
+</span><span class='line'>egrep <span class="s2">&quot;^# Uncomment the following if you are using InnoDB tables$&quot;</span> /Applications/MAMP/conf/my.cnf &amp;&gt;/dev/null <span class="o">&amp;&amp;</span> sed -i <span class="s1">&#39;&#39;</span> <span class="s2">&quot;s/^\(# Uncomment the following if you are using InnoDB tables\)$/\1@innodb_file_per_table/; y/@/\n/; s/^#\(innodb_.*\)/\1/g&quot;</span> /Applications/MAMP/conf/my.cnf
+</span><span class='line'>
+</span><span class='line'>/Applications/MAMP/bin/startMysql.sh &amp;
+</span><span class='line'>
+</span><span class='line'><span class="c"># Secure MySQL setup:</span>
+</span><span class='line'>/Applications/MAMP/Library/bin/mysql_secure_installation
+</span><span class='line'><span class="c"># -- OR --</span>
+</span><span class='line'><span class="c"># Less secure MySQL setup:</span>
+</span><span class='line'><span class="c">#/Applications/MAMP/Library/bin/mysql -uroot -proot -e&quot;DELETE FROM mysql.user WHERE User=&#39;&#39;; DELETE FROM mysql.user WHERE User=&#39;root&#39; AND Host!=&#39;localhost&#39;; FLUSH PRIVILEGES;&quot;</span>
+</span><span class='line'>
+</span><span class='line'>/Applications/MAMP/bin/stopMysql.sh
+</span></code></pre></td></tr></table></div></figure>
+
+<h2 id="toc_4">PHP</h2>
+
+<p>Set timezone, and increase timeouts and memory values:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>sed -i <span class="s1">&#39;-default&#39;</span> <span class="s2">&quot;s|^;*\(date\.timezone[[:space:]]*=\).*|\1 \&quot;`systemsetup -gettimezone|awk -F&quot;</span><span class="se">\:</span> <span class="s2">&quot; &#39;{print $2}&#39;`\&quot;|; s|^\(memory_limit[[:space:]]*=\).*\(\;.*\)|\1 256M \2|; s|^\(post_max_size[[:space:]]*=\).*|\1 200M|; s|^\(upload_max_filesize[[:space:]]*=\).*|\1 100M|; s|^\(default_socket_timeout[[:space:]]*=\).*|\1 600|; s|^\(max_execution_time[[:space:]]*=\).*\(\;.*\)|\1 300 \2|; s|^\(max_input_time[[:space:]]*=\).*\(\;.*\)|\1 600 \2|;&quot;</span> <span class="k">$(</span>find /Applications/MAMP/bin/php -type d -name <span class="s2">&quot;php5.4*&quot;</span> | sort | tail -1<span class="k">)</span>/conf/php.ini
+</span><span class='line'>
+</span><span class='line'><span class="nb">echo</span> -e <span class="s2">&quot;\n[apc]\napc.shm_size = 192M\napc.rfc1867 = 1&quot;</span> &gt;&gt; <span class="k">$(</span>find /Applications/MAMP/bin/php -type d -name <span class="s2">&quot;php5.4*&quot;</span> | sort | tail -1<span class="k">)</span>/conf/php.ini
+</span></code></pre></td></tr></table></div></figure>
+
+<h3 id="toc_5">PECL Uploadprogress</h3>
+
+<p><strong>Feel free to skip:</strong> This is quite involved when <code>apc.rfc1867=1</code> does the job in most cases. This is mostly an exercise in building PHP modules for MAMP. </p>
+
+<p><strong>You&#39;ll need to install Xcode Command Line Tools from <a href="http://develop.apple.com/downloads">http://develop.apple.com/downloads</a> in order to complete all of the steps below.</strong></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>mkdir -p <span class="k">$(</span>find /Applications/MAMP/bin/php -type d -name <span class="s2">&quot;php5.4*&quot;</span> | sort | tail -1<span class="k">)</span>/include
+</span><span class='line'><span class="nb">cd</span> <span class="k">$(</span>find /Applications/MAMP/bin/php -type d -name <span class="s2">&quot;php5.4*&quot;</span> | sort | tail -1<span class="k">)</span>/include
+</span><span class='line'><span class="nb">export </span><span class="nv">PHPVER</span><span class="o">=</span><span class="k">$(</span><span class="nb">cd</span> /Applications/MAMP/bin/php <span class="o">&amp;&amp;</span> find * -type d -name <span class="s2">&quot;php5.4*&quot;</span> | sort | tail -1 | sed <span class="s1">&#39;s/php//&#39;</span><span class="k">)</span> <span class="o">&amp;&amp;</span> curl -L -o php-<span class="k">${</span><span class="nv">PHPVER</span><span class="k">}</span>.tar.bz2 http://us3.php.net/get/php-<span class="k">${</span><span class="nv">PHPVER</span><span class="k">}</span>.tar.bz2/from/us3.php.net/mirror <span class="o">&amp;&amp;</span> <span class="nb">unset </span>PHPVER
+</span><span class='line'>ls php-5.4*bz2 | xargs -L1 tar jxpf <span class="o">&amp;&amp;</span> rm php-5.4*bz2
+</span><span class='line'>mv -v <span class="k">$(</span>find * -type d -name <span class="s2">&quot;php-5.4*&quot;</span><span class="k">)</span> php
+</span><span class='line'><span class="nb">cd </span>php
+</span><span class='line'>./configure
+</span><span class='line'><span class="nb">cd</span> ..
+</span><span class='line'>
+</span><span class='line'><span class="c">## Build automake and related tools</span>
+</span><span class='line'><span class="nb">export </span><span class="nv">build</span><span class="o">=</span><span class="s2">&quot;$PWD/build&quot;</span>
+</span><span class='line'>mkdir -p <span class="nv">$build</span>
+</span><span class='line'><span class="nb">cd</span> <span class="nv">$build</span>
+</span><span class='line'>curl -OL http://ftpmirror.gnu.org/autoconf/autoconf-2.68.tar.gz
+</span><span class='line'>tar xzf autoconf-2.68.tar.gz
+</span><span class='line'><span class="nb">cd </span>autoconf-2.68
+</span><span class='line'>./configure --prefix<span class="o">=</span><span class="nv">$build</span>/autotools-bin
+</span><span class='line'>make
+</span><span class='line'>make install
+</span><span class='line'><span class="nb">export </span><span class="nv">PATH</span><span class="o">=</span><span class="nv">$PATH</span>:<span class="nv">$build</span>/autotools-bin/bin
+</span><span class='line'><span class="nb">cd</span> <span class="nv">$build</span>
+</span><span class='line'>curl -OL http://ftpmirror.gnu.org/automake/automake-1.11.tar.gz
+</span><span class='line'>tar xzf automake-1.11.tar.gz
+</span><span class='line'><span class="nb">cd </span>automake-1.11
+</span><span class='line'>./configure --prefix<span class="o">=</span><span class="nv">$build</span>/autotools-bin
+</span><span class='line'>make
+</span><span class='line'>make install
+</span><span class='line'><span class="nb">cd</span> <span class="nv">$build</span>
+</span><span class='line'>curl -OL http://ftpmirror.gnu.org/libtool/libtool-2.4.tar.gz
+</span><span class='line'>tar xzf libtool-2.4.tar.gz
+</span><span class='line'><span class="nb">cd </span>libtool-2.4
+</span><span class='line'>./configure --prefix<span class="o">=</span><span class="nv">$build</span>/autotools-bin
+</span><span class='line'>make
+</span><span class='line'>make install
+</span><span class='line'><span class="nb">cd</span> <span class="nv">$build</span>
+</span><span class='line'><span class="nb">unset </span>build
+</span><span class='line'>rm autoconf-2.68.tar.gz automake-1.11.tar.gz libtool-2.4.tar.gz
+</span><span class='line'>rm -rf autoconf-2.68 automake-1.11 libtool-2.4
+</span><span class='line'><span class="nb">cd</span> ..
+</span><span class='line'>
+</span><span class='line'>pecl download uploadprogress
+</span><span class='line'>ls uploadprogress*z | xargs -L1 tar zxpf <span class="o">&amp;&amp;</span> rm -v uploadprogress*z package*xml
+</span><span class='line'>mv -v <span class="k">$(</span>find * -type d -name <span class="s2">&quot;uploadprogress*&quot;</span><span class="k">)</span> uploadprogress
+</span><span class='line'><span class="nb">cd </span>uploadprogress
+</span><span class='line'>phpize
+</span><span class='line'>./configure --with-php-config<span class="o">=</span><span class="k">$(</span>find /Applications/MAMP/bin/php -type d -name <span class="s2">&quot;php5.4*&quot;</span> | sort | tail -1<span class="k">)</span>/bin/php-config
+</span><span class='line'>make
+</span><span class='line'>make install
+</span><span class='line'>
+</span><span class='line'><span class="nb">echo</span> -e <span class="s2">&quot;\n[uploadprogress]\nextension=uploadprogress.so&quot;</span> &gt;&gt; <span class="k">$(</span>find /Applications/MAMP/bin/php -type d -name <span class="s2">&quot;php5.4*&quot;</span> | sort | tail -1<span class="k">)</span>/conf/php.ini
+</span></code></pre></td></tr></table></div></figure>
+
+<p>Reference 1: <a href="http://www.lullabot.com/articles/installing-php-pear-and-pecl-extensions-on-mamp-mac-os-x-107-lion">http://www.lullabot.com/articles/installing-php-pear-and-pecl-extensions-on-mamp-mac-os-x-107-lion</a><br>
+Reference 2: <a href="http://jsdelfino.blogspot.com/2012/08/autoconf-and-automake-on-mac-os-x.html">http://jsdelfino.blogspot.com/2012/08/autoconf-and-automake-on-mac-os-x.html</a></p>
+
+<h2 id="toc_6">Apache</h2>
+
+<p>Set up VirtualHosts in <strong>~/Sites/mamp-vhosts.conf</strong> so it&#39;s easy to edit later:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>cp -av /Applications/MAMP/conf/apache/httpd.conf<span class="o">{</span>,-default<span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nb">export </span><span class="nv">USERHOME</span><span class="o">=</span><span class="k">$(</span>dscl . -read /Users/<span class="sb">`</span>whoami<span class="sb">`</span> NFSHomeDirectory | awk -F<span class="s2">&quot;\: &quot;</span> <span class="s1">&#39;{print $2}&#39;</span><span class="k">)</span> <span class="o">&amp;&amp;</span> <span class="nb">echo</span> -e <span class="s2">&quot;\n# User VirtualHosts file (added after MAMP installer)\nInclude ${USERHOME}/Sites/mamp-vhosts.conf&quot;</span> &gt;&gt; /Applications/MAMP/conf/apache/httpd.conf <span class="o">&amp;&amp;</span> <span class="nb">unset </span>USERHOME
+</span><span class='line'>
+</span><span class='line'><span class="o">[</span> ! -d ~/Sites/logs <span class="o">]</span> <span class="o">&amp;&amp;</span> mkdir -pv ~/Sites/logs
+</span></code></pre></td></tr></table></div></figure>
+
+<p><strong><em>IMPORTANT!</em></strong> Be sure to copy and paste the lines containing <code>PORTNUM</code> through the last <code>EOF</code> as a <strong><em>single</em></strong> command (this entire block is a single copy+paste):</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">PORTNUM</span><span class="o">=</span><span class="k">$(</span>egrep <span class="s1">&#39;^Listen [0-9]*&#39;</span> /Applications/MAMP/conf/apache/httpd.conf | awk <span class="s1">&#39;{print $2}&#39;</span><span class="k">)</span> <span class="nv">USERHOME</span><span class="o">=</span><span class="k">$(</span>dscl . -read /Users/<span class="sb">`</span>whoami<span class="sb">`</span> NFSHomeDirectory | awk -F<span class="s2">&quot;\: &quot;</span> <span class="s1">&#39;{print $2}&#39;</span><span class="k">)</span> cat &gt; ~/Sites/mamp-vhosts.conf <span class="s">&lt;&lt;EOF</span>
+</span><span class='line'><span class="s">#</span>
+</span><span class='line'><span class="s"># Use name-based virtual hosting.</span>
+</span><span class='line'><span class="s">#</span>
+</span><span class='line'><span class="s">NameVirtualHost *:${PORTNUM}</span>
+</span><span class='line'>
+</span><span class='line'><span class="s">#</span>
+</span><span class='line'><span class="s"># Set up permissions for VirtualHosts in ~/Sites</span>
+</span><span class='line'><span class="s">#</span>
+</span><span class='line'><span class="s">&lt;Directory &quot;${USERHOME}/Sites&quot;&gt;</span>
+</span><span class='line'><span class="s">    Options Indexes FollowSymLinks MultiViews</span>
+</span><span class='line'><span class="s">    AllowOverride All</span>
+</span><span class='line'><span class="s">    Order allow,deny</span>
+</span><span class='line'><span class="s">    Allow from all</span>
+</span><span class='line'><span class="s">&lt;/Directory&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="s"># For http://localhost in the MAMP default location</span>
+</span><span class='line'><span class="s">&lt;VirtualHost _default_:${PORTNUM}&gt;</span>
+</span><span class='line'><span class="s">    ServerName localhost</span>
+</span><span class='line'><span class="s">    DocumentRoot &quot;/Applications/MAMP/htdocs&quot;</span>
+</span><span class='line'><span class="s">&lt;/VirtualHost&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="s">#</span>
+</span><span class='line'><span class="s"># VirtualHosts</span>
+</span><span class='line'><span class="s">#</span>
+</span><span class='line'>
+</span><span class='line'><span class="s">## VirtualHost template</span>
+</span><span class='line'><span class="s">#&lt;VirtualHost *:${PORTNUM}&gt;</span>
+</span><span class='line'><span class="s">#  ServerName domain.local</span>
+</span><span class='line'><span class="s">#  CustomLog &quot;${USERHOME}/Sites/logs/domain.local-access_log&quot; combined</span>
+</span><span class='line'><span class="s">#  ErrorLog &quot;${USERHOME}/Sites/logs/domain.local-error_log&quot;</span>
+</span><span class='line'><span class="s">#  DocumentRoot &quot;${USERHOME}/Sites/domain.local&quot;</span>
+</span><span class='line'><span class="s">#&lt;/VirtualHost&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="s">#</span>
+</span><span class='line'><span class="s"># Automatic VirtualHosts</span>
+</span><span class='line'><span class="s"># A directory at ${USERHOME}/Sites/webroot can be accessed at http://webroot.dev</span>
+</span><span class='line'><span class="s"># In Drupal, uncomment the line in .htaccess with: RewriteBase /</span>
+</span><span class='line'><span class="s">#</span>
+</span><span class='line'><span class="s"># This log format will display the per-virtual-host as the first field followed by a typical log line</span>
+</span><span class='line'><span class="s">LogFormat &quot;%V %h %l %u %t \&quot;%r\&quot; %&gt;s %b \&quot;%{Referer}i\&quot; \&quot;%{User-Agent}i\&quot;&quot; combinedmassvhost</span>
+</span><span class='line'><span class="s">&lt;VirtualHost *:${PORTNUM}&gt;</span>
+</span><span class='line'><span class="s">  ServerName dev</span>
+</span><span class='line'><span class="s">  ServerAlias *.dev</span>
+</span><span class='line'>
+</span><span class='line'><span class="s">  CustomLog &quot;${USERHOME}/Sites/logs/dev-access_log&quot; combinedmassvhost</span>
+</span><span class='line'><span class="s">  ErrorLog &quot;${USERHOME}/Sites/logs/dev-error_log&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="s">  VirtualDocumentRoot ${USERHOME}/Sites/%-2+</span>
+</span><span class='line'><span class="s">&lt;/VirtualHost&gt;</span>
+</span><span class='line'><span class="s">EOF</span>
+</span></code></pre></td></tr></table></div></figure>
+
+<p>If you read that closely, you&#39;ll see that it&#39;s set up to do <a href="http://httpd.apache.org/docs/2.2/vhosts/mass.html">MassVirtualHosts</a> using the <code>*.dev</code> tld. For example, set up a web root at <code>$HOME/Sites/project</code> and you will be able to view it at <a href="http://project.dev:8888">http://project.dev:8888</a> without needing to create a separate VirtualHost. A custom log format is used, putting the domain name at the beginning of the line, so you can easily see the output as it related to a project.</p>
+
+<h2 id="toc_7">Finishing Up</h2>
+
+<p>Open the MAMP application to <strong>Start Servers</strong>. Note that if you ever change the Apache port number, you&#39;ll need to edit <code>~/Sites/mamp-vhosts.conf</code> appropriately.</p>
+
+<p>As always with MAMP, you can work out of <a href="http://localhost:8888/">http://localhost:8888/</a> by putting files in <code>/Applications/MAMP/htdocs</code>. For example, the folder <code>/Applications/MAMP/drupal</code> will be accessible at <a href="http://localhost:8888/drupal">http://localhost:8888/drupal</a>. You can find other MAMP tools at <a href="http://localhost:8888/MAMP">http://localhost:8888/MAMP</a>.</p>
+
+<p>If you&#39;re having trouble connecting to MySQL with Sequel Pro or another utility, use <code>/Applications/MAMP/tmp/mysql/mysql.sock</code> as the socket path. If MAMP&#39;s MySQL is the only service running mysqld, this should not be necessary but YMMV&#8230;</p>
 ]]></content>
   </entry>
   
@@ -129,7 +434,7 @@
     <link href="http://alanthing.com/blog/2012/09/04/apache-modules-on-os-x-with-homebrew/"/>
     <updated>2012-09-04T11:27:00-04:00</updated>
     <id>http://alanthing.com/blog/2012/09/04/apache-modules-on-os-x-with-homebrew</id>
-    <content type="html"><![CDATA[<p>I have long been a big fan of <a href="http://mxcl.github.com/homebrew">Homebrew</a>, a way of adding open-source software to OS X without much of the overhead and systems link <a href="http://www.macports.org">MacPorts</a> and <a href="http://www.finkproject.org">Fink</a> introduce. It&#8217;s quickly become my favorite way to do PHP-based development on a Mac, and I&#8217;ve <a href="http://echodittolabs.org/blog/2012/04/os-x-107-lion-development-nginx-php-mariadb-homebrew">blogged</a> <a href="http://echodittolabs.org/blog/2011/09/os-x-107-lion-development-native-apache-php-homebrew-mysql-or-mariadb">before</a> about various ways to integrate Homebrew-based software into your workflow.</p>
+    <content type="html"><![CDATA[<p>I have long been a big fan of <a href="http://mxcl.github.com/homebrew">Homebrew</a>, a way of adding open-source software to OS X without much of the overhead and systems link <a href="http://www.macports.org">MacPorts</a> and <a href="http://www.finkproject.org">Fink</a> introduce. It&#39;s quickly become my favorite way to do PHP-based development on a Mac, and I&#39;ve <a href="http://echodittolabs.org/blog/2012/04/os-x-107-lion-development-nginx-php-mariadb-homebrew">blogged</a> <a href="http://echodittolabs.org/blog/2011/09/os-x-107-lion-development-native-apache-php-homebrew-mysql-or-mariadb">before</a> about various ways to integrate Homebrew-based software into your workflow.</p>
 
 <p>In preparing new documentation for using Homebrew on 10.7 and 10.8 (coming soon to <a href="http://echodittolabs.org/blogs/alan-ivey">my EchoDitto blog</a>), I wanted to find a way to run either <a href="http://httpd.apache.org/docs/2.2/mod/mod_suexec.html">mod_suexec</a> or <a href="http://www.fastcgi.com/mod_fastcgi/docs/mod_fastcgi.html">mod_fastcgi</a> so I could use the built-in version of Apache without having to change folder ownership in random places where the web server needed to modify files. Homebrew did not have any formulas, but I found that <a href="http://github.com/lifepillar">Lifepillar</a> had written formulas <a href="https://github.com/mxcl/homebrew/pull/12093/files">(mod_fastcgi)</a> <a href="https://github.com/mxcl/homebrew/pull/12091">(mod_suexec)</a> for them both and was hoping to get them into Homebrew.</p>
 
@@ -145,8 +450,122 @@
 <li><a href="https://github.com/Homebrew/homebrew-apache/blob/master/mod_python.rb">mod_python</a> and <a href="https://github.com/Homebrew/homebrew-apache/blob/master/mod_wsgi.rb">mod_wsgi</a> - copied from main Homebrew formulas</li>
 </ul>
 
-
 <p>If you have any problems or questions, let me know in the issue queue! Or write a formula and submit a pull request!</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Three ways to get Drush on OS X]]></title>
+    <link href="http://alanthing.com/blog/2012/08/29/three-ways-get-drush-os-x/"/>
+    <updated>2012-08-29T15:18:00-04:00</updated>
+    <id>http://alanthing.com/blog/2012/08/29/three-ways-get-drush-os-x</id>
+    <content type="html"><![CDATA[<p><a href="http://echodittolabs.org/blog/2011/03/keep-drush-up-to-date">As I&#39;ve said before</a>, we love <a href="http://drupal.org/project/drush">drush</a>. It&#39;s hard to imagine doing Drupal work without it. If OS X is your workstation, it&#39;s pretty simple to install with pear, as described on the project page. Let&#39;s review that method and cover two others, git and Homebrew, and how to keep them updated.</p>
+
+<p>All commands listed below are to be executed on the command line with the Terminal application. But if you use Drush regularly then you already knew that!</p>
+
+<h2 id="toc_0">Homebrew</h2>
+
+<p>If you need introduced to Homebrew, or need help installing it, check out the <a href="http://mxcl.github.com/homebrew/">Homebrew project homepage</a>. The installation script is at the bottom.</p>
+
+<p>Ready to install drush?</p>
+<div class="highlight"><pre><code class="text">brew install drush
+</code></pre></div>
+<p>Yup, that&#39;s it! Upgrading is simple as well, as explained in the <a href="https://github.com/mxcl/homebrew/wiki/FAQ">Homebrew FAQ</a>:</p>
+<div class="highlight"><pre><code class="text">brew update
+brew upgrade drush
+</code></pre></div>
+<h2 id="toc_1">PEAR</h2>
+
+<p>Whether you&#39;ve installed your own copy of PHP with Homebrew, are using the one included with MAMP, or the version provided by OS X, drush is easy to install using the <code>pear</code> command.</p>
+
+<p>If you are using the built-in php with OS X, you&#39;ll need to prefix each command with <code>sudo</code>.</p>
+<div class="highlight"><pre><code class="text">pear channel-discover pear.drush.org
+</code></pre></div>
+<p><strong>Homebrew Note:</strong> If you are using Homebrew and get an error about not being able to create a lock file, run the following command (change php54 to php53 if applicable): <code>touch $(brew --prefix php54)/lib/php/.lock &amp;&amp; chmod 0644 $(brew --prefix php54)/lib/php/.lock</code></p>
+
+<p>Continue by installing drush now that the channel is added:</p>
+<div class="highlight"><pre><code class="text">pear install drush/drush
+pear upgrade --force Console_Getopt
+</code></pre></div>
+<p><strong>Homebrew Note:</strong> If you do not have drush available in your path after installing, relink PHP and you should then have the symlink available in <em>/usr/local/bin</em>: <code>brew unlink php54 &amp;&amp; brew link php54</code></p>
+
+<p>Upgrading is also easy (again, if using the built-in PHP with OS X, prefix with <code>sudo</code>):</p>
+<div class="highlight"><pre><code class="text">pear channel-update pear.drush.org
+pear upgrade drush
+</code></pre></div>
+<h2 id="toc_2">Git</h2>
+
+<p>If you would prefer to keep track of the source code for Drush, or perhaps be a contributor, you will want to use Git so you can easily make and keep track of changes. If you do not have git installed on your system, install <a href="http://itunes.apple.com/us/app/xcode/id497799835?mt=12">Xcode</a> or <a href="http://developer.apple.com/downloads">Command Line Tools for Xcode</a> and then proceed. These commands will clone the drush repository, checkout the latest stable tag, and create a symlink in <em>/usr/local/bin</em>:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>[ ! -d /usr/local ] && sudo mkdir /usr/local && sudo chgrp admin /usr/local && sudo chmod g+rwx /usr/local
+</span><span class='line'>git clone http://git.drupal.org/project/drush.git /usr/local/drush
+</span><span class='line'>cd /usr/local/drush
+</span><span class='line'>git checkout $(git tag|grep "^[0-9]"|egrep -v "alpha|beta|rc"|tail -1)
+</span><span class='line'>cd /usr/local/bin 2&gt;/dev/null || mkdir /usr/local/bin && cd /usr/local/bin
+</span><span class='line'>ln -s ../drush/drush || sudo ln -s ../drush/drush</span></code></pre></td></tr></table></div></figure>
+
+<p>To update, fetch the latest code and grab the latest stable tag:</p>
+<div class="highlight"><pre><code class="text">cd /usr/local/drush
+git fetch
+git checkout $(git tag|grep &quot;^[0-9]&quot;|egrep -v &quot;alpha|beta|rc&quot;|tail -1)
+</code></pre></div>
+<p>If you have any questions or improvements, please leave a comment!</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Never touch your local /etc/hosts file in OS X again]]></title>
+    <link href="http://alanthing.com/blog/2012/04/24/never-touch-your-local-etchosts-file-os-x-again/"/>
+    <updated>2012-04-24T08:20:00-04:00</updated>
+    <id>http://alanthing.com/blog/2012/04/24/never-touch-your-local-etchosts-file-os-x-again</id>
+    <content type="html"><![CDATA[<p>In each of my posts on setting up a <a href="http://echodittolabs.org/blog/2012/04/os-x-107-lion-development-nginx-php-mariadb-homebrew">local</a> <a href="http://echodittolabs.org/blog/2011/10/os-x-107-lion-development-macports">development</a> <a href="http://echodittolabs.org/blog/2011/09/os-x-107-lion-development-native-apache-php-homebrew-mysql-or-mariadb">environment</a> <a href="http://echodittolabs.org/blog/2011/08/os-x-107-lion-development-native-mamp-mysql-installer">on OS X</a>, it&#39;s mentioned that you need to add your website&#39;s domain, even though it&#39;s local, in your /etc/hosts file. My preferred way to edit the hosts file on OS X is using <a href="http://code.google.com/p/gmask/">Gas Mask</a>. If you wanted to create the local virtual host <strong>projectx.dev</strong>, you would add the line <code>127.0.0.1 projectx.dev</code> in /etc/hosts or with Gas Mask, and then use that same value in either <strong>ServerName</strong> in Apache or <strong>server_name</strong> in Nginx. This can be tedious for adding new sites. Luckily there&#39;s a way to set this up once and then never have to edit your hosts file again for adding new local virtual hosts.</p>
+
+<p>You&#39;ll need a copy of dnsmasq, and I find this is most easily installed via Homebrew. If you haven&#39;t already, grab either <a href="http://itunes.apple.com/us/app/xcode/id448457090">Xcode</a> or <a href="http://kennethreitz.com/xcode-gcc-and-homebrew.html">Xcode Command Line Tools</a> and <a href="https://github.com/mxcl/homebrew/wiki/installation">install Homebrew</a>.</p>
+
+<p>The steps below will install dnsmasq from Homebrew, configure dnsmasq to return the IP address &#39;127.0.0.1&#39; for all requests to the fake top-level-domain &quot;.dev,&quot; start dnsmasq on boot (don&#39;t worry, it&#39;s an extremely light-weight process), and configure OS X to use dnsmasq for queries ending in &quot;.dev.&quot;</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>brew install dnsmasq
+</span><span class='line'>mkdir -pv $(brew --prefix)/etc/
+</span><span class='line'>echo 'address=/.dev/127.0.0.1' &gt; $(brew --prefix)/etc/dnsmasq.conf
+</span><span class='line'>sudo cp -v $(brew --prefix dnsmasq)/homebrew.mxcl.dnsmasq.plist /Library/LaunchDaemons
+</span><span class='line'>sudo launchctl load -w /Library/LaunchDaemons/homebrew.mxcl.dnsmasq.plist
+</span><span class='line'>sudo mkdir -v /etc/resolver
+</span><span class='line'>sudo bash -c 'echo "nameserver 127.0.0.1" &gt; /etc/resolver/dev'</span></code></pre></td></tr></table></div></figure>
+
+<p>That&#39;s it! You can run <code>scutil --dns</code> to show all of your current resolvers, and you should see that all requests for a domain ending in .dev will go to the DNS server at 127.0.0.1:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>resolver #9
+</span><span class='line'>  domain   : dev
+</span><span class='line'>  nameserver[0] : 127.0.0.1</span></code></pre></td></tr></table></div></figure>
+
+<p>If you ping any domain that ends in .dev, you&#39;ll get the IP address 127.0.0.1 back as a result:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ ping -c 1 thereisnowaythisisarealdomain.dev
+</span><span class='line'>PING thereisnowaythisisarealdomain.dev (127.0.0.1): 56 data bytes
+</span><span class='line'>64 bytes from 127.0.0.1: icmp_seq=0 ttl=64 time=0.057 ms</span></code></pre></td></tr></table></div></figure>
+
+<p>Note that if you&#39;re using Mountain Lion you may need to reboot before the /etc/resolver settings take effect globally. I was able to get pings to work right away but Chrome would not resolve properly until I restarted.</p>
+
+<p>Now you can set up a new virtual host with <strong>anydomain.dev</strong>, and it&#39;ll be available as soon as you reload Apache or Nginx! You could extend this by enabling <a href="http://httpd.apache.org/docs/2.2/vhosts/mass.html">Mass Virtual Hosting for Apache</a> or <a href="http://forum.nginx.org/read.php?2,218617,218617#msg-218617">similar with Nginx</a>, though both require consistent layout of directories. Have fun configuring less stuff on your system!</p>
 ]]></content>
   </entry>
   
@@ -155,25 +574,23 @@
     <link href="http://alanthing.com/blog/2011/01/25/easy-php-5-dot-2-rpms-on-centos/"/>
     <updated>2011-01-25T10:13:00-05:00</updated>
     <id>http://alanthing.com/blog/2011/01/25/easy-php-5-dot-2-rpms-on-centos</id>
-    <content type="html"><![CDATA[<p>I had previously <a href="http://echodittolabs.org/blog/2009/05/all-i-want-php-52-centosrhel">written a post</a> on one method of upgrading PHP from 5.1 to 5.2 on CentOS and Red Hat servers by creating new RPMs. Since then, I have found a much better way to create PHP 5.2.17 (or newer) RPMs to easily upgrade (and later remove, if you want) the older version available by default. I&#8217;ll presume you have no prior experience building PHP RPMs.</p>
+    <content type="html"><![CDATA[<p>I had previously <a href="http://echodittolabs.org/blog/2009/05/all-i-want-php-52-centosrhel">written a post</a> on one method of upgrading PHP from 5.1 to 5.2 on CentOS and Red Hat servers by creating new RPMs. Since then, I have found a much better way to create PHP 5.2.17 (or newer) RPMs to easily upgrade (and later remove, if you want) the older version available by default. I&#39;ll presume you have no prior experience building PHP RPMs.</p>
 
-<p>We start by adding the <a href="http://fedoraproject.org/wiki/EPEL">Extra Packages for Enterprise Linux (EPEL) repository</a> to our server. EPEL is safe to add as an additional repository and leave enabled because it <a href="http://fedoraproject.org/wiki/EPEL/FAQ#How_is_EPEL_different_from_other_third_party_repositories_for_RHEL_and_derivatives.3F">provides complementary packages only</a> and will not conflict with the CentOS or Red Hat repositories. Since their installation method may change, I won&#8217;t reproduce it here; instead head over to the <a href="http://fedoraproject.org/wiki/EPEL/FAQ#howtouse">installation portion of the FAQ</a> and it&#8217;s just one line to get started with EPEL.</p>
+<p>We start by adding the <a href="http://fedoraproject.org/wiki/EPEL">Extra Packages for Enterprise Linux (EPEL) repository</a> to our server. EPEL is safe to add as an additional repository and leave enabled because it <a href="http://fedoraproject.org/wiki/EPEL/FAQ#How_is_EPEL_different_from_other_third_party_repositories_for_RHEL_and_derivatives.3F">provides complementary packages only</a> and will not conflict with the CentOS or Red Hat repositories. Since their installation method may change, I won&#39;t reproduce it here; instead head over to the <a href="http://fedoraproject.org/wiki/EPEL/FAQ#howtouse">installation portion of the FAQ</a> and it&#39;s just one line to get started with EPEL.</p>
 
-<p>With EPEL enabled, we will need just one new package to build RPMs: <a href="http://fedoraproject.org/wiki/Projects/Mock">Mock</a>. Mock will create a chroot, download what&#8217;s necessary to build your RPM, build, and cleanup afterwards. Mock only requires a couple of python packages as dependencies; it will not require a compiler or anything like that since mock will grab them as needed during operation. I will presume you are not running as root so I will use sudo as necessary. To install mock:</p>
+<p>With EPEL enabled, we will need just one new package to build RPMs: <a href="http://fedoraproject.org/wiki/Projects/Mock">Mock</a>. Mock will create a chroot, download what&#39;s necessary to build your RPM, build, and cleanup afterwards. Mock only requires a couple of python packages as dependencies; it will not require a compiler or anything like that since mock will grab them as needed during operation. I will presume you are not running as root so I will use sudo as necessary. To install mock:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'>sudo yum install mock
 </span></code></pre></td></tr></table></div></figure>
 
-
-<p>That&#8217;s it. You can run all mock operations with the &#8216;sudo&#8217; command to run as root, but your packages will be built inside the chroot as a non-root user. Or, if you prefer to not use sudo when running mock, add your user to the mock group (where username is your user):</p>
+<p>That&#39;s it. You can run all mock operations with the &#39;sudo&#39; command to run as root, but your packages will be built inside the chroot as a non-root user. Or, if you prefer to not use sudo when running mock, add your user to the mock group (where username is your user):</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'>sudo /usr/sbin/usermod -G mock username
 </span></code></pre></td></tr></table></div></figure>
 
-
-<p>Using the source code from php.net and creating a RPM spec file from scratch would be a lot of work, so we&#8217;ll grab a source RPM for PHP 5.2. I&#8217;ve found that <a href="http://blog.famillecollet.com/">Remi</a> has the most up-to-date RPM spec with the latest patches and robust install scripts. <a href="http://rpms.famillecollet.com/SRPMS/">Browse Remi&#8217;s SRPMS</a> and download the latest PHP 5.2 file. As of this writing, it&#8217;s php-5.2.17-1.remi.src.rpm. On your system, download it with wget in your home directory:</p>
+<p>Using the source code from php.net and creating a RPM spec file from scratch would be a lot of work, so we&#39;ll grab a source RPM for PHP 5.2. I&#39;ve found that <a href="http://blog.famillecollet.com/">Remi</a> has the most up-to-date RPM spec with the latest patches and robust install scripts. <a href="http://rpms.famillecollet.com/SRPMS/">Browse Remi&#39;s SRPMS</a> and download the latest PHP 5.2 file. As of this writing, it&#39;s php-5.2.17-1.remi.src.rpm. On your system, download it with wget in your home directory:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -181,10 +598,9 @@
 </span><span class='line'>wget http://rpms.famillecollet.com/SRPMS/php-5.2.17-1.remi.src.rpm
 </span></code></pre></td></tr></table></div></figure>
 
+<p>Now, we could just run mock and rebuild this source RPM and hopefully install the results, but it would fail due to not having sqlite2-devel installed. Remi provides sqlite2 and sqlite2-devel, so you could add Remi&#39;s yum repository to your mock settings, but then it would grab Remi&#39;s other updated packages like MySQL 5.5 and others during the PHP build. My goal here is to only build PHP against Base CentOS and EPEL packages. So, we have to edit the spec file and rebuild the source RPM before passing it off to mock. Don&#39;t worry; while there are a few steps, it&#39;s not very difficult if you follow closely.</p>
 
-<p>Now, we could just run mock and rebuild this source RPM and hopefully install the results, but it would fail due to not having sqlite2-devel installed. Remi provides sqlite2 and sqlite2-devel, so you could add Remi&#8217;s yum repository to your mock settings, but then it would grab Remi&#8217;s other updated packages like MySQL 5.5 and others during the PHP build. My goal here is to only build PHP against Base CentOS and EPEL packages. So, we have to edit the spec file and rebuild the source RPM before passing it off to mock. Don&#8217;t worry; while there are a few steps, it&#8217;s not very difficult if you follow closely.</p>
-
-<p>To unpack the source RPM we just downloaded into our home directory, we&#8217;ll need to set up the .rpmmacros file in our home directory. Why? Without it, it will attempt to extract to /usr/src/redhat, and only root can use that directory, and you should <a href="http://wiki.centos.org/HowTos/SetupRpmBuildEnvironment">never build any packages as a privileged user</a>. We&#8217;ll create the macros file and the directories it needs from your home directory:</p>
+<p>To unpack the source RPM we just downloaded into our home directory, we&#39;ll need to set up the .rpmmacros file in our home directory. Why? Without it, it will attempt to extract to /usr/src/redhat, and only root can use that directory, and you should <a href="http://wiki.centos.org/HowTos/SetupRpmBuildEnvironment">never build any packages as a privileged user</a>. We&#39;ll create the macros file and the directories it needs from your home directory:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -194,15 +610,13 @@
 </span><span class='line'>mkdir -p ~/rpmbuild/<span class="o">{</span>SOURCES,SPECS,SRPMS<span class="o">}</span>
 </span></code></pre></td></tr></table></div></figure>
 
-
 <p>Unpack the source RPM. This will extract the PHP 5.2.17 source and any patches and configuration files into ~/rpmbuild/SOURCES, and the spec file will be in ~/rpmbuild/SPECS:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'>rpm -ivh php-5.2.17-1.remi.src.rpm
 </span></code></pre></td></tr></table></div></figure>
 
-
-<p>Now we need to make a couple of changes to the spec file. We&#8217;ll change to the SPECS directory and make a copy of Remi&#8217;s spec file so we can keep it for reference:</p>
+<p>Now we need to make a couple of changes to the spec file. We&#39;ll change to the SPECS directory and make a copy of Remi&#39;s spec file so we can keep it for reference:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -210,27 +624,24 @@
 </span><span class='line'>cp -a php52.spec php.spec
 </span></code></pre></td></tr></table></div></figure>
 
-
-<p>Open up php.spec in your favorite text editor and let&#8217;s have the PHP configure script use the bundled SQLite2 libraries instead of searching for ones on your system:</p>
+<p>Open up php.spec in your favorite text editor and let&#39;s have the PHP configure script use the bundled SQLite2 libraries instead of searching for ones on your system:</p>
 
 <ol>
-<li>Find the line &#8220;BuildRequires: sqlite2-devel >= 2.8.0&#8221; and delete it</li>
-<li>Find &#8220;&#8211;with-sqlite=shared,%{_prefix} &#34; and replace it with &#8220;&#8211;with-sqlite=shared &#34;</li>
+<li>Find the line &quot;BuildRequires: sqlite2-devel &gt;= 2.8.0&quot; and delete it</li>
+<li>Find &quot;&#8211;with-sqlite=shared,%{_prefix} \&quot; and replace it with &quot;&#8211;with-sqlite=shared \&quot;</li>
 <li>Optionally: Add your own lines to the %changelog describing that you removed the sqlite2-devel build requirement</li>
-<li>Optionally: Remove the first 4 lines after &#8220;%pre common&#8221; to remove Remi&#8217;s note about their forums</li>
+<li>Optionally: Remove the first 4 lines after &quot;%pre common&quot; to remove Remi&#39;s note about their forums</li>
 </ol>
-
 
 <p>It took 2 small tweaks to remove the sqlite2-devel RPM requirement not found in our standard repositories. See <a href="http://paste.ly/4Yrx">php.spec.diff</a> to see only the changes we made; or <a href="http://paste.ly/4Ys5">php.spec</a> for the complete file if you do not want to edit it yourself.</p>
 
-<p>The hard part is now over! It&#8217;s easy from here on out. First step is to build the newly-edited spec into your own source RPM. But first, if you don&#8217;t have &#8220;rpmbuild&#8221; available, it&#8217;s a quick install via yum:</p>
+<p>The hard part is now over! It&#39;s easy from here on out. First step is to build the newly-edited spec into your own source RPM. But first, if you don&#39;t have &quot;rpmbuild&quot; available, it&#39;s a quick install via yum:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'>sudo yum install rpm-build
 </span></code></pre></td></tr></table></div></figure>
 
-
-<p>It&#8217;s possible your system may have already had the yum package rpm-build installed. We&#8217;ll build our source RPM with &#8220;-bs&#8221; to <strong>b</strong>uild the <strong>s</strong>ource, and &#8220;&#8211;nodeps&#8221; to prevent our system from checking all of the &#8220;Requires&#8221; in the spec since we&#8217;re just building the source:</p>
+<p>It&#39;s possible your system may have already had the yum package rpm-build installed. We&#39;ll build our source RPM with &quot;-bs&quot; to <strong>b</strong>uild the <strong>s</strong>ource, and &quot;&#8211;nodeps&quot; to prevent our system from checking all of the &quot;Requires&quot; in the spec since we&#39;re just building the source:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -238,8 +649,7 @@
 </span><span class='line'>Wrote: /home/username/rpmbuild/SRPMS/php-5.2.17-1.src.rpm
 </span></code></pre></td></tr></table></div></figure>
 
-
-<p>rpmbuild will show you where it wrote your source RPM. All we have to do is provide it to mock; &#8220;-v&#8221; will give us verbose output and &#8220;-r epel-5-x86_64&#8221; will use the mock profile at &#8220;/etc/mock/epel-5-x86_64.cfg&#8221;. If you&#8217;re on a 32-bit system, change &#8220;epel-5-x86_64&#8221; to &#8220;epel-5-i386&#8221;:</p>
+<p>rpmbuild will show you where it wrote your source RPM. All we have to do is provide it to mock; &quot;-v&quot; will give us verbose output and &quot;-r epel-5-x86_64&quot; will use the mock profile at &quot;/etc/mock/epel-5-x86_64.cfg&quot;. If you&#39;re on a 32-bit system, change &quot;epel-5-x86_64&quot; to &quot;epel-5-i386&quot;:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -247,8 +657,7 @@
 </span><span class='line'>mock -v -r epel-5-x86_64 php-5.2.17-1.src.rpm
 </span></code></pre></td></tr></table></div></figure>
 
-
-<p>The output shows you that mock is creating a chroot, downloading the bare essentials needed for a chroot and compiling tools, ccache to speed up compilation, and the packages in all &#8220;Requires&#8221; lines in the spec file. When mock is finished with the build after several minutes, you&#8217;ll see output similar to:</p>
+<p>The output shows you that mock is creating a chroot, downloading the bare essentials needed for a chroot and compiling tools, ccache to speed up compilation, and the packages in all &quot;Requires&quot; lines in the spec file. When mock is finished with the build after several minutes, you&#39;ll see output similar to:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -256,10 +665,9 @@
 </span><span class='line'>INFO: Results and/or logs in: /var/lib/mock/epel-5-x86_64/result
 </span></code></pre></td></tr></table></div></figure>
 
-
 <p>The /var/lib/mock/epel-5-x86_64/results/ folder will contain all of your PHP RPMs, including another source RPM. You can now either install these PHP packages by hand, or you can dump them into <a href="http://www.techrepublic.com/blog/opensource/create-your-own-yum-repository/609">your own Yum repository</a> and install with yum.</p>
 
-<h3>TL;DR</h3>
+<h3 id="toc_0">TL;DR</h3>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -293,7 +701,6 @@
 </span><span class='line'>mock -v -r epel-5-x86_64 php-5.2.17-1.src.rpm
 </span></code></pre></td></tr></table></div></figure>
 
-
 <p>Resulting RPMs will be in /var/lib/epel-5-x86_64/results. If on a 32-bit system, replace epel-5-x86_64 with epel-5-i386.</p>
 ]]></content>
   </entry>
@@ -303,9 +710,9 @@
     <link href="http://alanthing.com/blog/2011/01/05/are-your-wordpress-sites-running-the-latest-core/"/>
     <updated>2011-01-05T20:31:00-05:00</updated>
     <id>http://alanthing.com/blog/2011/01/05/are-your-wordpress-sites-running-the-latest-core</id>
-    <content type="html"><![CDATA[<p>In addition to hosting Drupal sites, we also host a number of WordPress sites. Similar to (checking all of our Drupal core versions)[http://echodittolabs.org/blog/2011/01/are-your-drupal-sites-running-latest-core], we needed an easy way to quickly see what versions we are running on all of our WordPress sites. Kudos to <a href="http://echodittolabs.org/users/ethan">Ethan</a> for getting this one kicked off; here is a bash script to check your definable <code>$WEBHOME</code> (where you deposit all of your WordPress webroots) and scan for WordPress versions.</p>
+    <content type="html"><![CDATA[<p>In addition to hosting Drupal sites, we also host a number of WordPress sites. Similar to (checking all of our Drupal core versions)[<a href="http://echodittolabs.org/blog/2011/01/are-your-drupal-sites-running-latest-core">http://echodittolabs.org/blog/2011/01/are-your-drupal-sites-running-latest-core</a>], we needed an easy way to quickly see what versions we are running on all of our WordPress sites. Kudos to <a href="http://echodittolabs.org/users/ethan">Ethan</a> for getting this one kicked off; here is a bash script to check your definable <code>$WEBHOME</code> (where you deposit all of your WordPress webroots) and scan for WordPress versions.</p>
 
-<p>Note: this requires bash, grep, wc, sed, awk, and tree. If your system doesn&#8217;t have tree, it&#8217;s usually pretty easy to get from EPEL/Homebrew/apt-get/[mac]ports/etc.</p>
+<p>Note: this requires bash, grep, wc, sed, awk, and tree. If your system doesn&#39;t have tree, it&#39;s usually pretty easy to get from EPEL/Homebrew/apt-get/[mac]ports/etc.</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -341,8 +748,7 @@
 </span><span class='line'><span class="k">done</span>
 </span></code></pre></td></tr></table></div></figure>
 
-
-<p>As a result, you&#8217;ll see output like this:</p>
+<p>As a result, you&#39;ll see output like this:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -356,8 +762,7 @@
 </span><span class='line'>kickinitoldschool.org/web/wordpress - 2.0.2
 </span></code></pre></td></tr></table></div></figure>
 
-
-<p>If you think there&#8217;s a better way, or have any questions, let me know in the comments.</p>
+<p>If you think there&#39;s a better way, or have any questions, let me know in the comments.</p>
 ]]></content>
   </entry>
   
@@ -366,9 +771,9 @@
     <link href="http://alanthing.com/blog/2011/01/05/are-your-drupal-sites-running-the-latest-core/"/>
     <updated>2011-01-05T19:25:00-05:00</updated>
     <id>http://alanthing.com/blog/2011/01/05/are-your-drupal-sites-running-the-latest-core</id>
-    <content type="html"><![CDATA[<p>At <a href="http://www.echoditto.com">EchoDitto</a>, we host a lot of Drupal sites. Just about all of our web servers contain more than one completely separate Drupal cores since we develop most of our websites independently. We also keep an eye out on <a href="http://drupal.org/security">Drupal Security</a> and when to apply core updates. Since we&#8217;re not using Aegir, nor do we run every site off of a single multi-site core install, we need a quick and easy way to see what versions we&#8217;re running.</p>
+    <content type="html"><![CDATA[<p>At <a href="http://www.echoditto.com">EchoDitto</a>, we host a lot of Drupal sites. Just about all of our web servers contain more than one completely separate Drupal cores since we develop most of our websites independently. We also keep an eye out on <a href="http://drupal.org/security">Drupal Security</a> and when to apply core updates. Since we&#39;re not using Aegir, nor do we run every site off of a single multi-site core install, we need a quick and easy way to see what versions we&#39;re running.</p>
 
-<p>Here&#8217;s a shell script we recently developed to report the Drupal Core versions for all of our sites under a single parent folder. It works on Drupal 4 through 7. It&#8217;s not been tested outside of our platform, or non-RHEL systems, but it should be universal as long as you have bash, find, awk, and grep. I decided not to use <a href="http://drupal.org/project/drush">Drush</a> because it would involve bootstrapping every site and invoking PHP; this is just more lightweight. Drush also would not work for Drupal 4 sites, which we surprisingly still have a couple kicking around still.</p>
+<p>Here&#39;s a shell script we recently developed to report the Drupal Core versions for all of our sites under a single parent folder. It works on Drupal 4 through 7. It&#39;s not been tested outside of our platform, or non-RHEL systems, but it should be universal as long as you have bash, find, awk, and grep. I decided not to use <a href="http://drupal.org/project/drush">Drush</a> because it would involve bootstrapping every site and invoking PHP; this is just more lightweight. Drush also would not work for Drupal 4 sites, which we surprisingly still have a couple kicking around still.</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -440,8 +845,7 @@
 </span><span class='line'><span class="k">done</span>
 </span></code></pre></td></tr></table></div></figure>
 
-
-<p>As a result, you&#8217;ll see the directory tree after <code>$WEBHOME</code> where the root of the site is and the version number. Below is an example:</p>
+<p>As a result, you&#39;ll see the directory tree after <code>$WEBHOME</code> where the root of the site is and the version number. Below is an example:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -455,8 +859,7 @@
 </span><span class='line'>blah.org/trunk - 7.0
 </span></code></pre></td></tr></table></div></figure>
 
-
-<p>If you have suggestions, please send them over. This script is still young and I&#8217;d love to see if anyone has any better ideas.</p>
+<p>If you have suggestions, please send them over. This script is still young and I&#39;d love to see if anyone has any better ideas.</p>
 ]]></content>
   </entry>
   
@@ -470,43 +873,30 @@
 <p>Luckily, if you have shared storage, it’s pretty simple to write to a single log file. Apache allows for log file locations to go to a pipe, which means you can redirect the output anywhere else. This was initially done to allow Apache to release open file descriptors since it can begin to create problems with more than 300 domains. But you don’t need to have 300 websites to see the benefits of using a pipe for logging.</p>
 
 <p>In your VirtualHost declaration, change your logging options from:</p>
-
-<pre><code>CustomLog logs/domain.com-access_log combined
-</code></pre>
-
+<div class="highlight"><pre><code class="text">CustomLog logs/domain.com-access_log combined
+</code></pre></div>
 <p>to:</p>
-
-<pre><code>CustomLog "|/bin/cat » /var/www/vhosts/_logs/domain.com-access_log" combined
-</code></pre>
-
+<div class="highlight"><pre><code class="text">CustomLog &quot;|/bin/cat » /var/www/vhosts/_logs/domain.com-access_log&quot; combined
+</code></pre></div>
 <p>In this example, /var/www/vhosts is the shared SAN storage device, and by using “cat »” we append Apache output in real-time to the log file. As multiple machines do this simultaneously, you begin to have a single log file from multiple machines. You can do the same thing with your ErrorLog:</p>
-
-<pre><code>ErrorLog  "|/bin/cat » /var/www/vhosts/_logs/domain.com-error_log"
-</code></pre>
-
-<p>There is a slight problem with this approach: it doesn’t give us enough information. If one of the 4 servers behind the load balancer was the source of a problem, it would be helpful to determine which server each log entry is coming from.</p>
+<div class="highlight"><pre><code class="text">ErrorLog  &quot;|/bin/cat » /var/www/vhosts/_logs/domain.com-error_log&quot;
+</code></pre></div>
+<p>There is a slight problem with this approach: it doesn’t give us enough information. If one of the 4 servers behind the load balancer was the source of a problem, it would be helpful to determine which server each log entry is coming from. </p>
 
 <p>For CustomLog, we can create a new LogType that adds the server’s IP address at the end of the line, and the LogType name will be “combinedIP”:</p>
-
-<pre><code>LogFormat "%h %l %u %t "%r" %&gt;s %b "%{Referer}i" "%{User-Agent}i" %A" combinedIP
-</code></pre>
-
+<div class="highlight"><pre><code class="text">LogFormat &quot;%h %l %u %t &quot;%r&quot; %&gt;s %b &quot;%{Referer}i&quot; &quot;%{User-Agent}i&quot; %A&quot; combinedIP
+</code></pre></div>
 <p>This format is identical to “combined” and just adds %A at the end. Then, simply change the end of the CustomLog line:</p>
-
-<pre><code>CustomLog "|/bin/cat » /var/www/vhosts/_logs/domain.com-access_log" combinedIP
-</code></pre>
-
+<div class="highlight"><pre><code class="text">CustomLog &quot;|/bin/cat » /var/www/vhosts/_logs/domain.com-access_log&quot; combinedIP
+</code></pre></div>
 <p>Here’s an example of what your log file will look like, showing entries from two servers:</p>
-
-<pre><code>1.2.3.4 - - [07/Dec/2010:11:22:08 -0500] "GET /blog/feed HTTP/1.1" 304 - "-" "-" 192.168.1.6
-5.6.7.8 - - [07/Dec/2010:11:22:08 -0500] "GET /blog/feed HTTP/1.1" 304 - "-" "-" 192.168.1.8
-</code></pre>
-
+<div class="highlight"><pre><code class="text">1.2.3.4 - - [07/Dec/2010:11:22:08 -0500] &quot;GET /blog/feed HTTP/1.1&quot; 304 - &quot;-&quot; &quot;-&quot; 192.168.1.6
+5.6.7.8 - - [07/Dec/2010:11:22:08 -0500] &quot;GET /blog/feed HTTP/1.1&quot; 304 - &quot;-&quot; &quot;-&quot; 192.168.1.8
+</code></pre></div>
 <p>These log entries are the same as the typical “combined” LogType but with the addition of the IP address at the end.</p>
 
 <p>But what about the ErrorLog? There is no way to define a LogType for the ErrorLog, and it would be helpful to know which server originated error, say, if MaxClients was reached, or there is a misconfiguration in a configuration file. Since we’re piping the ErrorLog output to /bin/cat, we can instead pipe it to a script that simply adds the server hostname on the end (I chose not to use an IP address because 1) some servers have multiple IP addresses, and 2) I cannot insert the VirtualHost’s IP address automatically. Better to know the server and then determine the IP address is necessary). We’ll start by creating a simple script at /usr/local/bin/httpd_errors (I’m not using bash since I was not able to get it to write to the log file in real time, it would only write once Apache was reloaded. I did not spend much time to determine why, and I knew it would work in PHP):</p>
-
-<pre><code>#!/usr/bin/php -q
+<div class="highlight"><pre><code class="text">#!/usr/bin/php -q
 &lt;?php
 $stdin = fopen (‘php://stdin’, ‘r’);
 ob_implicit_flush (true); // Use unbuffered output
@@ -515,19 +905,14 @@ while ($line = fgets ($stdin))
     print chop($line).” - “.system(‘hostname -f’).”\n”;
 }
 ?&gt;
-</code></pre>
-
+</code></pre></div>
 <p>Make the script executable with “chmod +x /usr/local/bin/httpd_errors”, and then change your ErrorLog in your Apache configuration:</p>
-
-<pre><code>ErrorLog  ”|/usr/local/bin/httpd_errors » /var/www/vhosts/_logs/domain.com-error_log”
-</code></pre>
-
+<div class="highlight"><pre><code class="text">ErrorLog  ”|/usr/local/bin/httpd_errors » /var/www/vhosts/_logs/domain.com-error_log”
+</code></pre></div>
 <p>And your error logs will now reveal which server the error originated from:</p>
-
-<pre><code>[Tue Dec 07 11:20:51 2010] [error] [client 1.2.3.4] File does not exist: /var/www/vhosts/domain.com/favicon.ico - wsrv1
+<div class="highlight"><pre><code class="text">[Tue Dec 07 11:20:51 2010] [error] [client 1.2.3.4] File does not exist: /var/www/vhosts/domain.com/favicon.ico - wsrv1
 [Tue Dec 07 11:24:27 2010] [error] [client 5.6.7.8] File does not exist: /var/www/vhosts/domain.com/favicon.ico - wsrv2
-</code></pre>
-
+</code></pre></div>
 <p>There you have it, combined Apache logs for multiple web servers. If you have any suggestions, questions, tips, etc, leave a comment!</p>
 ]]></content>
   </entry>
