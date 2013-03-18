@@ -1,0 +1,363 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Are your Drupal sites running the latest core? - Linux and other things</title>
+  <meta name="author" content="Alan Ivey">
+
+  
+  <meta name="description" content="At EchoDitto, we host a lot of Drupal sites. Just about all of our web servers contain more than one completely separate Drupal cores since we &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://alanthing.com/blog/2011/01/05/are-your-drupal-sites-running-the-latest-core">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Linux and other things" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-34327970-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Linux and other things</a></h1>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:alanthing.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Are Your Drupal Sites Running the Latest Core?</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-01-05T19:25:00-05:00" pubdate data-updated="true">Jan 5<span>th</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>At <a href="http://www.echoditto.com">EchoDitto</a>, we host a lot of Drupal sites. Just about all of our web servers contain more than one completely separate Drupal cores since we develop most of our websites independently. We also keep an eye out on <a href="http://drupal.org/security">Drupal Security</a> and when to apply core updates. Since we&#8217;re not using Aegir, nor do we run every site off of a single multi-site core install, we need a quick and easy way to see what versions we&#8217;re running.</p>
+
+<p>Here&#8217;s a shell script we recently developed to report the Drupal Core versions for all of our sites under a single parent folder. It works on Drupal 4 through 7. It&#8217;s not been tested outside of our platform, or non-RHEL systems, but it should be universal as long as you have bash, find, awk, and grep. I decided not to use <a href="http://drupal.org/project/drush">Drush</a> because it would involve bootstrapping every site and invoking PHP; this is just more lightweight. Drush also would not work for Drupal 4 sites, which we surprisingly still have a couple kicking around still.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c">#!/bin/bash</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># Where to start looking</span>
+</span><span class='line'><span class="nv">WEBHOME</span><span class="o">=</span>/var/www/vhosts
+</span><span class='line'>
+</span><span class='line'><span class="c"># Workaround to fix awk counting below, but it works</span>
+</span><span class='line'><span class="nv">WEBHOMECOUNT</span><span class="o">=</span><span class="k">$(($(</span><span class="nb">echo</span> <span class="s2">&quot;${WEBHOME}&quot;</span>|grep -o <span class="s2">&quot;/&quot;</span>|wc -l| sed s/<span class="se">\ </span>//g<span class="k">)</span><span class="o">+</span><span class="m">2</span><span class="k">))</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># Change maxdepth from 5 to some other value if your webroot is not being detected</span>
+</span><span class='line'><span class="k">for </span>i in <span class="k">$(</span>find <span class="nv">$WEBHOME</span> -maxdepth 5 -type f -name system.module<span class="k">)</span>; <span class="k">do</span>
+</span><span class='line'>  <span class="c"># Grabs only the version number from the file as described </span>
+</span><span class='line'>  <span class="c"># at http://drupal.org/handbook/version-info</span>
+</span><span class='line'>  <span class="nv">VERSION</span><span class="o">=</span><span class="k">$(</span>grep <span class="s2">&quot;VERSION&quot;</span> <span class="k">${</span><span class="nv">i</span><span class="k">}</span>|awk -F<span class="se">\&#39;</span> <span class="s1">&#39;{print $4}&#39;</span><span class="k">)</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c"># Drupal 4 has the system.module file in a lower directory than 5+</span>
+</span><span class='line'>  <span class="k">if</span> <span class="o">[[</span> <span class="nv">$VERSION</span> <span class="o">==</span> 4* <span class="o">]]</span>; <span class="k">then</span>
+</span><span class='line'><span class="k">    </span><span class="nv">SITE</span><span class="o">=</span><span class="k">$(</span><span class="nb">echo</span> <span class="nv">$i</span>|awk -v <span class="nv">count</span><span class="o">=</span><span class="s2">&quot;$WEBHOMECOUNT&quot;</span> -F/ <span class="s1">&#39;{for(j=count;j&lt;=NF-2;j++) \</span>
+</span><span class='line'><span class="s1">           printf $j&quot;/&quot;}&#39;</span> | sed <span class="s1">&#39;s/.$//g&#39;</span><span class="k">)</span>
+</span><span class='line'>  <span class="k">else</span>
+</span><span class='line'><span class="k">    </span><span class="nv">SITE</span><span class="o">=</span><span class="k">$(</span><span class="nb">echo</span> <span class="nv">$i</span>|awk -v <span class="nv">count</span><span class="o">=</span><span class="s2">&quot;$WEBHOMECOUNT&quot;</span> -F/ <span class="s1">&#39;{for(j=count;j&lt;=NF-3;j++) \</span>
+</span><span class='line'><span class="s1">           printf $j&quot;/&quot;}&#39;</span> | sed <span class="s1">&#39;s/.$//g&#39;</span><span class="k">)</span>
+</span><span class='line'>    <span class="k">if</span> <span class="o">[</span> -z <span class="nv">$VERSION</span> <span class="o">]</span>; <span class="k">then</span>
+</span><span class='line'>      <span class="c"># Drupal 7 does not keep the version number on system.module, despite the </span>
+</span><span class='line'>      <span class="c"># drupal.org page. Grab from changelog (disabled b/c it includes extra info)</span>
+</span><span class='line'>      <span class="c">#VERSION=&quot;$(sed &#39;3q;d&#39; ${WEBHOME}/${SITE}/CHANGELOG.txt)&quot;</span>
+</span><span class='line'>      <span class="c"># All versions of Drupal have the version of the module in system.info, </span>
+</span><span class='line'>      <span class="c"># so we grab it here for D7. The only reason I&#39;m not using this for all </span>
+</span><span class='line'>      <span class="c"># versions is because of the aforementioned drupal.org page</span>
+</span><span class='line'>      <span class="nv">VERSION</span><span class="o">=</span><span class="k">$(</span>grep <span class="s2">&quot;version = \&quot;&quot;</span> <span class="k">${</span><span class="nv">WEBHOME</span><span class="k">}</span>/<span class="k">${</span><span class="nv">SITE</span><span class="k">}</span>/modules/system/system.info <span class="se">\</span>
+</span><span class='line'>                | awk -F<span class="se">\&quot;</span> <span class="s1">&#39;{print $2}&#39;</span><span class="k">)</span>
+</span><span class='line'>    <span class="k">fi</span>
+</span><span class='line'><span class="k">  fi</span>
+</span><span class='line'><span class="k">  </span><span class="nb">echo</span> <span class="nv">$SITE</span> - <span class="nv">$VERSION</span>
+</span><span class='line'><span class="k">done</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>As a result, you&#8217;ll see the directory tree after <code>$WEBHOME</code> where the root of the site is and the version number. Below is an example:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>./drupal-version-check.sh
+</span><span class='line'>mysite.org/www - 5.22
+</span><span class='line'>thissite.net - 4.7.11
+</span><span class='line'>subfolder/drupalftw.com - 6.12
+</span><span class='line'>blah.org/trunk - 7.0
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>If you have suggestions, please send them over. This script is still young and I&#8217;d love to see if anyone has any better ideas.</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Alan Ivey</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-01-05T19:25:00-05:00" pubdate data-updated="true">Jan 5<span>th</span>, 2011</time>
+      
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://alanthing.com/blog/2011/01/05/are-your-drupal-sites-running-the-latest-core/" data-via="alanthing" data-counturl="http://alanthing.com/blog/2011/01/05/are-your-drupal-sites-running-the-latest-core/" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
+    <div class="fb-like" data-send="true" data-width="450" data-show-faces="false"></div>
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2010/12/07/combined-apache-logs-for-load-balanced-web-servers/" title="Previous Post: Combined Apache logs for load balanced web servers">&laquo; Combined Apache logs for load balanced web servers</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2011/01/05/are-your-wordpress-sites-running-the-latest-core/" title="Next Post: Are your WordPress sites running the latest core?">Are your WordPress sites running the latest core? &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/03/17/virtualbox-extension-pack-with-one-line/">VirtualBox Extension Pack With One Line</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/02/21/real-time-ruby-gem-development/">"Real-time" Ruby Gem Development</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/09/04/apache-modules-on-os-x-with-homebrew/">Apache modules on OS X with Homebrew</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/01/25/easy-php-5-dot-2-rpms-on-centos/">Easy PHP 5.2 RPMs on CentOS</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/01/05/are-your-wordpress-sites-running-the-latest-core/">Are your WordPress sites running the latest core?</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/alanthing">@alanthing</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'alanthing',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - Alan Ivey -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id; js.async = true;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,334 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Combined Apache logs for load balanced web servers - Linux and other things</title>
+  <meta name="author" content="Alan Ivey">
+
+  
+  <meta name="description" content="When dealing with a load spike or unexplained poor performance, once of the first things to do is to check the Apache web server logs. However, when &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://alanthing.com/blog/2010/12/07/combined-apache-logs-for-load-balanced-web-servers">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Linux and other things" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-34327970-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Linux and other things</a></h1>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:alanthing.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Combined Apache Logs for Load Balanced Web Servers</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-12-07T14:34:00-05:00" pubdate data-updated="true">Dec 7<span>th</span>, 2010</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>When dealing with a load spike or unexplained poor performance, once of the first things to do is to check the Apache web server logs. However, when dealing with multiple web servers behind a load balancer, it can be cumbersome to check through multiple logs on different machines.</p>
+
+<p>Luckily, if you have shared storage, it’s pretty simple to write to a single log file. Apache allows for log file locations to go to a pipe, which means you can redirect the output anywhere else. This was initially done to allow Apache to release open file descriptors since it can begin to create problems with more than 300 domains. But you don’t need to have 300 websites to see the benefits of using a pipe for logging.</p>
+
+<p>In your VirtualHost declaration, change your logging options from:</p>
+
+<pre><code>CustomLog logs/domain.com-access_log combined
+</code></pre>
+
+<p>to:</p>
+
+<pre><code>CustomLog "|/bin/cat » /var/www/vhosts/_logs/domain.com-access_log" combined
+</code></pre>
+
+<p>In this example, /var/www/vhosts is the shared SAN storage device, and by using “cat »” we append Apache output in real-time to the log file. As multiple machines do this simultaneously, you begin to have a single log file from multiple machines. You can do the same thing with your ErrorLog:</p>
+
+<pre><code>ErrorLog  "|/bin/cat » /var/www/vhosts/_logs/domain.com-error_log"
+</code></pre>
+
+<p>There is a slight problem with this approach: it doesn’t give us enough information. If one of the 4 servers behind the load balancer was the source of a problem, it would be helpful to determine which server each log entry is coming from.</p>
+
+<p>For CustomLog, we can create a new LogType that adds the server’s IP address at the end of the line, and the LogType name will be “combinedIP”:</p>
+
+<pre><code>LogFormat "%h %l %u %t "%r" %&gt;s %b "%{Referer}i" "%{User-Agent}i" %A" combinedIP
+</code></pre>
+
+<p>This format is identical to “combined” and just adds %A at the end. Then, simply change the end of the CustomLog line:</p>
+
+<pre><code>CustomLog "|/bin/cat » /var/www/vhosts/_logs/domain.com-access_log" combinedIP
+</code></pre>
+
+<p>Here’s an example of what your log file will look like, showing entries from two servers:</p>
+
+<pre><code>1.2.3.4 - - [07/Dec/2010:11:22:08 -0500] "GET /blog/feed HTTP/1.1" 304 - "-" "-" 192.168.1.6
+5.6.7.8 - - [07/Dec/2010:11:22:08 -0500] "GET /blog/feed HTTP/1.1" 304 - "-" "-" 192.168.1.8
+</code></pre>
+
+<p>These log entries are the same as the typical “combined” LogType but with the addition of the IP address at the end.</p>
+
+<p>But what about the ErrorLog? There is no way to define a LogType for the ErrorLog, and it would be helpful to know which server originated error, say, if MaxClients was reached, or there is a misconfiguration in a configuration file. Since we’re piping the ErrorLog output to /bin/cat, we can instead pipe it to a script that simply adds the server hostname on the end (I chose not to use an IP address because 1) some servers have multiple IP addresses, and 2) I cannot insert the VirtualHost’s IP address automatically. Better to know the server and then determine the IP address is necessary). We’ll start by creating a simple script at /usr/local/bin/httpd_errors (I’m not using bash since I was not able to get it to write to the log file in real time, it would only write once Apache was reloaded. I did not spend much time to determine why, and I knew it would work in PHP):</p>
+
+<pre><code>#!/usr/bin/php -q
+&lt;?php
+$stdin = fopen (‘php://stdin’, ‘r’);
+ob_implicit_flush (true); // Use unbuffered output
+while ($line = fgets ($stdin))
+{
+    print chop($line).” - “.system(‘hostname -f’).”\n”;
+}
+?&gt;
+</code></pre>
+
+<p>Make the script executable with “chmod +x /usr/local/bin/httpd_errors”, and then change your ErrorLog in your Apache configuration:</p>
+
+<pre><code>ErrorLog  ”|/usr/local/bin/httpd_errors » /var/www/vhosts/_logs/domain.com-error_log”
+</code></pre>
+
+<p>And your error logs will now reveal which server the error originated from:</p>
+
+<pre><code>[Tue Dec 07 11:20:51 2010] [error] [client 1.2.3.4] File does not exist: /var/www/vhosts/domain.com/favicon.ico - wsrv1
+[Tue Dec 07 11:24:27 2010] [error] [client 5.6.7.8] File does not exist: /var/www/vhosts/domain.com/favicon.ico - wsrv2
+</code></pre>
+
+<p>There you have it, combined Apache logs for multiple web servers. If you have any suggestions, questions, tips, etc, leave a comment!</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Alan Ivey</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-12-07T14:34:00-05:00" pubdate data-updated="true">Dec 7<span>th</span>, 2010</time>
+      
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://alanthing.com/blog/2010/12/07/combined-apache-logs-for-load-balanced-web-servers/" data-via="alanthing" data-counturl="http://alanthing.com/blog/2010/12/07/combined-apache-logs-for-load-balanced-web-servers/" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
+    <div class="fb-like" data-send="true" data-width="450" data-show-faces="false"></div>
+  
+</div>
+
+    
+    <p class="meta">
+      
+      
+        <a class="basic-alignment right" href="/blog/2011/01/05/are-your-drupal-sites-running-the-latest-core/" title="Next Post: Are your Drupal sites running the latest core?">Are your Drupal sites running the latest core? &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/03/17/virtualbox-extension-pack-with-one-line/">VirtualBox Extension Pack With One Line</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/02/21/real-time-ruby-gem-development/">"Real-time" Ruby Gem Development</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/09/04/apache-modules-on-os-x-with-homebrew/">Apache modules on OS X with Homebrew</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/01/25/easy-php-5-dot-2-rpms-on-centos/">Easy PHP 5.2 RPMs on CentOS</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/01/05/are-your-wordpress-sites-running-the-latest-core/">Are your WordPress sites running the latest core?</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/alanthing">@alanthing</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'alanthing',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - Alan Ivey -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id; js.async = true;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

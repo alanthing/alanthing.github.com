@@ -1,151 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
 
-<!DOCTYPE html>
-<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
-<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
-<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
-<head>
-  <meta charset="utf-8">
-  <title>Linux and other things</title>
-  <meta name="author" content="Alan Ivey">
-
-  
-  <meta name="description" content="Just installed VirtualBox on OS X and need the Extension Pack? This (really long) one-liner will download and install it for you. Run in terminal and &hellip;">
-  
-
-  <!-- http://t.co/dKP3o1e -->
-  <meta name="HandheldFriendly" content="True">
-  <meta name="MobileOptimized" content="320">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-
-  
-  <link rel="canonical" href="http://alanthing.com">
-  <link href="/favicon.png" rel="icon">
-  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
-  <link href="/atom.xml" rel="alternate" title="Linux and other things" type="application/atom+xml">
-  <script src="/javascripts/modernizr-2.0.js"></script>
-  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
-  <script src="/javascripts/octopress.js" type="text/javascript"></script>
-  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
-<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
-<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
-
-  
-  <script type="text/javascript">
-    var _gaq = _gaq || [];
-    _gaq.push(['_setAccount', 'UA-34327970-1']);
-    _gaq.push(['_trackPageview']);
-
-    (function() {
-      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-    })();
-  </script>
-
-
-</head>
-
-<body   >
-  <header role="banner"><hgroup>
-  <h1><a href="/">Linux and other things</a></h1>
-  
-</hgroup>
-
-</header>
-  <nav role="navigation"><ul class="subscription" data-subscription="rss">
-  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
-  
-</ul>
-  
-<form action="http://google.com/search" method="get">
-  <fieldset role="search">
-    <input type="hidden" name="q" value="site:alanthing.com" />
-    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
-  </fieldset>
-</form>
-  
-<ul class="main-navigation">
-  <li><a href="/">Blog</a></li>
-  <li><a href="/blog/archives">Archives</a></li>
-</ul>
-
-</nav>
-  <div id="main">
-    <div id="content">
-      <div class="blog-index">
-  
-  
-  
-    <article>
-      
-  <header>
+  <title><![CDATA[Linux and other things]]></title>
+  <link href="http://alanthing.com/atom.xml" rel="self"/>
+  <link href="http://alanthing.com/"/>
+  <updated>2013-03-17T21:16:05-04:00</updated>
+  <id>http://alanthing.com/</id>
+  <author>
+    <name><![CDATA[Alan Ivey]]></name>
     
-      <h1 class="entry-title"><a href="/blog/2013/03/17/virtualbox-extension-pack-with-one-line/">VirtualBox Extension Pack With One Line</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
 
   
-
-
-<time datetime="2013-03-17T20:46:00-04:00" pubdate data-updated="true">Mar 17<span>th</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Just installed <a href="http://www.virtualbox.org">VirtualBox</a> on OS X and need the <a href="http://www.virtualbox.org/wiki/Downloads">Extension Pack</a>? This (really long) one-liner will download and install it for you. Run in terminal and enter your password once and you&#8217;re off to the races!</p>
+  <entry>
+    <title type="html"><![CDATA[VirtualBox Extension Pack With One Line]]></title>
+    <link href="http://alanthing.com/blog/2013/03/17/virtualbox-extension-pack-with-one-line/"/>
+    <updated>2013-03-17T20:46:00-04:00</updated>
+    <id>http://alanthing.com/blog/2013/03/17/virtualbox-extension-pack-with-one-line</id>
+    <content type="html"><![CDATA[<p>Just installed <a href="http://www.virtualbox.org">VirtualBox</a> on OS X and need the <a href="http://www.virtualbox.org/wiki/Downloads">Extension Pack</a>? This (really long) one-liner will download and install it for you. Run in terminal and enter your password once and you&#8217;re off to the races!</p>
 
 <pre><code>export version=$(/usr/bin/vboxmanage -v) &amp;&amp; export var1=$(echo ${version} | cut -d 'r' -f 1) &amp;&amp; export var2=$(echo ${version} | cut -d 'r' -f 2) &amp;&amp; export file="Oracle_VM_VirtualBox_Extension_Pack-${var1}-${var2}.vbox-extpack" &amp;&amp; curl --silent --location http://download.virtualbox.org/virtualbox/${var1}/${file} -o ~/Downloads/${file} &amp;&amp; VBoxManage extpack install ~/Downloads/${file} --replace &amp;&amp; rm ~/Downloads/${file} &amp;&amp; unset version var1 var2 file
 </code></pre>
 
 <p>Note that VirtualBox must be installed first :)</p>
-</div>
+]]></content>
+  </entry>
   
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/02/21/real-time-ruby-gem-development/">&#8220;Real-time&#8221; Ruby Gem Development</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-02-21T08:08:00-05:00" pubdate data-updated="true">Feb 21<span>st</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Recently, I&#8217;ve been working on adding functionality for <a href="http://www.stormondemand.com">Storm on Demand</a>&#8217;s <a href="https://www.stormondemand.com/api/docs/1.0/">API</a> to the excellent <a href="http://fog.io">fog</a> library. There didn&#8217;t seem to be a clear way, that I could find, to work on a Ruby gem in real-time, meaning I save the file in my editor and immediately run some code. Most <a href="http://gembundler.com/rubygems.html">guides</a> I <a href="http://blog.thepete.net/2010/11/creating-and-publishing-your-first-ruby.html">found</a> tended to advise to create the gem file and install it. <a href="http://rakeroutes.com/blog/lets-write-a-gem-part-two/">Stephen Ball demostrates</a> the use of <code>bundle console</code> which drops you into <code>irb</code> for testing, but I was looking for a way to test my own scripts outside of a shell with my recently-saved gem files.</p>
+  <entry>
+    <title type="html"><![CDATA["Real-time" Ruby Gem Development]]></title>
+    <link href="http://alanthing.com/blog/2013/02/21/real-time-ruby-gem-development/"/>
+    <updated>2013-02-21T08:08:00-05:00</updated>
+    <id>http://alanthing.com/blog/2013/02/21/real-time-ruby-gem-development</id>
+    <content type="html"><![CDATA[<p>Recently, I&#8217;ve been working on adding functionality for <a href="http://www.stormondemand.com">Storm on Demand</a>&#8217;s <a href="https://www.stormondemand.com/api/docs/1.0/">API</a> to the excellent <a href="http://fog.io">fog</a> library. There didn&#8217;t seem to be a clear way, that I could find, to work on a Ruby gem in real-time, meaning I save the file in my editor and immediately run some code. Most <a href="http://gembundler.com/rubygems.html">guides</a> I <a href="http://blog.thepete.net/2010/11/creating-and-publishing-your-first-ruby.html">found</a> tended to advise to create the gem file and install it. <a href="http://rakeroutes.com/blog/lets-write-a-gem-part-two/">Stephen Ball demostrates</a> the use of <code>bundle console</code> which drops you into <code>irb</code> for testing, but I was looking for a way to test my own scripts outside of a shell with my recently-saved gem files.</p>
 
 <p>Thankfully this isn&#8217;t too difficult to set up and this will allow you to work on your gem in &#8220;real-time;&#8221; save and test, without <code>bundle console</code> or installing lots of dev gems.</p>
 
@@ -234,42 +121,15 @@
 
 
 <p>If you see any mistakes or have any questions, let me know!</p>
-</div>
+]]></content>
+  </entry>
   
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2012/09/04/apache-modules-on-os-x-with-homebrew/">Apache Modules on OS X With Homebrew</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-09-04T11:27:00-04:00" pubdate data-updated="true">Sep 4<span>th</span>, 2012</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>I have long been a big fan of <a href="http://mxcl.github.com/homebrew">Homebrew</a>, a way of adding open-source software to OS X without much of the overhead and systems link <a href="http://www.macports.org">MacPorts</a> and <a href="http://www.finkproject.org">Fink</a> introduce. It&#8217;s quickly become my favorite way to do PHP-based development on a Mac, and I&#8217;ve <a href="http://echodittolabs.org/blog/2012/04/os-x-107-lion-development-nginx-php-mariadb-homebrew">blogged</a> <a href="http://echodittolabs.org/blog/2011/09/os-x-107-lion-development-native-apache-php-homebrew-mysql-or-mariadb">before</a> about various ways to integrate Homebrew-based software into your workflow.</p>
+  <entry>
+    <title type="html"><![CDATA[Apache modules on OS X with Homebrew]]></title>
+    <link href="http://alanthing.com/blog/2012/09/04/apache-modules-on-os-x-with-homebrew/"/>
+    <updated>2012-09-04T11:27:00-04:00</updated>
+    <id>http://alanthing.com/blog/2012/09/04/apache-modules-on-os-x-with-homebrew</id>
+    <content type="html"><![CDATA[<p>I have long been a big fan of <a href="http://mxcl.github.com/homebrew">Homebrew</a>, a way of adding open-source software to OS X without much of the overhead and systems link <a href="http://www.macports.org">MacPorts</a> and <a href="http://www.finkproject.org">Fink</a> introduce. It&#8217;s quickly become my favorite way to do PHP-based development on a Mac, and I&#8217;ve <a href="http://echodittolabs.org/blog/2012/04/os-x-107-lion-development-nginx-php-mariadb-homebrew">blogged</a> <a href="http://echodittolabs.org/blog/2011/09/os-x-107-lion-development-native-apache-php-homebrew-mysql-or-mariadb">before</a> about various ways to integrate Homebrew-based software into your workflow.</p>
 
 <p>In preparing new documentation for using Homebrew on 10.7 and 10.8 (coming soon to <a href="http://echodittolabs.org/blogs/alan-ivey">my EchoDitto blog</a>), I wanted to find a way to run either <a href="http://httpd.apache.org/docs/2.2/mod/mod_suexec.html">mod_suexec</a> or <a href="http://www.fastcgi.com/mod_fastcgi/docs/mod_fastcgi.html">mod_fastcgi</a> so I could use the built-in version of Apache without having to change folder ownership in random places where the web server needed to modify files. Homebrew did not have any formulas, but I found that <a href="http://github.com/lifepillar">Lifepillar</a> had written formulas <a href="https://github.com/mxcl/homebrew/pull/12093/files">(mod_fastcgi)</a> <a href="https://github.com/mxcl/homebrew/pull/12091">(mod_suexec)</a> for them both and was hoping to get them into Homebrew.</p>
 
@@ -287,42 +147,15 @@
 
 
 <p>If you have any problems or questions, let me know in the issue queue! Or write a formula and submit a pull request!</p>
-</div>
+]]></content>
+  </entry>
   
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2011/01/25/easy-php-5-dot-2-rpms-on-centos/">Easy PHP 5.2 RPMs on CentOS</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2011-01-25T10:13:00-05:00" pubdate data-updated="true">Jan 25<span>th</span>, 2011</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>I had previously <a href="http://echodittolabs.org/blog/2009/05/all-i-want-php-52-centosrhel">written a post</a> on one method of upgrading PHP from 5.1 to 5.2 on CentOS and Red Hat servers by creating new RPMs. Since then, I have found a much better way to create PHP 5.2.17 (or newer) RPMs to easily upgrade (and later remove, if you want) the older version available by default. I&#8217;ll presume you have no prior experience building PHP RPMs.</p>
+  <entry>
+    <title type="html"><![CDATA[Easy PHP 5.2 RPMs on CentOS]]></title>
+    <link href="http://alanthing.com/blog/2011/01/25/easy-php-5-dot-2-rpms-on-centos/"/>
+    <updated>2011-01-25T10:13:00-05:00</updated>
+    <id>http://alanthing.com/blog/2011/01/25/easy-php-5-dot-2-rpms-on-centos</id>
+    <content type="html"><![CDATA[<p>I had previously <a href="http://echodittolabs.org/blog/2009/05/all-i-want-php-52-centosrhel">written a post</a> on one method of upgrading PHP from 5.1 to 5.2 on CentOS and Red Hat servers by creating new RPMs. Since then, I have found a much better way to create PHP 5.2.17 (or newer) RPMs to easily upgrade (and later remove, if you want) the older version available by default. I&#8217;ll presume you have no prior experience building PHP RPMs.</p>
 
 <p>We start by adding the <a href="http://fedoraproject.org/wiki/EPEL">Extra Packages for Enterprise Linux (EPEL) repository</a> to our server. EPEL is safe to add as an additional repository and leave enabled because it <a href="http://fedoraproject.org/wiki/EPEL/FAQ#How_is_EPEL_different_from_other_third_party_repositories_for_RHEL_and_derivatives.3F">provides complementary packages only</a> and will not conflict with the CentOS or Red Hat repositories. Since their installation method may change, I won&#8217;t reproduce it here; instead head over to the <a href="http://fedoraproject.org/wiki/EPEL/FAQ#howtouse">installation portion of the FAQ</a> and it&#8217;s just one line to get started with EPEL.</p>
 
@@ -462,42 +295,15 @@
 
 
 <p>Resulting RPMs will be in /var/lib/epel-5-x86_64/results. If on a 32-bit system, replace epel-5-x86_64 with epel-5-i386.</p>
-</div>
+]]></content>
+  </entry>
   
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2011/01/05/are-your-wordpress-sites-running-the-latest-core/">Are Your WordPress Sites Running the Latest Core?</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2011-01-05T20:31:00-05:00" pubdate data-updated="true">Jan 5<span>th</span>, 2011</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>In addition to hosting Drupal sites, we also host a number of WordPress sites. Similar to (checking all of our Drupal core versions)[http://echodittolabs.org/blog/2011/01/are-your-drupal-sites-running-latest-core], we needed an easy way to quickly see what versions we are running on all of our WordPress sites. Kudos to <a href="http://echodittolabs.org/users/ethan">Ethan</a> for getting this one kicked off; here is a bash script to check your definable <code>$WEBHOME</code> (where you deposit all of your WordPress webroots) and scan for WordPress versions.</p>
+  <entry>
+    <title type="html"><![CDATA[Are your WordPress sites running the latest core?]]></title>
+    <link href="http://alanthing.com/blog/2011/01/05/are-your-wordpress-sites-running-the-latest-core/"/>
+    <updated>2011-01-05T20:31:00-05:00</updated>
+    <id>http://alanthing.com/blog/2011/01/05/are-your-wordpress-sites-running-the-latest-core</id>
+    <content type="html"><![CDATA[<p>In addition to hosting Drupal sites, we also host a number of WordPress sites. Similar to (checking all of our Drupal core versions)[http://echodittolabs.org/blog/2011/01/are-your-drupal-sites-running-latest-core], we needed an easy way to quickly see what versions we are running on all of our WordPress sites. Kudos to <a href="http://echodittolabs.org/users/ethan">Ethan</a> for getting this one kicked off; here is a bash script to check your definable <code>$WEBHOME</code> (where you deposit all of your WordPress webroots) and scan for WordPress versions.</p>
 
 <p>Note: this requires bash, grep, wc, sed, awk, and tree. If your system doesn&#8217;t have tree, it&#8217;s usually pretty easy to get from EPEL/Homebrew/apt-get/[mac]ports/etc.</p>
 
@@ -552,42 +358,15 @@
 
 
 <p>If you think there&#8217;s a better way, or have any questions, let me know in the comments.</p>
-</div>
+]]></content>
+  </entry>
   
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2011/01/05/are-your-drupal-sites-running-the-latest-core/">Are Your Drupal Sites Running the Latest Core?</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2011-01-05T19:25:00-05:00" pubdate data-updated="true">Jan 5<span>th</span>, 2011</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>At <a href="http://www.echoditto.com">EchoDitto</a>, we host a lot of Drupal sites. Just about all of our web servers contain more than one completely separate Drupal cores since we develop most of our websites independently. We also keep an eye out on <a href="http://drupal.org/security">Drupal Security</a> and when to apply core updates. Since we&#8217;re not using Aegir, nor do we run every site off of a single multi-site core install, we need a quick and easy way to see what versions we&#8217;re running.</p>
+  <entry>
+    <title type="html"><![CDATA[Are your Drupal sites running the latest core?]]></title>
+    <link href="http://alanthing.com/blog/2011/01/05/are-your-drupal-sites-running-the-latest-core/"/>
+    <updated>2011-01-05T19:25:00-05:00</updated>
+    <id>http://alanthing.com/blog/2011/01/05/are-your-drupal-sites-running-the-latest-core</id>
+    <content type="html"><![CDATA[<p>At <a href="http://www.echoditto.com">EchoDitto</a>, we host a lot of Drupal sites. Just about all of our web servers contain more than one completely separate Drupal cores since we develop most of our websites independently. We also keep an eye out on <a href="http://drupal.org/security">Drupal Security</a> and when to apply core updates. Since we&#8217;re not using Aegir, nor do we run every site off of a single multi-site core install, we need a quick and easy way to see what versions we&#8217;re running.</p>
 
 <p>Here&#8217;s a shell script we recently developed to report the Drupal Core versions for all of our sites under a single parent folder. It works on Drupal 4 through 7. It&#8217;s not been tested outside of our platform, or non-RHEL systems, but it should be universal as long as you have bash, find, awk, and grep. I decided not to use <a href="http://drupal.org/project/drush">Drush</a> because it would involve bootstrapping every site and invoking PHP; this is just more lightweight. Drush also would not work for Drupal 4 sites, which we surprisingly still have a couple kicking around still.</p>
 
@@ -678,42 +457,15 @@
 
 
 <p>If you have suggestions, please send them over. This script is still young and I&#8217;d love to see if anyone has any better ideas.</p>
-</div>
+]]></content>
+  </entry>
   
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2010/12/07/combined-apache-logs-for-load-balanced-web-servers/">Combined Apache Logs for Load Balanced Web Servers</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2010-12-07T14:34:00-05:00" pubdate data-updated="true">Dec 7<span>th</span>, 2010</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>When dealing with a load spike or unexplained poor performance, once of the first things to do is to check the Apache web server logs. However, when dealing with multiple web servers behind a load balancer, it can be cumbersome to check through multiple logs on different machines.</p>
+  <entry>
+    <title type="html"><![CDATA[Combined Apache logs for load balanced web servers]]></title>
+    <link href="http://alanthing.com/blog/2010/12/07/combined-apache-logs-for-load-balanced-web-servers/"/>
+    <updated>2010-12-07T14:34:00-05:00</updated>
+    <id>http://alanthing.com/blog/2010/12/07/combined-apache-logs-for-load-balanced-web-servers</id>
+    <content type="html"><![CDATA[<p>When dealing with a load spike or unexplained poor performance, once of the first things to do is to check the Apache web server logs. However, when dealing with multiple web servers behind a load balancer, it can be cumbersome to check through multiple logs on different machines.</p>
 
 <p>Luckily, if you have shared storage, it’s pretty simple to write to a single log file. Apache allows for log file locations to go to a pipe, which means you can redirect the output anywhere else. This was initially done to allow Apache to release open file descriptors since it can begin to create problems with more than 300 domains. But you don’t need to have 300 websites to see the benefits of using a pipe for logging.</p>
 
@@ -777,130 +529,7 @@ while ($line = fgets ($stdin))
 </code></pre>
 
 <p>There you have it, combined Apache logs for multiple web servers. If you have any suggestions, questions, tips, etc, leave a comment!</p>
-</div>
+]]></content>
+  </entry>
   
-  
-
-
-    </article>
-  
-  <div class="pagination">
-    
-    <a href="/blog/archives">Blog Archives</a>
-    
-  </div>
-</div>
-<aside class="sidebar">
-  
-    <section>
-  <h1>Recent Posts</h1>
-  <ul id="recent_posts">
-    
-      <li class="post">
-        <a href="/blog/2013/03/17/virtualbox-extension-pack-with-one-line/">VirtualBox Extension Pack With One Line</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/02/21/real-time-ruby-gem-development/">&#8220;Real-time&#8221; Ruby Gem Development</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2012/09/04/apache-modules-on-os-x-with-homebrew/">Apache modules on OS X with Homebrew</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2011/01/25/easy-php-5-dot-2-rpms-on-centos/">Easy PHP 5.2 RPMs on CentOS</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2011/01/05/are-your-wordpress-sites-running-the-latest-core/">Are your WordPress sites running the latest core?</a>
-      </li>
-    
-  </ul>
-</section>
-
-<section>
-  <h1>GitHub Repos</h1>
-  <ul id="gh_repos">
-    <li class="loading">Status updating&#8230;</li>
-  </ul>
-  
-  <a href="https://github.com/alanthing">@alanthing</a> on GitHub
-  
-  <script type="text/javascript">
-    $(document).ready(function(){
-        if (!window.jXHR){
-            var jxhr = document.createElement('script');
-            jxhr.type = 'text/javascript';
-            jxhr.src = '/javascripts/libs/jXHR.js';
-            var s = document.getElementsByTagName('script')[0];
-            s.parentNode.insertBefore(jxhr, s);
-        }
-
-        github.showRepos({
-            user: 'alanthing',
-            count: 0,
-            skip_forks: true,
-            target: '#gh_repos'
-        });
-    });
-  </script>
-  <script src="/javascripts/github.js" type="text/javascript"> </script>
-</section>
-
-
-
-
-
-  
-</aside>
-
-    </div>
-  </div>
-  <footer role="contentinfo"><p>
-  Copyright &copy; 2013 - Alan Ivey -
-  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
-</p>
-
-</footer>
-  
-
-
-
-<div id="fb-root"></div>
-<script>(function(d, s, id) {
-  var js, fjs = d.getElementsByTagName(s)[0];
-  if (d.getElementById(id)) {return;}
-  js = d.createElement(s); js.id = id; js.async = true;
-  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
-  fjs.parentNode.insertBefore(js, fjs);
-}(document, 'script', 'facebook-jssdk'));</script>
-
-
-
-  <script type="text/javascript">
-    (function() {
-      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
-      script.src = 'https://apis.google.com/js/plusone.js';
-      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
-    })();
-  </script>
-
-
-
-  <script type="text/javascript">
-    (function(){
-      var twitterWidgets = document.createElement('script');
-      twitterWidgets.type = 'text/javascript';
-      twitterWidgets.async = true;
-      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
-      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
-    })();
-  </script>
-
-
-
-
-
-</body>
-</html>
+</feed>
