@@ -110,31 +110,45 @@
 <p>If you need introduced to Homebrew, or need help installing it, check out the <a href="http://mxcl.github.com/homebrew/">Homebrew project homepage</a>. The installation script is at the bottom.</p>
 
 <p>Ready to install drush?</p>
-<div class="highlight"><pre><code class="text">brew install drush
-</code></pre></div>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>brew install drush</span></code></pre></td></tr></table></div></figure>
+
 <p>Yup, that&#39;s it! Upgrading is simple as well, as explained in the <a href="https://github.com/mxcl/homebrew/wiki/FAQ">Homebrew FAQ</a>:</p>
-<div class="highlight"><pre><code class="text">brew update
-brew upgrade drush
-</code></pre></div>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>brew update
+</span><span class='line'>brew upgrade drush</span></code></pre></td></tr></table></div></figure>
+
 <h2 id="toc_1">PEAR</h2>
 
 <p>Whether you&#39;ve installed your own copy of PHP with Homebrew, are using the one included with MAMP, or the version provided by OS X, drush is easy to install using the <code>pear</code> command.</p>
 
 <p>If you are using the built-in php with OS X, you&#39;ll need to prefix each command with <code>sudo</code>.</p>
-<div class="highlight"><pre><code class="text">pear channel-discover pear.drush.org
-</code></pre></div>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>pear channel-discover pear.drush.org</span></code></pre></td></tr></table></div></figure>
+
 <p><strong>Homebrew Note:</strong> If you are using Homebrew and get an error about not being able to create a lock file, run the following command (change php54 to php53 if applicable): <code>touch $(brew --prefix php54)/lib/php/.lock &amp;&amp; chmod 0644 $(brew --prefix php54)/lib/php/.lock</code></p>
 
 <p>Continue by installing drush now that the channel is added:</p>
-<div class="highlight"><pre><code class="text">pear install drush/drush
-pear upgrade --force Console_Getopt
-</code></pre></div>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>pear install drush/drush
+</span><span class='line'>pear upgrade --force Console_Getopt</span></code></pre></td></tr></table></div></figure>
+    
+
 <p><strong>Homebrew Note:</strong> If you do not have drush available in your path after installing, relink PHP and you should then have the symlink available in <em>/usr/local/bin</em>: <code>brew unlink php54 &amp;&amp; brew link php54</code></p>
 
 <p>Upgrading is also easy (again, if using the built-in PHP with OS X, prefix with <code>sudo</code>):</p>
-<div class="highlight"><pre><code class="text">pear channel-update pear.drush.org
-pear upgrade drush
-</code></pre></div>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>pear channel-update pear.drush.org
+</span><span class='line'>pear upgrade drush</span></code></pre></td></tr></table></div></figure>
+
 <h2 id="toc_2">Git</h2>
 
 <p>If you would prefer to keep track of the source code for Drush, or perhaps be a contributor, you will want to use Git so you can easily make and keep track of changes. If you do not have git installed on your system, install <a href="http://itunes.apple.com/us/app/xcode/id497799835?mt=12">Xcode</a> or <a href="http://developer.apple.com/downloads">Command Line Tools for Xcode</a> and then proceed. These commands will clone the drush repository, checkout the latest stable tag, and create a symlink in <em>/usr/local/bin</em>:</p>
@@ -153,10 +167,14 @@ pear upgrade drush
 </span><span class='line'>ln -s ../drush/drush || sudo ln -s ../drush/drush</span></code></pre></td></tr></table></div></figure>
 
 <p>To update, fetch the latest code and grab the latest stable tag:</p>
-<div class="highlight"><pre><code class="text">cd /usr/local/drush
-git fetch
-git checkout $(git tag|grep &quot;^[0-9]&quot;|egrep -v &quot;alpha|beta|rc&quot;|tail -1)
-</code></pre></div>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>cd /usr/local/drush
+</span><span class='line'>git fetch
+</span><span class='line'>git checkout $(git tag|grep "^[0-9]"|egrep -v "alpha|beta|rc"|tail -1)</span></code></pre></td></tr></table></div></figure>
+
 <p>If you have any questions or improvements, please leave a comment!</p>
 </div>
 

@@ -5,11 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Never touch your local /etc/hosts file in OS X again - Linux and other things</title>
+  <title>Redirect all port 80 requests to port 8080 - Linux and other things</title>
   <meta name="author" content="Alan Ivey">
 
   
-  <meta name="description" content="In each of my posts on setting up a local development environment on OS X, it&#39;s mentioned that you need to add your website&#39;s domain, even &hellip;">
+  <meta name="description" content="In my previous post, I walked through how to set up a local environment using Nginx running on port 8080 so as to avoid running anything as root or &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://alanthing.com/blog/2012/04/24/never-touch-your-local-etchosts-file-os-x-again">
+  <link rel="canonical" href="http://alanthing.com/blog/2012/04/23/redirect-all-port-80-requests-port-8080">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="Linux and other things" type="application/atom+xml">
@@ -78,7 +78,7 @@
   
   <header>
     
-      <h1 class="entry-title">Never Touch Your Local /etc/hosts File in OS X Again</h1>
+      <h1 class="entry-title">Redirect All Port 80 Requests to Port 8080</h1>
     
     
       <p class="meta">
@@ -94,55 +94,42 @@
   
 
 
-<time datetime="2012-04-24T08:20:00-04:00" pubdate data-updated="true">Apr 24<span>th</span>, 2012</time>
+<time datetime="2012-04-23T09:50:00-04:00" pubdate data-updated="true">Apr 23<span>rd</span>, 2012</time>
         
       </p>
     
   </header>
 
 
-<div class="entry-content"><p>In each of my posts on setting up a <a href="http://echodittolabs.org/blog/2012/04/os-x-107-lion-development-nginx-php-mariadb-homebrew">local</a> <a href="http://echodittolabs.org/blog/2011/10/os-x-107-lion-development-macports">development</a> <a href="http://echodittolabs.org/blog/2011/09/os-x-107-lion-development-native-apache-php-homebrew-mysql-or-mariadb">environment</a> <a href="http://echodittolabs.org/blog/2011/08/os-x-107-lion-development-native-mamp-mysql-installer">on OS X</a>, it&#39;s mentioned that you need to add your website&#39;s domain, even though it&#39;s local, in your /etc/hosts file. My preferred way to edit the hosts file on OS X is using <a href="http://code.google.com/p/gmask/">Gas Mask</a>. If you wanted to create the local virtual host <strong>projectx.dev</strong>, you would add the line <code>127.0.0.1 projectx.dev</code> in /etc/hosts or with Gas Mask, and then use that same value in either <strong>ServerName</strong> in Apache or <strong>server_name</strong> in Nginx. This can be tedious for adding new sites. Luckily there&#39;s a way to set this up once and then never have to edit your hosts file again for adding new local virtual hosts.</p>
+<div class="entry-content"><p><a href="http://echodittolabs.org/blog/2012/04/os-x-107-lion-development-nginx-php-mariadb-homebrew">In my previous post</a>, I walked through how to set up a local environment using Nginx running on port 8080 so as to avoid running anything as root or with sudo. Something that I&#39;ve found incredibly annoying is when I forget to specify the port I get an error in my browser, or Chrome might even suggest something based on a search term. It&#39;s fairly easy though to configure Apache to route everything to another port.</p>
 
-<p>You&#39;ll need a copy of dnsmasq, and I find this is most easily installed via Homebrew. If you haven&#39;t already, grab either <a href="http://itunes.apple.com/us/app/xcode/id448457090">Xcode</a> or <a href="http://kennethreitz.com/xcode-gcc-and-homebrew.html">Xcode Command Line Tools</a> and <a href="https://github.com/mxcl/homebrew/wiki/installation">install Homebrew</a>.</p>
+<p>Create the file <em>/etc/apache2/other/port8080-redirect.conf</em> as root. It&#39;s probably easiest to hop into Terminal and use nano:</p>
 
-<p>The steps below will install dnsmasq from Homebrew, configure dnsmasq to return the IP address &#39;127.0.0.1&#39; for all requests to the fake top-level-domain &quot;.dev,&quot; start dnsmasq on boot (don&#39;t worry, it&#39;s an extremely light-weight process), and configure OS X to use dnsmasq for queries ending in &quot;.dev.&quot;</p>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>sudo nano -w /etc/apache2/other/port8080-redirect.conf
+</span></code></pre></td></tr></table></div></figure>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<p>Enter the following lines and save and exit the editor.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
 <span class='line-number'>5</span>
 <span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>brew install dnsmasq
-</span><span class='line'>mkdir -pv $(brew --prefix)/etc/
-</span><span class='line'>echo 'address=/.dev/127.0.0.1' &gt; $(brew --prefix)/etc/dnsmasq.conf
-</span><span class='line'>sudo cp -v $(brew --prefix dnsmasq)/homebrew.mxcl.dnsmasq.plist /Library/LaunchDaemons
-</span><span class='line'>sudo launchctl load -w /Library/LaunchDaemons/homebrew.mxcl.dnsmasq.plist
-</span><span class='line'>sudo mkdir -v /etc/resolver
-</span><span class='line'>sudo bash -c 'echo "nameserver 127.0.0.1" &gt; /etc/resolver/dev'</span></code></pre></td></tr></table></div></figure>
+</pre></td><td class='code'><pre><code class='apache'><span class='line'><span class="nt">&lt;VirtualHost</span> <span class="s">_default_:80</span><span class="nt">&gt;</span>
+</span><span class='line'>  <span class="nb">DocumentRoot</span> <span class="sx">/Library/WebServer/Documents</span>
+</span><span class='line'>  <span class="nb">RewriteEngine</span> <span class="k">On</span>
+</span><span class='line'>  <span class="c"># Redirect all requests to the local Apache server to port 8080</span>
+</span><span class='line'>  <span class="nb">RewriteRule</span> ^.*$ http://%{HTTP_HOST}:8080%{REQUEST_URI}
+</span><span class='line'><span class="nt">&lt;/VirtualHost&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
 
-<p>That&#39;s it! You can run <code>scutil --dns</code> to show all of your current resolvers, and you should see that all requests for a domain ending in .dev will go to the DNS server at 127.0.0.1:</p>
+<p>Even though the <em>DocumentRoot</em> doesn&#39;t appear to be necessary, I wasn&#39;t able to get this working without it.</p>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>resolver #9
-</span><span class='line'>  domain   : dev
-</span><span class='line'>  nameserver[0] : 127.0.0.1</span></code></pre></td></tr></table></div></figure>
+<p>Go into System Preferences, open the Sharing preference pane, and check the box for Web Sharing. If you have trouble getting the check to &quot;stick,&quot; you can run the following in Terminal: <code>sudo apachectl restart</code></p>
 
-<p>If you ping any domain that ends in .dev, you&#39;ll get the IP address 127.0.0.1 back as a result:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ ping -c 1 thereisnowaythisisarealdomain.dev
-</span><span class='line'>PING thereisnowaythisisarealdomain.dev (127.0.0.1): 56 data bytes
-</span><span class='line'>64 bytes from 127.0.0.1: icmp_seq=0 ttl=64 time=0.057 ms</span></code></pre></td></tr></table></div></figure>
-
-<p>Note that if you&#39;re using Mountain Lion you may need to reboot before the /etc/resolver settings take effect globally. I was able to get pings to work right away but Chrome would not resolve properly until I restarted.</p>
-
-<p>Now you can set up a new virtual host with <strong>anydomain.dev</strong>, and it&#39;ll be available as soon as you reload Apache or Nginx! You could extend this by enabling <a href="http://httpd.apache.org/docs/2.2/vhosts/mass.html">Mass Virtual Hosting for Apache</a> or <a href="http://forum.nginx.org/read.php?2,218617,218617#msg-218617">similar with Nginx</a>, though both require consistent layout of directories. Have fun configuring less stuff on your system!</p>
+<p>Now if you go in your browser and hit a domain you have defined in <em>/etc/hosts</em>, like <strong><a href="http://drupal.local/">http://drupal.local/</a></strong>, you&#39;ll automatically be redirected to <strong><a href="http://drupal.local:8080/">http://drupal.local:8080/</a></strong></p>
 </div>
 
 
@@ -165,7 +152,7 @@
   
 
 
-<time datetime="2012-04-24T08:20:00-04:00" pubdate data-updated="true">Apr 24<span>th</span>, 2012</time>
+<time datetime="2012-04-23T09:50:00-04:00" pubdate data-updated="true">Apr 23<span>rd</span>, 2012</time>
       
 
 
@@ -173,7 +160,7 @@
     
       <div class="sharing">
   
-  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://alanthing.com/blog/2012/04/24/never-touch-your-local-etchosts-file-os-x-again/" data-via="alanthing" data-counturl="http://alanthing.com/blog/2012/04/24/never-touch-your-local-etchosts-file-os-x-again/" >Tweet</a>
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://alanthing.com/blog/2012/04/23/redirect-all-port-80-requests-port-8080/" data-via="alanthing" data-counturl="http://alanthing.com/blog/2012/04/23/redirect-all-port-80-requests-port-8080/" >Tweet</a>
   
   
   <div class="g-plusone" data-size="medium"></div>
@@ -186,10 +173,10 @@
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/blog/2012/04/23/redirect-all-port-80-requests-port-8080/" title="Previous Post: Redirect all port 80 requests to port 8080">&laquo; Redirect all port 80 requests to port 8080</a>
+        <a class="basic-alignment left" href="/blog/2011/01/25/easy-php-5-dot-2-rpms-on-centos/" title="Previous Post: Easy PHP 5.2 RPMs on CentOS">&laquo; Easy PHP 5.2 RPMs on CentOS</a>
       
       
-        <a class="basic-alignment right" href="/blog/2012/08/29/three-ways-get-drush-os-x/" title="Next Post: Three ways to get Drush on OS X">Three ways to get Drush on OS X &raquo;</a>
+        <a class="basic-alignment right" href="/blog/2012/04/24/never-touch-your-local-etchosts-file-os-x-again/" title="Next Post: Never touch your local /etc/hosts file in OS X again">Never touch your local /etc/hosts file in OS X again &raquo;</a>
       
     </p>
   </footer>
@@ -284,8 +271,8 @@
       
         
         // var disqus_developer = 1;
-        var disqus_identifier = 'http://alanthing.com/blog/2012/04/24/never-touch-your-local-etchosts-file-os-x-again/';
-        var disqus_url = 'http://alanthing.com/blog/2012/04/24/never-touch-your-local-etchosts-file-os-x-again/';
+        var disqus_identifier = 'http://alanthing.com/blog/2012/04/23/redirect-all-port-80-requests-port-8080/';
+        var disqus_url = 'http://alanthing.com/blog/2012/04/23/redirect-all-port-80-requests-port-8080/';
         var disqus_script = 'embed.js';
       
     (function () {

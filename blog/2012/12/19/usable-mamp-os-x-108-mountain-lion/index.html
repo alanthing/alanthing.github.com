@@ -347,57 +347,57 @@ Reference 2: <a href="http://jsdelfino.blogspot.com/2012/08/autoconf-and-automak
 <span class='line-number'>49</span>
 <span class='line-number'>50</span>
 <span class='line-number'>51</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">PORTNUM</span><span class="o">=</span><span class="k">$(</span>egrep <span class="s1">&#39;^Listen [0-9]*&#39;</span> /Applications/MAMP/conf/apache/httpd.conf | awk <span class="s1">&#39;{print $2}&#39;</span><span class="k">)</span> <span class="nv">USERHOME</span><span class="o">=</span><span class="k">$(</span>dscl . -read /Users/<span class="sb">`</span>whoami<span class="sb">`</span> NFSHomeDirectory | awk -F<span class="s2">&quot;\: &quot;</span> <span class="s1">&#39;{print $2}&#39;</span><span class="k">)</span> cat &gt; ~/Sites/mamp-vhosts.conf <span class="s">&lt;&lt;EOF</span>
-</span><span class='line'><span class="s">#</span>
-</span><span class='line'><span class="s"># Use name-based virtual hosting.</span>
-</span><span class='line'><span class="s">#</span>
-</span><span class='line'><span class="s">NameVirtualHost *:${PORTNUM}</span>
+</pre></td><td class='code'><pre><code class='apache'><span class='line'><span class="err">PORTNUM=$(</span><span class="nb">egrep</span> &#39;^Listen [0-9]*&#39; <span class="sx">/Applications/MAMP/conf/apache/httpd.conf</span> | awk &#39;{print $2}&#39;) USERHOME=$(dscl . -read <span class="sx">/Users/</span>`whoami` NFSHomeDirectory | awk -F<span class="s2">&quot;\: &quot;</span> &#39;{print $2}&#39;) cat &gt; ~/Sites/mamp-vhosts.conf &lt;&lt;EOF
+</span><span class='line'><span class="c">#</span>
+</span><span class='line'><span class="c"># Use name-based virtual hosting.</span>
+</span><span class='line'><span class="c">#</span>
+</span><span class='line'><span class="nb">NameVirtualHost</span> *:${PORTNUM}
 </span><span class='line'>
-</span><span class='line'><span class="s">#</span>
-</span><span class='line'><span class="s"># Set up permissions for VirtualHosts in ~/Sites</span>
-</span><span class='line'><span class="s">#</span>
-</span><span class='line'><span class="s">&lt;Directory &quot;${USERHOME}/Sites&quot;&gt;</span>
-</span><span class='line'><span class="s">    Options Indexes FollowSymLinks MultiViews</span>
-</span><span class='line'><span class="s">    AllowOverride All</span>
-</span><span class='line'><span class="s">    Order allow,deny</span>
-</span><span class='line'><span class="s">    Allow from all</span>
-</span><span class='line'><span class="s">&lt;/Directory&gt;</span>
+</span><span class='line'><span class="c">#</span>
+</span><span class='line'><span class="c"># Set up permissions for VirtualHosts in ~/Sites</span>
+</span><span class='line'><span class="c">#</span>
+</span><span class='line'><span class="nt">&lt;Directory</span> <span class="s">&quot;${USERHOME}/Sites&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>    <span class="nb">Options</span> Indexes FollowSymLinks MultiViews
+</span><span class='line'>    <span class="nb">AllowOverride</span> <span class="k">All</span>
+</span><span class='line'>    <span class="nb">Order</span> allow,deny
+</span><span class='line'>    <span class="nb">Allow</span> from <span class="k">all</span>
+</span><span class='line'><span class="nt">&lt;/Directory&gt;</span>
 </span><span class='line'>
-</span><span class='line'><span class="s"># For http://localhost in the MAMP default location</span>
-</span><span class='line'><span class="s">&lt;VirtualHost _default_:${PORTNUM}&gt;</span>
-</span><span class='line'><span class="s">    ServerName localhost</span>
-</span><span class='line'><span class="s">    DocumentRoot &quot;/Applications/MAMP/htdocs&quot;</span>
-</span><span class='line'><span class="s">&lt;/VirtualHost&gt;</span>
+</span><span class='line'><span class="c"># For http://localhost in the MAMP default location</span>
+</span><span class='line'><span class="nt">&lt;VirtualHost</span> <span class="s">_default_:${PORTNUM}</span><span class="nt">&gt;</span>
+</span><span class='line'>    <span class="nb">ServerName</span> localhost
+</span><span class='line'>    <span class="nb">DocumentRoot</span> <span class="s2">&quot;/Applications/MAMP/htdocs&quot;</span>
+</span><span class='line'><span class="nt">&lt;/VirtualHost&gt;</span>
 </span><span class='line'>
-</span><span class='line'><span class="s">#</span>
-</span><span class='line'><span class="s"># VirtualHosts</span>
-</span><span class='line'><span class="s">#</span>
+</span><span class='line'><span class="c">#</span>
+</span><span class='line'><span class="c"># VirtualHosts</span>
+</span><span class='line'><span class="c">#</span>
 </span><span class='line'>
-</span><span class='line'><span class="s">## VirtualHost template</span>
-</span><span class='line'><span class="s">#&lt;VirtualHost *:${PORTNUM}&gt;</span>
-</span><span class='line'><span class="s">#  ServerName domain.local</span>
-</span><span class='line'><span class="s">#  CustomLog &quot;${USERHOME}/Sites/logs/domain.local-access_log&quot; combined</span>
-</span><span class='line'><span class="s">#  ErrorLog &quot;${USERHOME}/Sites/logs/domain.local-error_log&quot;</span>
-</span><span class='line'><span class="s">#  DocumentRoot &quot;${USERHOME}/Sites/domain.local&quot;</span>
-</span><span class='line'><span class="s">#&lt;/VirtualHost&gt;</span>
+</span><span class='line'><span class="c">## VirtualHost template</span>
+</span><span class='line'><span class="c">#&lt;VirtualHost *:${PORTNUM}&gt;</span>
+</span><span class='line'><span class="c">#  ServerName domain.local</span>
+</span><span class='line'><span class="c">#  CustomLog &quot;${USERHOME}/Sites/logs/domain.local-access_log&quot; combined</span>
+</span><span class='line'><span class="c">#  ErrorLog &quot;${USERHOME}/Sites/logs/domain.local-error_log&quot;</span>
+</span><span class='line'><span class="c">#  DocumentRoot &quot;${USERHOME}/Sites/domain.local&quot;</span>
+</span><span class='line'><span class="c">#&lt;/VirtualHost&gt;</span>
 </span><span class='line'>
-</span><span class='line'><span class="s">#</span>
-</span><span class='line'><span class="s"># Automatic VirtualHosts</span>
-</span><span class='line'><span class="s"># A directory at ${USERHOME}/Sites/webroot can be accessed at http://webroot.dev</span>
-</span><span class='line'><span class="s"># In Drupal, uncomment the line in .htaccess with: RewriteBase /</span>
-</span><span class='line'><span class="s">#</span>
-</span><span class='line'><span class="s"># This log format will display the per-virtual-host as the first field followed by a typical log line</span>
-</span><span class='line'><span class="s">LogFormat &quot;%V %h %l %u %t \&quot;%r\&quot; %&gt;s %b \&quot;%{Referer}i\&quot; \&quot;%{User-Agent}i\&quot;&quot; combinedmassvhost</span>
-</span><span class='line'><span class="s">&lt;VirtualHost *:${PORTNUM}&gt;</span>
-</span><span class='line'><span class="s">  ServerName dev</span>
-</span><span class='line'><span class="s">  ServerAlias *.dev</span>
+</span><span class='line'><span class="c">#</span>
+</span><span class='line'><span class="c"># Automatic VirtualHosts</span>
+</span><span class='line'><span class="c"># A directory at ${USERHOME}/Sites/webroot can be accessed at http://webroot.dev</span>
+</span><span class='line'><span class="c"># In Drupal, uncomment the line in .htaccess with: RewriteBase /</span>
+</span><span class='line'><span class="c">#</span>
+</span><span class='line'><span class="c"># This log format will display the per-virtual-host as the first field followed by a typical log line</span>
+</span><span class='line'><span class="nb">LogFormat</span> <span class="s2">&quot;%V %h %l %u %t \&quot;%r\&quot; %&gt;s %b \&quot;%{Referer}i\&quot; \&quot;%{User-Agent}i\&quot;&quot;</span> combinedmassvhost
+</span><span class='line'><span class="nt">&lt;VirtualHost</span> <span class="s">*:${PORTNUM}</span><span class="nt">&gt;</span>
+</span><span class='line'>  <span class="nb">ServerName</span> dev
+</span><span class='line'>  <span class="nb">ServerAlias</span> *.dev
 </span><span class='line'>
-</span><span class='line'><span class="s">  CustomLog &quot;${USERHOME}/Sites/logs/dev-access_log&quot; combinedmassvhost</span>
-</span><span class='line'><span class="s">  ErrorLog &quot;${USERHOME}/Sites/logs/dev-error_log&quot;</span>
+</span><span class='line'>  <span class="nb">CustomLog</span> <span class="s2">&quot;${USERHOME}/Sites/logs/dev-access_log&quot;</span> combinedmassvhost
+</span><span class='line'>  <span class="nb">ErrorLog</span> <span class="s2">&quot;${USERHOME}/Sites/logs/dev-error_log&quot;</span>
 </span><span class='line'>
-</span><span class='line'><span class="s">  VirtualDocumentRoot ${USERHOME}/Sites/%-2+</span>
-</span><span class='line'><span class="s">&lt;/VirtualHost&gt;</span>
-</span><span class='line'><span class="s">EOF</span>
+</span><span class='line'>  <span class="nb">VirtualDocumentRoot</span> ${USERHOME}/Sites/%-2+
+</span><span class='line'><span class="nt">&lt;/VirtualHost&gt;</span>
+</span><span class='line'><span class="nb">EOF</span>
 </span></code></pre></td></tr></table></div></figure>
 
 <p>If you read that closely, you&#39;ll see that it&#39;s set up to do <a href="http://httpd.apache.org/docs/2.2/vhosts/mass.html">MassVirtualHosts</a> using the <code>*.dev</code> tld. For example, set up a web root at <code>$HOME/Sites/project</code> and you will be able to view it at <a href="http://project.dev:8888">http://project.dev:8888</a> without needing to create a separate VirtualHost. A custom log format is used, putting the domain name at the beginning of the line, so you can easily see the output as it related to a project.</p>

@@ -4,7 +4,7 @@
   <title><![CDATA[Linux and other things]]></title>
   <link href="http://alanthing.com/atom.xml" rel="self"/>
   <link href="http://alanthing.com/"/>
-  <updated>2013-03-17T22:34:32-04:00</updated>
+  <updated>2013-03-17T22:53:57-04:00</updated>
   <id>http://alanthing.com/</id>
   <author>
     <name><![CDATA[Alan Ivey]]></name>
@@ -19,8 +19,10 @@
     <updated>2013-03-17T20:46:00-04:00</updated>
     <id>http://alanthing.com/blog/2013/03/17/virtualbox-extension-pack-with-one-line</id>
     <content type="html"><![CDATA[<p>Just installed <a href="http://www.virtualbox.org">VirtualBox</a> on OS X and need the <a href="http://www.virtualbox.org/wiki/Downloads">Extension Pack</a>? This (really long) one-liner will download and install it for you. Run in terminal and enter your password once and you&#39;re off to the races!</p>
-<div class="highlight"><pre><code class="text">export version=$(/usr/bin/vboxmanage -v) &amp;&amp; export var1=$(echo ${version} | cut -d &#39;r&#39; -f 1) &amp;&amp; export var2=$(echo ${version} | cut -d &#39;r&#39; -f 2) &amp;&amp; export file=&quot;Oracle_VM_VirtualBox_Extension_Pack-${var1}-${var2}.vbox-extpack&quot; &amp;&amp; curl --silent --location http://download.virtualbox.org/virtualbox/${var1}/${file} -o ~/Downloads/${file} &amp;&amp; VBoxManage extpack install ~/Downloads/${file} --replace &amp;&amp; rm ~/Downloads/${file} &amp;&amp; unset version var1 var2 file
-</code></pre></div>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>export version=$(/usr/bin/vboxmanage -v) && export var1=$(echo ${version} | cut -d 'r' -f 1) && export var2=$(echo ${version} | cut -d 'r' -f 2) && export file="Oracle_VM_VirtualBox_Extension_Pack-${var1}-${var2}.vbox-extpack" && curl --silent --location http://download.virtualbox.org/virtualbox/${var1}/${file} -o ~/Downloads/${file} && VBoxManage extpack install ~/Downloads/${file} --replace && rm ~/Downloads/${file} && unset version var1 var2 file</span></code></pre></td></tr></table></div></figure>
+
 <p>Note that VirtualBox must be installed first :)</p>
 ]]></content>
   </entry>
@@ -42,42 +44,42 @@
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ git clone git@github.com:fog/fog.git
-</span><span class='line'>$ cd fog</span></code></pre></td></tr></table></div></figure>
+</pre></td><td class='code'><pre><code class=''><span class='line'>git clone git@github.com:fog/fog.git
+</span><span class='line'>cd fog</span></code></pre></td></tr></table></div></figure>
 
 <p>I&#39;m going to switch to ruby 1.9.3 and use a new gemset called fogdev:</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ rvm use 1.9.3 && rvm gemset create fogdev && rvm use 1.9.3@fogdev</span></code></pre></td></tr></table></div></figure>
+</pre></td><td class='code'><pre><code class=''><span class='line'>rvm use 1.9.3 && rvm gemset create fogdev && rvm use 1.9.3@fogdev</span></code></pre></td></tr></table></div></figure>
 
 <p>You may want to create a <code>.rvmrc</code> file so you don&#39;t have to use <code>rvm use</code> constantly.</p>
 
 <p>Install the prerequesite gems as listed in the gemspec file with bundler:</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ bundle install</span></code></pre></td></tr></table></div></figure>
+</pre></td><td class='code'><pre><code class=''><span class='line'>bundle install</span></code></pre></td></tr></table></div></figure>
 
 <p>I&#39;m going to grab the version number of fog from the gemspec file so I can reuse it later (if there are multiple &#39;.gemspec&#39; files in your directory, change &#39;*.gemspec&#39; to &#39;name.gemspec&#39; as appropriate):</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ export GEMVERSION=$(grep -E '^[ \t]+s.version' *.gemspec | awk '{print $3}' | sed 's/'\''//g')</span></code></pre></td></tr></table></div></figure>
+</pre></td><td class='code'><pre><code class=''><span class='line'>export GEMVERSION=$(grep -E '^[ \t]+s.version' *.gemspec | awk '{print $3}' | sed 's/'\''//g')</span></code></pre></td></tr></table></div></figure>
 
 <p>Now at this point, you can build and install the gem with <code>rake build &amp;&amp; gem install pkg/fog-${GEMVERSION}.gem</code> or <code>gem build</code> or any other tools as most tutorials advise, but then whenever you edit the source files you&#39;ll have to repeat. Let&#39;s create some symbolic links instead. Start by going to the rvm gemset folder (this may be a different location for your environment):</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ cd ~/.rvm/gems/ruby-1.9.3-p286\@fogdev/</span></code></pre></td></tr></table></div></figure>
+</pre></td><td class='code'><pre><code class=''><span class='line'>cd ~/.rvm/gems/ruby-1.9.3-p286\@fogdev/</span></code></pre></td></tr></table></div></figure>
 
 <p>It seems as though the earlier <code>bundle install</code> command created the file bin/fog for me, but it doesn&#39;t work without either installing a gem or running the remaining commands below. Particularly for fog, if this bin/fog file is missing and you need it, you can grab it with the following:</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ [ ! -f bin/fog ] && curl --silent --output bin/fog https://gist.github.com/alanthing/5004411/raw/13f748f1cc19df7511ea2a01de6824eac3358905/fog && chmod +x bin/fog</span></code></pre></td></tr></table></div></figure>
+</pre></td><td class='code'><pre><code class=''><span class='line'>[ ! -f bin/fog ] && curl --silent --output bin/fog https://gist.github.com/alanthing/5004411/raw/13f748f1cc19df7511ea2a01de6824eac3358905/fog && chmod +x bin/fog</span></code></pre></td></tr></table></div></figure>
 
 <p>Let&#39;s add our development gem with symbolic links (again, change as appropriate for your gem):</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ ln -s ~/fog/fog.gemspec specifications/fog-${GEMVERSION}.gemspec
-</span><span class='line'>$ ln -s ~/fog gems/fog-${GEMVERSION}</span></code></pre></td></tr></table></div></figure>
+</pre></td><td class='code'><pre><code class=''><span class='line'>ln -s ~/fog/fog.gemspec specifications/fog-${GEMVERSION}.gemspec
+</span><span class='line'>ln -s ~/fog gems/fog-${GEMVERSION}</span></code></pre></td></tr></table></div></figure>
 
 <p>Now if you run <code>gem list</code> you should see your gem listed:</p>
 
@@ -364,57 +366,57 @@ Reference 2: <a href="http://jsdelfino.blogspot.com/2012/08/autoconf-and-automak
 <span class='line-number'>49</span>
 <span class='line-number'>50</span>
 <span class='line-number'>51</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">PORTNUM</span><span class="o">=</span><span class="k">$(</span>egrep <span class="s1">&#39;^Listen [0-9]*&#39;</span> /Applications/MAMP/conf/apache/httpd.conf | awk <span class="s1">&#39;{print $2}&#39;</span><span class="k">)</span> <span class="nv">USERHOME</span><span class="o">=</span><span class="k">$(</span>dscl . -read /Users/<span class="sb">`</span>whoami<span class="sb">`</span> NFSHomeDirectory | awk -F<span class="s2">&quot;\: &quot;</span> <span class="s1">&#39;{print $2}&#39;</span><span class="k">)</span> cat &gt; ~/Sites/mamp-vhosts.conf <span class="s">&lt;&lt;EOF</span>
-</span><span class='line'><span class="s">#</span>
-</span><span class='line'><span class="s"># Use name-based virtual hosting.</span>
-</span><span class='line'><span class="s">#</span>
-</span><span class='line'><span class="s">NameVirtualHost *:${PORTNUM}</span>
+</pre></td><td class='code'><pre><code class='apache'><span class='line'><span class="err">PORTNUM=$(</span><span class="nb">egrep</span> &#39;^Listen [0-9]*&#39; <span class="sx">/Applications/MAMP/conf/apache/httpd.conf</span> | awk &#39;{print $2}&#39;) USERHOME=$(dscl . -read <span class="sx">/Users/</span>`whoami` NFSHomeDirectory | awk -F<span class="s2">&quot;\: &quot;</span> &#39;{print $2}&#39;) cat &gt; ~/Sites/mamp-vhosts.conf &lt;&lt;EOF
+</span><span class='line'><span class="c">#</span>
+</span><span class='line'><span class="c"># Use name-based virtual hosting.</span>
+</span><span class='line'><span class="c">#</span>
+</span><span class='line'><span class="nb">NameVirtualHost</span> *:${PORTNUM}
 </span><span class='line'>
-</span><span class='line'><span class="s">#</span>
-</span><span class='line'><span class="s"># Set up permissions for VirtualHosts in ~/Sites</span>
-</span><span class='line'><span class="s">#</span>
-</span><span class='line'><span class="s">&lt;Directory &quot;${USERHOME}/Sites&quot;&gt;</span>
-</span><span class='line'><span class="s">    Options Indexes FollowSymLinks MultiViews</span>
-</span><span class='line'><span class="s">    AllowOverride All</span>
-</span><span class='line'><span class="s">    Order allow,deny</span>
-</span><span class='line'><span class="s">    Allow from all</span>
-</span><span class='line'><span class="s">&lt;/Directory&gt;</span>
+</span><span class='line'><span class="c">#</span>
+</span><span class='line'><span class="c"># Set up permissions for VirtualHosts in ~/Sites</span>
+</span><span class='line'><span class="c">#</span>
+</span><span class='line'><span class="nt">&lt;Directory</span> <span class="s">&quot;${USERHOME}/Sites&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>    <span class="nb">Options</span> Indexes FollowSymLinks MultiViews
+</span><span class='line'>    <span class="nb">AllowOverride</span> <span class="k">All</span>
+</span><span class='line'>    <span class="nb">Order</span> allow,deny
+</span><span class='line'>    <span class="nb">Allow</span> from <span class="k">all</span>
+</span><span class='line'><span class="nt">&lt;/Directory&gt;</span>
 </span><span class='line'>
-</span><span class='line'><span class="s"># For http://localhost in the MAMP default location</span>
-</span><span class='line'><span class="s">&lt;VirtualHost _default_:${PORTNUM}&gt;</span>
-</span><span class='line'><span class="s">    ServerName localhost</span>
-</span><span class='line'><span class="s">    DocumentRoot &quot;/Applications/MAMP/htdocs&quot;</span>
-</span><span class='line'><span class="s">&lt;/VirtualHost&gt;</span>
+</span><span class='line'><span class="c"># For http://localhost in the MAMP default location</span>
+</span><span class='line'><span class="nt">&lt;VirtualHost</span> <span class="s">_default_:${PORTNUM}</span><span class="nt">&gt;</span>
+</span><span class='line'>    <span class="nb">ServerName</span> localhost
+</span><span class='line'>    <span class="nb">DocumentRoot</span> <span class="s2">&quot;/Applications/MAMP/htdocs&quot;</span>
+</span><span class='line'><span class="nt">&lt;/VirtualHost&gt;</span>
 </span><span class='line'>
-</span><span class='line'><span class="s">#</span>
-</span><span class='line'><span class="s"># VirtualHosts</span>
-</span><span class='line'><span class="s">#</span>
+</span><span class='line'><span class="c">#</span>
+</span><span class='line'><span class="c"># VirtualHosts</span>
+</span><span class='line'><span class="c">#</span>
 </span><span class='line'>
-</span><span class='line'><span class="s">## VirtualHost template</span>
-</span><span class='line'><span class="s">#&lt;VirtualHost *:${PORTNUM}&gt;</span>
-</span><span class='line'><span class="s">#  ServerName domain.local</span>
-</span><span class='line'><span class="s">#  CustomLog &quot;${USERHOME}/Sites/logs/domain.local-access_log&quot; combined</span>
-</span><span class='line'><span class="s">#  ErrorLog &quot;${USERHOME}/Sites/logs/domain.local-error_log&quot;</span>
-</span><span class='line'><span class="s">#  DocumentRoot &quot;${USERHOME}/Sites/domain.local&quot;</span>
-</span><span class='line'><span class="s">#&lt;/VirtualHost&gt;</span>
+</span><span class='line'><span class="c">## VirtualHost template</span>
+</span><span class='line'><span class="c">#&lt;VirtualHost *:${PORTNUM}&gt;</span>
+</span><span class='line'><span class="c">#  ServerName domain.local</span>
+</span><span class='line'><span class="c">#  CustomLog &quot;${USERHOME}/Sites/logs/domain.local-access_log&quot; combined</span>
+</span><span class='line'><span class="c">#  ErrorLog &quot;${USERHOME}/Sites/logs/domain.local-error_log&quot;</span>
+</span><span class='line'><span class="c">#  DocumentRoot &quot;${USERHOME}/Sites/domain.local&quot;</span>
+</span><span class='line'><span class="c">#&lt;/VirtualHost&gt;</span>
 </span><span class='line'>
-</span><span class='line'><span class="s">#</span>
-</span><span class='line'><span class="s"># Automatic VirtualHosts</span>
-</span><span class='line'><span class="s"># A directory at ${USERHOME}/Sites/webroot can be accessed at http://webroot.dev</span>
-</span><span class='line'><span class="s"># In Drupal, uncomment the line in .htaccess with: RewriteBase /</span>
-</span><span class='line'><span class="s">#</span>
-</span><span class='line'><span class="s"># This log format will display the per-virtual-host as the first field followed by a typical log line</span>
-</span><span class='line'><span class="s">LogFormat &quot;%V %h %l %u %t \&quot;%r\&quot; %&gt;s %b \&quot;%{Referer}i\&quot; \&quot;%{User-Agent}i\&quot;&quot; combinedmassvhost</span>
-</span><span class='line'><span class="s">&lt;VirtualHost *:${PORTNUM}&gt;</span>
-</span><span class='line'><span class="s">  ServerName dev</span>
-</span><span class='line'><span class="s">  ServerAlias *.dev</span>
+</span><span class='line'><span class="c">#</span>
+</span><span class='line'><span class="c"># Automatic VirtualHosts</span>
+</span><span class='line'><span class="c"># A directory at ${USERHOME}/Sites/webroot can be accessed at http://webroot.dev</span>
+</span><span class='line'><span class="c"># In Drupal, uncomment the line in .htaccess with: RewriteBase /</span>
+</span><span class='line'><span class="c">#</span>
+</span><span class='line'><span class="c"># This log format will display the per-virtual-host as the first field followed by a typical log line</span>
+</span><span class='line'><span class="nb">LogFormat</span> <span class="s2">&quot;%V %h %l %u %t \&quot;%r\&quot; %&gt;s %b \&quot;%{Referer}i\&quot; \&quot;%{User-Agent}i\&quot;&quot;</span> combinedmassvhost
+</span><span class='line'><span class="nt">&lt;VirtualHost</span> <span class="s">*:${PORTNUM}</span><span class="nt">&gt;</span>
+</span><span class='line'>  <span class="nb">ServerName</span> dev
+</span><span class='line'>  <span class="nb">ServerAlias</span> *.dev
 </span><span class='line'>
-</span><span class='line'><span class="s">  CustomLog &quot;${USERHOME}/Sites/logs/dev-access_log&quot; combinedmassvhost</span>
-</span><span class='line'><span class="s">  ErrorLog &quot;${USERHOME}/Sites/logs/dev-error_log&quot;</span>
+</span><span class='line'>  <span class="nb">CustomLog</span> <span class="s2">&quot;${USERHOME}/Sites/logs/dev-access_log&quot;</span> combinedmassvhost
+</span><span class='line'>  <span class="nb">ErrorLog</span> <span class="s2">&quot;${USERHOME}/Sites/logs/dev-error_log&quot;</span>
 </span><span class='line'>
-</span><span class='line'><span class="s">  VirtualDocumentRoot ${USERHOME}/Sites/%-2+</span>
-</span><span class='line'><span class="s">&lt;/VirtualHost&gt;</span>
-</span><span class='line'><span class="s">EOF</span>
+</span><span class='line'>  <span class="nb">VirtualDocumentRoot</span> ${USERHOME}/Sites/%-2+
+</span><span class='line'><span class="nt">&lt;/VirtualHost&gt;</span>
+</span><span class='line'><span class="nb">EOF</span>
 </span></code></pre></td></tr></table></div></figure>
 
 <p>If you read that closely, you&#39;ll see that it&#39;s set up to do <a href="http://httpd.apache.org/docs/2.2/vhosts/mass.html">MassVirtualHosts</a> using the <code>*.dev</code> tld. For example, set up a web root at <code>$HOME/Sites/project</code> and you will be able to view it at <a href="http://project.dev:8888">http://project.dev:8888</a> without needing to create a separate VirtualHost. A custom log format is used, putting the domain name at the beginning of the line, so you can easily see the output as it related to a project.</p>
@@ -468,31 +470,45 @@ Reference 2: <a href="http://jsdelfino.blogspot.com/2012/08/autoconf-and-automak
 <p>If you need introduced to Homebrew, or need help installing it, check out the <a href="http://mxcl.github.com/homebrew/">Homebrew project homepage</a>. The installation script is at the bottom.</p>
 
 <p>Ready to install drush?</p>
-<div class="highlight"><pre><code class="text">brew install drush
-</code></pre></div>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>brew install drush</span></code></pre></td></tr></table></div></figure>
+
 <p>Yup, that&#39;s it! Upgrading is simple as well, as explained in the <a href="https://github.com/mxcl/homebrew/wiki/FAQ">Homebrew FAQ</a>:</p>
-<div class="highlight"><pre><code class="text">brew update
-brew upgrade drush
-</code></pre></div>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>brew update
+</span><span class='line'>brew upgrade drush</span></code></pre></td></tr></table></div></figure>
+
 <h2 id="toc_1">PEAR</h2>
 
 <p>Whether you&#39;ve installed your own copy of PHP with Homebrew, are using the one included with MAMP, or the version provided by OS X, drush is easy to install using the <code>pear</code> command.</p>
 
 <p>If you are using the built-in php with OS X, you&#39;ll need to prefix each command with <code>sudo</code>.</p>
-<div class="highlight"><pre><code class="text">pear channel-discover pear.drush.org
-</code></pre></div>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>pear channel-discover pear.drush.org</span></code></pre></td></tr></table></div></figure>
+
 <p><strong>Homebrew Note:</strong> If you are using Homebrew and get an error about not being able to create a lock file, run the following command (change php54 to php53 if applicable): <code>touch $(brew --prefix php54)/lib/php/.lock &amp;&amp; chmod 0644 $(brew --prefix php54)/lib/php/.lock</code></p>
 
 <p>Continue by installing drush now that the channel is added:</p>
-<div class="highlight"><pre><code class="text">pear install drush/drush
-pear upgrade --force Console_Getopt
-</code></pre></div>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>pear install drush/drush
+</span><span class='line'>pear upgrade --force Console_Getopt</span></code></pre></td></tr></table></div></figure>
+    
+
 <p><strong>Homebrew Note:</strong> If you do not have drush available in your path after installing, relink PHP and you should then have the symlink available in <em>/usr/local/bin</em>: <code>brew unlink php54 &amp;&amp; brew link php54</code></p>
 
 <p>Upgrading is also easy (again, if using the built-in PHP with OS X, prefix with <code>sudo</code>):</p>
-<div class="highlight"><pre><code class="text">pear channel-update pear.drush.org
-pear upgrade drush
-</code></pre></div>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>pear channel-update pear.drush.org
+</span><span class='line'>pear upgrade drush</span></code></pre></td></tr></table></div></figure>
+
 <h2 id="toc_2">Git</h2>
 
 <p>If you would prefer to keep track of the source code for Drush, or perhaps be a contributor, you will want to use Git so you can easily make and keep track of changes. If you do not have git installed on your system, install <a href="http://itunes.apple.com/us/app/xcode/id497799835?mt=12">Xcode</a> or <a href="http://developer.apple.com/downloads">Command Line Tools for Xcode</a> and then proceed. These commands will clone the drush repository, checkout the latest stable tag, and create a symlink in <em>/usr/local/bin</em>:</p>
@@ -511,10 +527,14 @@ pear upgrade drush
 </span><span class='line'>ln -s ../drush/drush || sudo ln -s ../drush/drush</span></code></pre></td></tr></table></div></figure>
 
 <p>To update, fetch the latest code and grab the latest stable tag:</p>
-<div class="highlight"><pre><code class="text">cd /usr/local/drush
-git fetch
-git checkout $(git tag|grep &quot;^[0-9]&quot;|egrep -v &quot;alpha|beta|rc&quot;|tail -1)
-</code></pre></div>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>cd /usr/local/drush
+</span><span class='line'>git fetch
+</span><span class='line'>git checkout $(git tag|grep "^[0-9]"|egrep -v "alpha|beta|rc"|tail -1)</span></code></pre></td></tr></table></div></figure>
+
 <p>If you have any questions or improvements, please leave a comment!</p>
 ]]></content>
   </entry>
@@ -566,6 +586,43 @@ git checkout $(git tag|grep &quot;^[0-9]&quot;|egrep -v &quot;alpha|beta|rc&quot
 <p>Note that if you&#39;re using Mountain Lion you may need to reboot before the /etc/resolver settings take effect globally. I was able to get pings to work right away but Chrome would not resolve properly until I restarted.</p>
 
 <p>Now you can set up a new virtual host with <strong>anydomain.dev</strong>, and it&#39;ll be available as soon as you reload Apache or Nginx! You could extend this by enabling <a href="http://httpd.apache.org/docs/2.2/vhosts/mass.html">Mass Virtual Hosting for Apache</a> or <a href="http://forum.nginx.org/read.php?2,218617,218617#msg-218617">similar with Nginx</a>, though both require consistent layout of directories. Have fun configuring less stuff on your system!</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Redirect all port 80 requests to port 8080]]></title>
+    <link href="http://alanthing.com/blog/2012/04/23/redirect-all-port-80-requests-port-8080/"/>
+    <updated>2012-04-23T09:50:00-04:00</updated>
+    <id>http://alanthing.com/blog/2012/04/23/redirect-all-port-80-requests-port-8080</id>
+    <content type="html"><![CDATA[<p><a href="http://echodittolabs.org/blog/2012/04/os-x-107-lion-development-nginx-php-mariadb-homebrew">In my previous post</a>, I walked through how to set up a local environment using Nginx running on port 8080 so as to avoid running anything as root or with sudo. Something that I&#39;ve found incredibly annoying is when I forget to specify the port I get an error in my browser, or Chrome might even suggest something based on a search term. It&#39;s fairly easy though to configure Apache to route everything to another port.</p>
+
+<p>Create the file <em>/etc/apache2/other/port8080-redirect.conf</em> as root. It&#39;s probably easiest to hop into Terminal and use nano:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>sudo nano -w /etc/apache2/other/port8080-redirect.conf
+</span></code></pre></td></tr></table></div></figure>
+
+<p>Enter the following lines and save and exit the editor.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='apache'><span class='line'><span class="nt">&lt;VirtualHost</span> <span class="s">_default_:80</span><span class="nt">&gt;</span>
+</span><span class='line'>  <span class="nb">DocumentRoot</span> <span class="sx">/Library/WebServer/Documents</span>
+</span><span class='line'>  <span class="nb">RewriteEngine</span> <span class="k">On</span>
+</span><span class='line'>  <span class="c"># Redirect all requests to the local Apache server to port 8080</span>
+</span><span class='line'>  <span class="nb">RewriteRule</span> ^.*$ http://%{HTTP_HOST}:8080%{REQUEST_URI}
+</span><span class='line'><span class="nt">&lt;/VirtualHost&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+<p>Even though the <em>DocumentRoot</em> doesn&#39;t appear to be necessary, I wasn&#39;t able to get this working without it.</p>
+
+<p>Go into System Preferences, open the Sharing preference pane, and check the box for Web Sharing. If you have trouble getting the check to &quot;stick,&quot; you can run the following in Terminal: <code>sudo apachectl restart</code></p>
+
+<p>Now if you go in your browser and hit a domain you have defined in <em>/etc/hosts</em>, like <strong><a href="http://drupal.local/">http://drupal.local/</a></strong>, you&#39;ll automatically be redirected to <strong><a href="http://drupal.local:8080/">http://drupal.local:8080/</a></strong></p>
 ]]></content>
   </entry>
   
@@ -896,16 +953,27 @@ git checkout $(git tag|grep &quot;^[0-9]&quot;|egrep -v &quot;alpha|beta|rc&quot
 <p>These log entries are the same as the typical “combined” LogType but with the addition of the IP address at the end.</p>
 
 <p>But what about the ErrorLog? There is no way to define a LogType for the ErrorLog, and it would be helpful to know which server originated error, say, if MaxClients was reached, or there is a misconfiguration in a configuration file. Since we’re piping the ErrorLog output to /bin/cat, we can instead pipe it to a script that simply adds the server hostname on the end (I chose not to use an IP address because 1) some servers have multiple IP addresses, and 2) I cannot insert the VirtualHost’s IP address automatically. Better to know the server and then determine the IP address is necessary). We’ll start by creating a simple script at /usr/local/bin/httpd_errors (I’m not using bash since I was not able to get it to write to the log file in real time, it would only write once Apache was reloaded. I did not spend much time to determine why, and I knew it would work in PHP):</p>
-<div class="highlight"><pre><code class="text">#!/usr/bin/php -q
-&lt;?php
-$stdin = fopen (‘php://stdin’, ‘r’);
-ob_implicit_flush (true); // Use unbuffered output
-while ($line = fgets ($stdin))
-{
-    print chop($line).” - “.system(‘hostname -f’).”\n”;
-}
-?&gt;
-</code></pre></div>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">#!/usr/bin/php -q</span>
+</span><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$stdin</span> <span class="o">=</span> <span class="nb">fopen</span> <span class="p">(</span><span class="err">‘</span><span class="nx">php</span><span class="o">://</span><span class="nx">stdin</span><span class="err">’</span><span class="p">,</span> <span class="err">‘</span><span class="nx">r</span><span class="err">’</span><span class="p">);</span>
+</span><span class='line'><span class="nb">ob_implicit_flush</span> <span class="p">(</span><span class="k">true</span><span class="p">);</span> <span class="c1">// Use unbuffered output</span>
+</span><span class='line'><span class="k">while</span> <span class="p">(</span><span class="nv">$line</span> <span class="o">=</span> <span class="nb">fgets</span> <span class="p">(</span><span class="nv">$stdin</span><span class="p">))</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="k">print</span> <span class="nb">chop</span><span class="p">(</span><span class="nv">$line</span><span class="p">)</span><span class="o">.</span><span class="err">”</span> <span class="o">-</span> <span class="err">“</span><span class="o">.</span><span class="nb">system</span><span class="p">(</span><span class="err">‘</span><span class="nx">hostname</span> <span class="o">-</span><span class="nx">f</span><span class="err">’</span><span class="p">)</span><span class="o">.</span><span class="err">”</span><span class="nx">\n</span><span class="err">”</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
 <p>Make the script executable with “chmod +x /usr/local/bin/httpd_errors”, and then change your ErrorLog in your Apache configuration:</p>
 <div class="highlight"><pre><code class="text">ErrorLog  ”|/usr/local/bin/httpd_errors » /var/www/vhosts/_logs/domain.com-error_log”
 </code></pre></div>

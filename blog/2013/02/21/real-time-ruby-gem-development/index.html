@@ -113,42 +113,42 @@
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ git clone git@github.com:fog/fog.git
-</span><span class='line'>$ cd fog</span></code></pre></td></tr></table></div></figure>
+</pre></td><td class='code'><pre><code class=''><span class='line'>git clone git@github.com:fog/fog.git
+</span><span class='line'>cd fog</span></code></pre></td></tr></table></div></figure>
 
 <p>I&#39;m going to switch to ruby 1.9.3 and use a new gemset called fogdev:</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ rvm use 1.9.3 && rvm gemset create fogdev && rvm use 1.9.3@fogdev</span></code></pre></td></tr></table></div></figure>
+</pre></td><td class='code'><pre><code class=''><span class='line'>rvm use 1.9.3 && rvm gemset create fogdev && rvm use 1.9.3@fogdev</span></code></pre></td></tr></table></div></figure>
 
 <p>You may want to create a <code>.rvmrc</code> file so you don&#39;t have to use <code>rvm use</code> constantly.</p>
 
 <p>Install the prerequesite gems as listed in the gemspec file with bundler:</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ bundle install</span></code></pre></td></tr></table></div></figure>
+</pre></td><td class='code'><pre><code class=''><span class='line'>bundle install</span></code></pre></td></tr></table></div></figure>
 
 <p>I&#39;m going to grab the version number of fog from the gemspec file so I can reuse it later (if there are multiple &#39;.gemspec&#39; files in your directory, change &#39;*.gemspec&#39; to &#39;name.gemspec&#39; as appropriate):</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ export GEMVERSION=$(grep -E '^[ \t]+s.version' *.gemspec | awk '{print $3}' | sed 's/'\''//g')</span></code></pre></td></tr></table></div></figure>
+</pre></td><td class='code'><pre><code class=''><span class='line'>export GEMVERSION=$(grep -E '^[ \t]+s.version' *.gemspec | awk '{print $3}' | sed 's/'\''//g')</span></code></pre></td></tr></table></div></figure>
 
 <p>Now at this point, you can build and install the gem with <code>rake build &amp;&amp; gem install pkg/fog-${GEMVERSION}.gem</code> or <code>gem build</code> or any other tools as most tutorials advise, but then whenever you edit the source files you&#39;ll have to repeat. Let&#39;s create some symbolic links instead. Start by going to the rvm gemset folder (this may be a different location for your environment):</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ cd ~/.rvm/gems/ruby-1.9.3-p286\@fogdev/</span></code></pre></td></tr></table></div></figure>
+</pre></td><td class='code'><pre><code class=''><span class='line'>cd ~/.rvm/gems/ruby-1.9.3-p286\@fogdev/</span></code></pre></td></tr></table></div></figure>
 
 <p>It seems as though the earlier <code>bundle install</code> command created the file bin/fog for me, but it doesn&#39;t work without either installing a gem or running the remaining commands below. Particularly for fog, if this bin/fog file is missing and you need it, you can grab it with the following:</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ [ ! -f bin/fog ] && curl --silent --output bin/fog https://gist.github.com/alanthing/5004411/raw/13f748f1cc19df7511ea2a01de6824eac3358905/fog && chmod +x bin/fog</span></code></pre></td></tr></table></div></figure>
+</pre></td><td class='code'><pre><code class=''><span class='line'>[ ! -f bin/fog ] && curl --silent --output bin/fog https://gist.github.com/alanthing/5004411/raw/13f748f1cc19df7511ea2a01de6824eac3358905/fog && chmod +x bin/fog</span></code></pre></td></tr></table></div></figure>
 
 <p>Let&#39;s add our development gem with symbolic links (again, change as appropriate for your gem):</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ ln -s ~/fog/fog.gemspec specifications/fog-${GEMVERSION}.gemspec
-</span><span class='line'>$ ln -s ~/fog gems/fog-${GEMVERSION}</span></code></pre></td></tr></table></div></figure>
+</pre></td><td class='code'><pre><code class=''><span class='line'>ln -s ~/fog/fog.gemspec specifications/fog-${GEMVERSION}.gemspec
+</span><span class='line'>ln -s ~/fog gems/fog-${GEMVERSION}</span></code></pre></td></tr></table></div></figure>
 
 <p>Now if you run <code>gem list</code> you should see your gem listed:</p>
 
