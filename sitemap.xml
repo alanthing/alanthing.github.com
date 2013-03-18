@@ -1,6 +1,10 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <urlset xmlns='http://www.sitemaps.org/schemas/sitemap/0.9'>
     <url>
+        <loc>http://alanthing.com/blog/2010/07/15/tidy-tmp-dev-servers/</loc>
+        <lastmod>2013-03-17T23:24:58-04:00</lastmod>
+    </url>
+    <url>
         <loc>
             http://alanthing.com/blog/2010/12/07/combined-apache-logs-for-load-balanced-web-servers/
         </loc>
@@ -21,6 +25,14 @@
     <url>
         <loc>http://alanthing.com/blog/2011/01/25/easy-php-5-dot-2-rpms-on-centos/</loc>
         <lastmod>2013-03-17T21:15:50-04:00</lastmod>
+    </url>
+    <url>
+        <loc>http://alanthing.com/blog/2011/02/15/fix-pear-permissions-problem-mac-os-x/</loc>
+        <lastmod>2013-03-17T23:19:03-04:00</lastmod>
+    </url>
+    <url>
+        <loc>http://alanthing.com/blog/2011/02/22/dump-each-mysql-table-file/</loc>
+        <lastmod>2013-03-17T23:20:39-04:00</lastmod>
     </url>
     <url>
         <loc>http://alanthing.com/blog/2012/04/23/redirect-all-port-80-requests-port-8080/</loc>
@@ -54,11 +66,11 @@
     </url>
     <url>
         <loc>http://alanthing.com/blog/archives/</loc>
-        <lastmod>2013-03-17T22:53:32-04:00</lastmod>
+        <lastmod>2013-03-17T23:24:58-04:00</lastmod>
     </url>
     <url>
         <loc>http://alanthing.com/</loc>
-        <lastmod>2013-03-17T22:53:32-04:00</lastmod>
+        <lastmod>2013-03-17T23:24:58-04:00</lastmod>
     </url>
     <url>
         <loc>http://alanthing.com/robots.txt</loc>

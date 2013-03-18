@@ -1,0 +1,390 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Fix pear permissions problem on Mac OS X - alanthing</title>
+  <meta name="author" content="Alan Ivey">
+
+  
+  <meta name="description" content="On Snow Leopard, you can install drush without using sudo. A dependency for installing drush is downloading a Pear library. The following example &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://alanthing.com/blog/2011/02/15/fix-pear-permissions-problem-mac-os-x">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="alanthing" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-34327970-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">alanthing</a></h1>
+  
+    <h2>Linux and other things</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:alanthing.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Fix Pear Permissions Problem on Mac OS X</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-02-15T16:34:00-05:00" pubdate data-updated="true">Feb 15<span>th</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>On Snow Leopard, you can install drush without using sudo. A dependency for installing drush is downloading a Pear library. The following example should allow you to be able to use the following commands to install drush to /usr/local/drush with a symlink in /usr/local/bin/drush, but it fails on the &#39;pear download&#39; step, even though it&#39;s writing to a user-writeable directory. Read on the figure out how to fix this annoying problem.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>svn co http://subversible.svn.beanstalkapp.com/modules/drush/tags/DRUPAL-7--4-2/ /usr/local/drush 
+</span><span class='line'>cd /tmp 
+</span><span class='line'>pear download Console_Table 
+</span><span class='line'>tar zxvf `ls Console_Table-*.tgz` `ls Console_Table-*.tgz | sed -e 's/\.[a-z]\{3\}$//'`/Table.php 
+</span><span class='line'>mv `ls Console_Table-*.tgz | sed -e 's/\.[a-z]\{3\}$//'`/Table.php 
+</span><span class='line'>/usr/local/drush/includes/table.inc $ rm -fr Console_Table-* 
+</span><span class='line'>ln -s /usr/local/drush/drush /usr/local/bin/drush</span></code></pre></td></tr></table></div></figure>
+
+<p>This assumes 1) /usr/local exists and you can write to it, and 2) you&#39;ve added the following to your ~/.profile (or ~/.bashrc or ~/.bash_profile):</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'># Use the built-in PEAR and PECL scripts
+</span><span class='line'>alias pear="/usr/bin/php /usr/lib/php/pearcmd.php"
+</span><span class='line'>alias pecl="/usr/bin/php /usr/lib/php/peclcmd.php"</span></code></pre></td></tr></table></div></figure>
+
+<p>But, OS X has a strange permissions problem when using pear for the first time. Running &#39;pear download&#39; should not require sudo, but if you&#39;ve never used pear before you&#39;ll get this error:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ pear download Console_Table 
+</span><span class='line'>
+</span><span class='line'>Warning: touch(): Unable to create file /usr/lib/php/.lock because Permission denied in PEAR/Registry.php on line 835 
+</span><span class='line'>
+</span><span class='line'>Warning: touch(): Unable to create file /usr/lib/php/.lock because Permission denied in /usr/lib/php/PEAR/Registry.php on line 835 
+</span><span class='line'>could not create lock file: fopen(/usr/lib/php/.lock): failed to open stream: No such file or directory 
+</span><span class='line'>invalid package name/package file "Console_Table" 
+</span><span class='line'>download failed</span></code></pre></td></tr></table></div></figure>
+
+<p>Strange, right? Administrators in OS X are in the wheel group, but /usr/lib/php is not writable by the group. Before you go changing permissions (which might not be retained after an OS X update), all you have to do is run something as root with pear:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ sudo pear list
+</span><span class='line'>Installed packages, channel pear.php.net:
+</span><span class='line'>=========================================
+</span><span class='line'>Package          Version State
+</span><span class='line'>Archive_Tar      1.3.3   stable
+</span><span class='line'>Console_Getopt   1.2.3   stable
+</span><span class='line'>PEAR             1.8.0   stable
+</span><span class='line'>Structures_Graph 1.0.2   stable
+</span><span class='line'>XML_Util         1.2.1   stable</span></code></pre></td></tr></table></div></figure>
+
+<p>The permissions and ownership of /usr/lib/php are still the same, but there is now the file /usr/lib/php/.lock</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ ls -Al /usr/lib/php/.lock
+</span><span class='line'>-rw-r--r--  1 root  wheel  0 Feb 15 16:08 /usr/lib/php/.lock</span></code></pre></td></tr></table></div></figure>
+
+<p>You&#39;d think that when pear has completed running the list command it would delete the .lock file, but it doesn&#39;t. But since it&#39;s there, the original pear download command will now run without sudo:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ pear download Console_Table
+</span><span class='line'>downloading Console_Table-1.1.4.tgz ...
+</span><span class='line'>Starting to download Console_Table-1.1.4.tgz (9,369 bytes)
+</span><span class='line'>.....done: 9,369 bytes
+</span><span class='line'>File /private/tmp/Console_Table-1.1.4.tgz downloaded</span></code></pre></td></tr></table></div></figure>
+
+<p>Of course, running &#39;pear install&#39; or many other commands will require sudo, but it&#39;s silly that commands that do not write any files to /usr/lib/php or its children would require sudo.</p>
+
+<p>Unrelated to the pear permissions issue, but related to my drush install script; this assumes that /usr/local and /usr/local/bin exist. By default, /usr/local/bin is in the $PATH regardless of whether or not the folder exists, but on a vanilla OS X install /usr/local does not exist. I have both Xcode and homebrew installed. I know homebrew will create /usr/local for you, but I&#39;m not sure about Xcode. If you don&#39;t want to have either installed but want drush installed to /usr/local, run this:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>sudo mkdir -p /usr/local/bin
+</span><span class='line'>sudo chown -R root:wheel /usr/local</span></code></pre></td></tr></table></div></figure>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Alan Ivey</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-02-15T16:34:00-05:00" pubdate data-updated="true">Feb 15<span>th</span>, 2011</time>
+      
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://alanthing.com/blog/2011/02/15/fix-pear-permissions-problem-mac-os-x/" data-via="alanthing" data-counturl="http://alanthing.com/blog/2011/02/15/fix-pear-permissions-problem-mac-os-x/" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
+    <div class="fb-like" data-send="true" data-width="450" data-show-faces="false"></div>
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2011/01/25/easy-php-5-dot-2-rpms-on-centos/" title="Previous Post: Easy PHP 5.2 RPMs on CentOS">&laquo; Easy PHP 5.2 RPMs on CentOS</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2011/02/22/dump-each-mysql-table-file/" title="Next Post: Dump each MySQL table to a file">Dump each MySQL table to a file &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/03/17/virtualbox-extension-pack-with-one-line/">VirtualBox Extension Pack With One Line</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/02/21/real-time-ruby-gem-development/">"Real-time" Ruby Gem Development</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/12/19/usable-mamp-os-x-108-mountain-lion/">Usable MAMP on OS X 10.8 Mountain Lion</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/09/04/apache-modules-on-os-x-with-homebrew/">Apache modules on OS X with Homebrew</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/08/29/three-ways-get-drush-os-x/">Three ways to get Drush on OS X</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/alanthing">@alanthing</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'alanthing',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - Alan Ivey -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'alanthing';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://alanthing.com/blog/2011/02/15/fix-pear-permissions-problem-mac-os-x/';
+        var disqus_url = 'http://alanthing.com/blog/2011/02/15/fix-pear-permissions-problem-mac-os-x/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id; js.async = true;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

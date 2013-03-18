@@ -9,7 +9,7 @@
   <meta name="author" content="Alan Ivey">
 
   
-  <meta name="description" content="When dealing with a load spike or unexplained poor performance, once of the first things to do is to check the Apache web server logs. However, when &hellip;">
+  <meta name="description" content="In addition to hosting Drupal sites, we also host a number of WordPress sites. Similar to (checking all of our Drupal core versions)[http:// &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -77,6 +77,218 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2011/01/05/are-your-wordpress-sites-running-the-latest-core/">Are Your WordPress Sites Running the Latest Core?</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-01-05T20:31:00-05:00" pubdate data-updated="true">Jan 5<span>th</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>In addition to hosting Drupal sites, we also host a number of WordPress sites. Similar to (checking all of our Drupal core versions)[<a href="http://echodittolabs.org/blog/2011/01/are-your-drupal-sites-running-latest-core">http://echodittolabs.org/blog/2011/01/are-your-drupal-sites-running-latest-core</a>], we needed an easy way to quickly see what versions we are running on all of our WordPress sites. Kudos to <a href="http://echodittolabs.org/users/ethan">Ethan</a> for getting this one kicked off; here is a bash script to check your definable <code>$WEBHOME</code> (where you deposit all of your WordPress webroots) and scan for WordPress versions.</p>
+
+<p>Note: this requires bash, grep, wc, sed, awk, and tree. If your system doesn&#39;t have tree, it&#39;s usually pretty easy to get from EPEL/Homebrew/apt-get/[mac]ports/etc.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c">#!/bin/bash</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># Where to start scanning</span>
+</span><span class='line'><span class="nv">WEBHOME</span><span class="o">=</span>/var/www/vhosts
+</span><span class='line'>
+</span><span class='line'><span class="c"># Workaround to fix awk counting below</span>
+</span><span class='line'><span class="nv">WEBHOMECOUNT</span><span class="o">=</span><span class="k">$(($(</span><span class="nb">echo</span> <span class="s2">&quot;${WEBHOME}&quot;</span>|grep -o <span class="s2">&quot;/&quot;</span>|wc -l| sed s/<span class="se">\ </span>//g<span class="k">)</span><span class="o">+</span><span class="m">2</span><span class="k">))</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># Other projects could use &#39;version.php&#39; so we include </span>
+</span><span class='line'><span class="c"># &#39;wp-includes/&#39; in our search to limit it to WordPress</span>
+</span><span class='line'><span class="k">for </span>i in <span class="k">$(</span>tree -L 5 -if <span class="k">${</span><span class="nv">WEBHOME</span><span class="k">}</span> | grep <span class="s1">&#39;wp-includes/version.php&#39;</span><span class="k">)</span>; <span class="k">do</span>
+</span><span class='line'><span class="k">  </span><span class="nv">SITE</span><span class="o">=</span><span class="k">$(</span><span class="nb">echo</span> <span class="nv">$i</span>|awk -v <span class="nv">count</span><span class="o">=</span><span class="s2">&quot;$WEBHOMECOUNT&quot;</span> -F/ <span class="s1">&#39;{for(j=count;j&lt;=NF-2;j++) \</span>
+</span><span class='line'><span class="s1">        printf $j&quot;/&quot;}&#39;</span> | sed <span class="s1">&#39;s/.$//g&#39;</span><span class="k">)</span>
+</span><span class='line'>  <span class="nv">VERSION</span><span class="o">=</span><span class="k">$(</span>grep <span class="s2">&quot;wp_version = &quot;</span> <span class="nv">$i</span>|awk -F<span class="se">\&#39;</span> <span class="s1">&#39;{print $2}&#39;</span><span class="k">)</span>
+</span><span class='line'>  <span class="nb">echo</span> <span class="nv">$SITE</span> - <span class="nv">$VERSION</span>
+</span><span class='line'><span class="k">done</span>
+</span></code></pre></td></tr></table></div></figure>
+
+<p>As a result, you&#39;ll see output like this:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>./wordpress-version-check.sh
+</span><span class='line'>speedyupdates.com - 3.0.4
+</span><span class='line'>littlebehind.org - 3.0.3
+</span><span class='line'>scaredtoupgrade.com/blog - 2.8.2
+</span><span class='line'>kickinitoldschool.org/web/wordpress - 2.0.2
+</span></code></pre></td></tr></table></div></figure>
+
+<p>If you think there&#39;s a better way, or have any questions, let me know in the comments.</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2011/01/05/are-your-drupal-sites-running-the-latest-core/">Are Your Drupal Sites Running the Latest Core?</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-01-05T19:25:00-05:00" pubdate data-updated="true">Jan 5<span>th</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>At <a href="http://www.echoditto.com">EchoDitto</a>, we host a lot of Drupal sites. Just about all of our web servers contain more than one completely separate Drupal cores since we develop most of our websites independently. We also keep an eye out on <a href="http://drupal.org/security">Drupal Security</a> and when to apply core updates. Since we&#39;re not using Aegir, nor do we run every site off of a single multi-site core install, we need a quick and easy way to see what versions we&#39;re running.</p>
+
+<p>Here&#39;s a shell script we recently developed to report the Drupal Core versions for all of our sites under a single parent folder. It works on Drupal 4 through 7. It&#39;s not been tested outside of our platform, or non-RHEL systems, but it should be universal as long as you have bash, find, awk, and grep. I decided not to use <a href="http://drupal.org/project/drush">Drush</a> because it would involve bootstrapping every site and invoking PHP; this is just more lightweight. Drush also would not work for Drupal 4 sites, which we surprisingly still have a couple kicking around still.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c">#!/bin/bash</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># Where to start looking</span>
+</span><span class='line'><span class="nv">WEBHOME</span><span class="o">=</span>/var/www/vhosts
+</span><span class='line'>
+</span><span class='line'><span class="c"># Workaround to fix awk counting below, but it works</span>
+</span><span class='line'><span class="nv">WEBHOMECOUNT</span><span class="o">=</span><span class="k">$(($(</span><span class="nb">echo</span> <span class="s2">&quot;${WEBHOME}&quot;</span>|grep -o <span class="s2">&quot;/&quot;</span>|wc -l| sed s/<span class="se">\ </span>//g<span class="k">)</span><span class="o">+</span><span class="m">2</span><span class="k">))</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># Change maxdepth from 5 to some other value if your webroot is not being detected</span>
+</span><span class='line'><span class="k">for </span>i in <span class="k">$(</span>find <span class="nv">$WEBHOME</span> -maxdepth 5 -type f -name system.module<span class="k">)</span>; <span class="k">do</span>
+</span><span class='line'>  <span class="c"># Grabs only the version number from the file as described </span>
+</span><span class='line'>  <span class="c"># at http://drupal.org/handbook/version-info</span>
+</span><span class='line'>  <span class="nv">VERSION</span><span class="o">=</span><span class="k">$(</span>grep <span class="s2">&quot;VERSION&quot;</span> <span class="k">${</span><span class="nv">i</span><span class="k">}</span>|awk -F<span class="se">\&#39;</span> <span class="s1">&#39;{print $4}&#39;</span><span class="k">)</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c"># Drupal 4 has the system.module file in a lower directory than 5+</span>
+</span><span class='line'>  <span class="k">if</span> <span class="o">[[</span> <span class="nv">$VERSION</span> <span class="o">==</span> 4* <span class="o">]]</span>; <span class="k">then</span>
+</span><span class='line'><span class="k">    </span><span class="nv">SITE</span><span class="o">=</span><span class="k">$(</span><span class="nb">echo</span> <span class="nv">$i</span>|awk -v <span class="nv">count</span><span class="o">=</span><span class="s2">&quot;$WEBHOMECOUNT&quot;</span> -F/ <span class="s1">&#39;{for(j=count;j&lt;=NF-2;j++) \</span>
+</span><span class='line'><span class="s1">           printf $j&quot;/&quot;}&#39;</span> | sed <span class="s1">&#39;s/.$//g&#39;</span><span class="k">)</span>
+</span><span class='line'>  <span class="k">else</span>
+</span><span class='line'><span class="k">    </span><span class="nv">SITE</span><span class="o">=</span><span class="k">$(</span><span class="nb">echo</span> <span class="nv">$i</span>|awk -v <span class="nv">count</span><span class="o">=</span><span class="s2">&quot;$WEBHOMECOUNT&quot;</span> -F/ <span class="s1">&#39;{for(j=count;j&lt;=NF-3;j++) \</span>
+</span><span class='line'><span class="s1">           printf $j&quot;/&quot;}&#39;</span> | sed <span class="s1">&#39;s/.$//g&#39;</span><span class="k">)</span>
+</span><span class='line'>    <span class="k">if</span> <span class="o">[</span> -z <span class="nv">$VERSION</span> <span class="o">]</span>; <span class="k">then</span>
+</span><span class='line'>      <span class="c"># Drupal 7 does not keep the version number on system.module, despite the </span>
+</span><span class='line'>      <span class="c"># drupal.org page. Grab from changelog (disabled b/c it includes extra info)</span>
+</span><span class='line'>      <span class="c">#VERSION=&quot;$(sed &#39;3q;d&#39; ${WEBHOME}/${SITE}/CHANGELOG.txt)&quot;</span>
+</span><span class='line'>      <span class="c"># All versions of Drupal have the version of the module in system.info, </span>
+</span><span class='line'>      <span class="c"># so we grab it here for D7. The only reason I&#39;m not using this for all </span>
+</span><span class='line'>      <span class="c"># versions is because of the aforementioned drupal.org page</span>
+</span><span class='line'>      <span class="nv">VERSION</span><span class="o">=</span><span class="k">$(</span>grep <span class="s2">&quot;version = \&quot;&quot;</span> <span class="k">${</span><span class="nv">WEBHOME</span><span class="k">}</span>/<span class="k">${</span><span class="nv">SITE</span><span class="k">}</span>/modules/system/system.info <span class="se">\</span>
+</span><span class='line'>                | awk -F<span class="se">\&quot;</span> <span class="s1">&#39;{print $2}&#39;</span><span class="k">)</span>
+</span><span class='line'>    <span class="k">fi</span>
+</span><span class='line'><span class="k">  fi</span>
+</span><span class='line'><span class="k">  </span><span class="nb">echo</span> <span class="nv">$SITE</span> - <span class="nv">$VERSION</span>
+</span><span class='line'><span class="k">done</span>
+</span></code></pre></td></tr></table></div></figure>
+
+<p>As a result, you&#39;ll see the directory tree after <code>$WEBHOME</code> where the root of the site is and the version number. Below is an example:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>./drupal-version-check.sh
+</span><span class='line'>mysite.org/www - 5.22
+</span><span class='line'>thissite.net - 4.7.11
+</span><span class='line'>subfolder/drupalftw.com - 6.12
+</span><span class='line'>blah.org/trunk - 7.0
+</span></code></pre></td></tr></table></div></figure>
+
+<p>If you have suggestions, please send them over. This script is still young and I&#39;d love to see if anyone has any better ideas.</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -163,6 +375,64 @@
 [Tue Dec 07 11:24:27 2010] [error] [client 5.6.7.8] File does not exist: /var/www/vhosts/domain.com/favicon.ico - wsrv2
 </code></pre></div>
 <p>There you have it, combined Apache logs for multiple web servers. If you have any suggestions, questions, tips, etc, leave a comment!</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2010/07/15/tidy-tmp-dev-servers/">Tidy Up /tmp on Dev Servers</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-07-15T16:53:00-04:00" pubdate data-updated="true">Jul 15<span>th</span>, 2010</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Today I was made aware of some strange MySQL errors on our development server that ended up being related to a lack of sufficient disk space. Upon inspection, the /tmp partition had completely filled up. A majority of the files were temporary files created by the <a href="http://drupal.org/project/devel">Drupal module devel</a> with devel_themer enabled. Turns out <a href="http://drupal.org/node/327512">these temporary files are not deleted at the end of a session</a>. There were also CURLCOOKIE files related to cron jobs to hit cron.php on various dev and production sites, and some other temporary files that if left unattended could result in the same errors.</p>
+
+<p>My solution is to have these files deleted every night, but only if they&#39;re three days old, which should be adequate time for the developer to need access to these temporary files. I added this to root&#39;s cron.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'># Delete some /tmp files older than 3 days
+</span><span class='line'>5 4 * * * find /tmp -type f -name "Apache-Session*" -mtime +3 -exec rm -f {} \;
+</span><span class='line'>6 4 * * * find /tmp -type f -name "backup_migrate_*" -mtime +3 -exec rm -f {} \;
+</span><span class='line'>7 4 * * * find /tmp -type f -name "devel_themer_*" -mtime +3 -exec rm -f {} \;
+</span><span class='line'>8 4 * * * find /tmp -type f -name "CURLCOOKIE_*" -mtime +3 -exec rm -f {} \;</span></code></pre></td></tr></table></div></figure>
+
+<p>Similarly, I have a cron job to remove old Apache logs, which is helpful since an old project will never have it&#39;s logs deleted unless they&#39;re removed manually.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'># Delete Apache logs older than 30 days
+</span><span class='line'>30 3 * * * find /var/log/httpd -type f -mtime +30 -exec rm -f {} \;</span></code></pre></td></tr></table></div></figure>
+
+<p>Do you have other ideas for managing temporary files that don&#39;t clean up after themselves? Let me know in the comments.</p>
 </div>
   
   
