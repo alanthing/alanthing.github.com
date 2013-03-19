@@ -1,0 +1,560 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>OS X 10.7 Lion Development: MacPorts - alanthing</title>
+  <meta name="author" content="Alan Ivey">
+
+  
+  <meta name="description" content="OS X Lion comes with most of the tools you would need to do &quot;MAMP&quot; (Mac OS X, Apache, MySQL/MariaDB, PHP) development, as outlined in my &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://alanthing.com/blog/2011/10/11/os-x-107-lion-development-macports">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="alanthing" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-34327970-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">alanthing</a></h1>
+  
+    <h2>Linux and other things</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:alanthing.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">OS X 10.7 Lion Development: MacPorts</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-10-11T14:13:00-04:00" pubdate data-updated="true">Oct 11<span>th</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>OS X Lion comes with most of the tools you would need to do &quot;MAMP&quot; (Mac OS X, Apache, MySQL/MariaDB, PHP) development, as outlined in my <a href="http://echodittolabs.org/blog/2011/08/os-x-107-lion-development-native-mamp-mysql-installer">previous</a> <a href="http://echodittolabs.org/blog/2011/09/os-x-107-lion-development-native-apache-php-homebrew-mysql-or-mariadb">posts</a> once you add a database. So then why would you want to use MacPorts? Setting your development environment up in MacPorts isolates the binaries, libraries, and configuration files, completely separate from the existing OS X install (with the exception of startup scripts). You can also tweak the configuration files on your own, apply your own patches, and apply updates that MacPorts may get before Apple pushes them. It will take more time because you&#39;ll be compiling everything, but you have all of the control. Read on for how to get things set up. </p>
+
+<h2 id="toc_0">Prerequisites</h2>
+
+<p>We&#39;ll going to be compiling a lot of source code so you&#39;ll need to have <a href="http://itunes.apple.com/us/app/xcode/id448457090">Xcode 4</a> installed. I initially tried with the <a href="https://github.com/kennethreitz/osx-gcc-installer">OS X GCC Installer</a> but eventually ran into a problem where a portfile was expecting an Xcode binary to check to a prerequisite. I&#39;m sure some hacking could&#39;ve resolved it to avoid having to install the very large Xcode package, but at the end of the day it&#39;s better to just know that it&#39;ll work as expected. </p>
+
+<p>Once you have Xcode 4 installed, you&#39;ll need to <a href="http://www.macports.org/install.php">install MacPorts</a>. It&#39;s a simple click-through installer. Come back to this guide once MacPorts is ready. </p>
+
+<p>Note that for all commands before that are starting with a $, the dollar sign is showing a command-line prompt in <a href="http://www.apple.com/macosx/apps/all.html#terminal">Terminal</a>, and you should not actually type it as part of the commands. </p>
+
+<h2 id="toc_1">Install packages</h2>
+
+<p>Update the ports tree to get the latest from the MacPorts server in case the installer had an older tree:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>sudo /opt/local/bin/port selfupdate
+</span></code></pre></td></tr></table></div></figure>
+
+<p>All of the packages that we need can be installed with a single command:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>sudo /opt/local/bin/port install apache2 php5 php5-mysql mysql5-server php5-gd php5-mbstring php5-apc lynx phpmyadmin
+</span></code></pre></td></tr></table></div></figure>
+
+<p>Compiling all of these tools will take a while, so grab a book and come back when the command is completed. </p>
+
+<h2 id="toc_2">Configure PHP</h2>
+
+<p>The following will set up PHP with some development-friendly settings. </p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sudo cp -av /opt/local/etc/php5/php.ini-development /opt/local/etc/php5/php.ini
+</span><span class='line'><span class="nv">$ </span>sudo sed -i <span class="s2">&quot;&quot;</span> <span class="s1">&#39;s/\(default_socket[ ]\{0,1\}=\)/\1 \/opt\/local\/var\/run\/mysql5\/mysqld.sock/g&#39;</span> /opt/local/etc/php5/php.ini
+</span><span class='line'><span class="nv">$ </span>sudo sh -c <span class="s2">&quot;cat &gt;&gt; /opt/local/etc/php5/php.ini &lt;&lt;&#39;EOF&#39;</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="s2">;;</span>
+</span><span class='line'><span class="s2">;; User customizations below</span>
+</span><span class='line'><span class="s2">;;</span>
+</span><span class='line'>
+</span><span class='line'><span class="s2">; Original - memory_limit = 128M</span>
+</span><span class='line'><span class="s2">memory_limit = 196M</span>
+</span><span class='line'><span class="s2">; Original - post_max_size = 8M</span>
+</span><span class='line'><span class="s2">post_max_size = 200M</span>
+</span><span class='line'><span class="s2">; Original - upload_max_filesize = 2M</span>
+</span><span class='line'><span class="s2">upload_max_filesize = 100M</span>
+</span><span class='line'><span class="s2">; Original - default_socket_timeout = 60</span>
+</span><span class='line'><span class="s2">default_socket_timeout = 600</span>
+</span><span class='line'><span class="s2">; Original - max_execution_time = 30</span>
+</span><span class='line'><span class="s2">max_execution_time = 300</span>
+</span><span class='line'><span class="s2">; Original - max_input_time = 60</span>
+</span><span class='line'><span class="s2">max_input_time = 600</span>
+</span><span class='line'><span class="s2">; Original - ;date.timezone =</span>
+</span><span class='line'><span class="s2">date.timezone = &#39;America/New_York&#39;</span>
+</span><span class='line'><span class="s2">EOF&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+<p>Now configure the APC extension (installed above with php5-apc) which will increase PHP performance dramatically.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sudo sh -c <span class="s2">&quot;cat &gt; /opt/local/var/db/php5/apc-config.ini &lt;&lt;&#39;EOF&#39;</span>
+</span><span class='line'><span class="s2">[apc]</span>
+</span><span class='line'><span class="s2">apc.enabled = 1</span>
+</span><span class='line'><span class="s2">apc.shm_segments = 1</span>
+</span><span class='line'><span class="s2">apc.shm_size = 96M</span>
+</span><span class='line'><span class="s2">apc.cache_by_default = 1</span>
+</span><span class='line'><span class="s2">apc.stat = 1</span>
+</span><span class='line'><span class="s2">apc.rfc1867 = 1</span>
+</span><span class='line'><span class="s2">apc.stat = 7200</span>
+</span><span class='line'><span class="s2">EOF&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+<h2 id="toc_3">Configure Apache</h2>
+
+<p>Start by setting up PHP to work with Apache properly:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sudo cp -av /opt/local/apache2/conf/httpd.conf /opt/local/apache2/conf/httpd.conf-default
+</span><span class='line'><span class="nv">$ </span>sudo /opt/local/apache2/bin/apxs -a -e -n <span class="s2">&quot;php5&quot;</span> /opt/local/apache2/modules/libphp5.so
+</span><span class='line'><span class="nv">$ </span>sudo bash -c <span class="s2">&quot;cat &gt;&gt; /opt/local/apache2/conf/httpd.conf &lt;&lt;&#39;EOF&#39;</span>
+</span><span class='line'>
+</span><span class='line'><span class="s2">## Add mod_php information</span>
+</span><span class='line'><span class="s2">Include conf/extra/mod_php.conf</span>
+</span><span class='line'><span class="s2"># Add index.php to the list of files that will be served as directory indexes.</span>
+</span><span class='line'><span class="s2">&lt;IfModule dir_module&gt;</span>
+</span><span class='line'><span class="s2">  DirectoryIndex index.php index.html</span>
+</span><span class='line'><span class="s2">&lt;/IfModule&gt;</span>
+</span><span class='line'><span class="s2">EOF&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+<p>Now we&#39;ll move httpd-vhosts.conf to ~/Sites for easy editing of new virtual hosts, as well as create a ~/Sites/logs folder:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sudo mv -v /opt/local/apache2/conf/extra/httpd-vhosts.conf /opt/local/apache2/conf/extra/httpd-vhosts.conf-default &lt;/br&gt;
+</span><span class='line'><span class="nv">$ </span><span class="o">[</span> ! -d ~/Sites <span class="o">]</span> <span class="o">&amp;&amp;</span> mkdir -v ~/Sites
+</span><span class='line'><span class="nv">$ </span>cp -av /opt/local/apache2/conf/extra/httpd-vhosts.conf-default ~/Sites/httpd-vhosts.conf
+</span><span class='line'><span class="nv">$ </span>sudo ln -s ~/Sites/httpd-vhosts.conf /opt/local/apache2/conf/extra/httpd-vhosts.conf
+</span><span class='line'><span class="nv">$ </span>sudo sed -i <span class="s2">&quot;&quot;</span> <span class="s1">&#39;s/\#\(.*httpd-vhosts\.conf\)/\1/&#39;</span> /opt/local/apache2/conf/httpd.conf
+</span><span class='line'><span class="nv">$ </span><span class="o">[</span> ! -d ~/Sites/logs <span class="o">]</span> <span class="o">&amp;&amp;</span> mkdir ~/Sites/logs
+</span><span class='line'><span class="nv">$ </span>sudo perl -pi -e <span class="s1">&#39;BEGIN{undef $/;} s/\&lt;VirtualHost .*\n//sg;&#39;</span> <span class="k">${</span><span class="nv">USERHOME</span><span class="k">}</span>/Sites/httpd-vhosts.conf &lt;/br&gt;
+</span><span class='line'><span class="nv">$ </span>sudo sh -c <span class="s2">&quot;cat &gt;&gt; ~/Sites/httpd-vhosts.conf &lt;&lt;&#39;EOF&#39; &lt;/br&gt;</span>
+</span><span class='line'><span class="s2"> &lt;/br&gt;</span>
+</span><span class='line'><span class="s2">## Change /Users/name to the path of your home folder &lt;/br&gt;</span>
+</span><span class='line'><span class="s2">#&lt;VirtualHost *:80&gt; &lt;/br&gt;</span>
+</span><span class='line'><span class="s2">#  ServerName project.local &lt;/br&gt;</span>
+</span><span class='line'><span class="s2">#  CustomLog &quot;</span>/Users/name/Sites/logs/project.local-access_log<span class="s2">&quot; combined &lt;/br&gt;</span>
+</span><span class='line'><span class="s2">#  ErrorLog &quot;</span>/Users/name/Sites/logs/project.local-error_log<span class="s2">&quot; &lt;/br&gt;</span>
+</span><span class='line'><span class="s2">#  DocumentRoot &quot;</span>/Users/name/Sites/project.local<span class="s2">&quot; &lt;/br&gt;</span>
+</span><span class='line'><span class="s2">#&lt;/VirtualHost&gt; &lt;/br&gt;</span>
+</span><span class='line'><span class="s2">EOF&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+<p>Allow userdirs so the MacPorts Apache &quot;feels&quot; more like the built-in Apache:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>sudo sed -i <span class="s2">&quot;&quot;</span> <span class="s1">&#39;s/\#\(.*httpd-userdir\.conf\)/\1/&#39;</span> /opt/local/apache2/conf/httpd.conf
+</span></code></pre></td></tr></table></div></figure>
+
+<p>Start Apache and set it to load on boot:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>sudo /opt/local/bin/port load apache2
+</span></code></pre></td></tr></table></div></figure>
+
+<h2 id="toc_4">Configure MySQL</h2>
+
+<p>Set up the configuration file:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>sudo cp -av /opt/local/share/mysql5/mysql/my-small.cnf /opt/local/etc/mysql5/my.cnf
+</span><span class='line'>sudo sed -i <span class="s2">&quot;&quot;</span> <span class="s1">&#39;s/max_allowed_packet = 1.*M/max_allowed_packet = 1G/g&#39;</span> /opt/local/etc/mysql5/my.cnf
+</span></code></pre></td></tr></table></div></figure>
+
+<p>Initialize MySQL and run the secure installation script:<br>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span><br>
+<span class='line-number'>2</span><br>
+<span class='line-number'>3</span><br>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>sudo -u _mysql /opt/local/bin/mysql_install_db5<br>
+</span><span class='line'>sudo /opt/local/bin/port load mysql5-server<br>
+</span><span class='line'>sudo /opt/local/lib/mysql5/bin/mysql_secure_installation<br>
+</span></code></pre></td></tr></table></div></figure></p>
+
+<h2 id="toc_5">Configure phpMyAdmin</h2>
+
+<p>Add a config file for Apache and reload Apache:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sudo sh -c <span class="s2">&quot;cat &gt;&gt; /opt/local/apache2/conf/httpd.conf &lt;&lt;&#39;EOF&#39;</span>
+</span><span class='line'>
+</span><span class='line'><span class="s2"># phpMyAdmin</span>
+</span><span class='line'><span class="s2">Include conf/extra/phpmyadmin.conf</span>
+</span><span class='line'><span class="s2">EOF&quot;</span>
+</span><span class='line'><span class="nv">$ </span>sudo sh -c <span class="s2">&quot;cat &gt;&gt; /opt/local/apache2/conf/extra/phpmyadmin.conf &lt;&lt;&#39;EOF&#39;</span>
+</span><span class='line'><span class="s2">AliasMatch ^/phpmyadmin(?:/)?(/.*)?$ /opt/local/www/phpmyadmin$1</span>
+</span><span class='line'><span class="s2">AliasMatch ^/phpMyAdmin(?:/)?(/.*)?$ /opt/local/www/phpmyadmin$1</span>
+</span><span class='line'>
+</span><span class='line'><span class="s2">&lt;Directory &quot;</span>/opt/local/www/phpmyadmin<span class="s2">&quot;&gt;</span>
+</span><span class='line'><span class="s2"> Options -Indexes</span>
+</span><span class='line'><span class="s2"> AllowOverride None</span>
+</span><span class='line'><span class="s2"> Order allow,deny</span>
+</span><span class='line'><span class="s2"> Allow from all</span>
+</span><span class='line'>
+</span><span class='line'><span class="s2"> LanguagePriority en de es fr ja ko pt-br ru</span>
+</span><span class='line'><span class="s2"> ForceLanguagePriority Prefer Fallback</span>
+</span><span class='line'><span class="s2">&lt;/Directory&gt;</span>
+</span><span class='line'><span class="s2">EOF&quot;</span>
+</span><span class='line'><span class="nv">$ </span>sudo /opt/local/bin/port unload apache2
+</span><span class='line'><span class="nv">$ </span>sudo /opt/local/bin/port load apache2
+</span></code></pre></td></tr></table></div></figure>
+
+<p>Basic set up of phpMyAdmin:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>sudo sed -i <span class="s2">&quot;&quot;</span> <span class="s2">&quot;s/blowfish_secret\&#39;\] = \&#39;/blowfish_secret\&#39;\] = \&#39;`cat /dev/urandom | strings | grep -o &#39;[[:alnum:]]&#39; | head -n 50 | tr -d &#39;\n&#39;`/&quot;</span> /opt/local/www/phpmyadmin/config.inc.php
+</span><span class='line'>sudo /opt/local/bin/mysql5 -uroot -proot &lt; /opt/local/www/phpmyadmin/scripts/create_tables.sql
+</span><span class='line'>sudo /opt/local/bin/mysql5 -uroot -proot -e<span class="s2">&quot;CREATE USER &#39;pma&#39;@&#39;localhost&#39; IDENTIFIED BY &#39;pmapass&#39;; GRANT SELECT, INSERT, DELETE, UPDATE ON phpmyadmin.* TO pma@localhost;&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+<h2 id="toc_6">Hooray!</h2>
+
+<p>Now you can edit ~/Sites/httpd-vhosts.conf and add a new virtual host. You&#39;d need to reload Apache after doing so by running <code>sudo port unload apache2 &amp;&amp; sudo port load apache2</code>. phpMyAdmin or the mysql5 binary should provide you a way to create new databases and database users and you can then set up a local site.</p>
+
+<p>If you find MacPorts too heavy a separation from OSX, or too slow to compile, you should check out my previous blog posts on setting up a MAMP environment with as many built-in tools as possible only by adding a <a href="http://echodittolabs.org/blog/2011/08/os-x-107-lion-development-native-mamp-mysql-installer">MySQL installer</a> or <a href="http://echodittolabs.org/blog/2011/09/os-x-107-lion-development-native-apache-php-homebrew-mysql-or-mariadb">MySQL/MariaDB via Homebrew</a>.</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Alan Ivey</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-10-11T14:13:00-04:00" pubdate data-updated="true">Oct 11<span>th</span>, 2011</time>
+      
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://alanthing.com/blog/2011/10/11/os-x-107-lion-development-macports/" data-via="alanthing" data-counturl="http://alanthing.com/blog/2011/10/11/os-x-107-lion-development-macports/" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
+    <div class="fb-like" data-send="true" data-width="450" data-show-faces="false"></div>
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2011/09/07/os-x-107-lion-development-native-apache-php-homebrew-mysql-or-mariadb/" title="Previous Post: OS X 10.7 Lion Development: Native Apache & PHP with Homebrew MySQL or MariaDB">&laquo; OS X 10.7 Lion Development: Native Apache & PHP with Homebrew MySQL or MariaDB</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2012/02/10/nodejs-and-npm-centos/" title="Next Post: Node.js and NPM on CentOS">Node.js and NPM on CentOS &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/03/17/virtualbox-extension-pack-with-one-line/">VirtualBox Extension Pack With One Line</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/02/21/real-time-ruby-gem-development/">"Real-time" Ruby Gem Development</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/12/19/usable-mamp-os-x-108-mountain-lion/">Usable MAMP on OS X 10.8 Mountain Lion</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/09/04/apache-modules-on-os-x-with-homebrew/">Apache modules on OS X with Homebrew</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/08/29/three-ways-get-drush-os-x/">Three ways to get Drush on OS X</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/alanthing">@alanthing</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'alanthing',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - Alan Ivey -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'alanthing';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://alanthing.com/blog/2011/10/11/os-x-107-lion-development-macports/';
+        var disqus_url = 'http://alanthing.com/blog/2011/10/11/os-x-107-lion-development-macports/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id; js.async = true;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>
