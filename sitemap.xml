@@ -1,6 +1,10 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <urlset xmlns='http://www.sitemaps.org/schemas/sitemap/0.9'>
     <url>
+        <loc>http://alanthing.com/blog/2009/04/24/takeaways-from-the-big-internet-gathering/</loc>
+        <lastmod>2013-03-18T22:22:01-04:00</lastmod>
+    </url>
+    <url>
         <loc>http://alanthing.com/blog/2010/07/15/tidy-tmp-dev-servers/</loc>
         <lastmod>2013-03-17T23:24:58-04:00</lastmod>
     </url>
@@ -100,11 +104,11 @@
     </url>
     <url>
         <loc>http://alanthing.com/blog/archives/</loc>
-        <lastmod>2013-03-18T21:59:28-04:00</lastmod>
+        <lastmod>2013-03-18T22:22:01-04:00</lastmod>
     </url>
     <url>
         <loc>http://alanthing.com/</loc>
-        <lastmod>2013-03-18T21:59:28-04:00</lastmod>
+        <lastmod>2013-03-18T22:22:01-04:00</lastmod>
     </url>
     <url>
         <loc>http://alanthing.com/robots.txt</loc>
