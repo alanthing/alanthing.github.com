@@ -5,11 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Tidy up /tmp on dev servers - alanthing</title>
+  <title>Dropbox CLI for CentOS 5 the easy way - alanthing</title>
   <meta name="author" content="Alan Ivey">
 
   
-  <meta name="description" content="Today I was made aware of some strange MySQL errors on our development server that ended up being related to a lack of sufficient disk space. Upon &hellip;">
+  <meta name="description" content="Dropbox hardly needs any introduction; put files in your Dropbox and they show up everywhere else you have Dropbox installed and dropbox.com. A &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://alanthing.com/blog/2010/07/15/tidy-tmp-dev-servers">
+  <link rel="canonical" href="http://alanthing.com/blog/2010/08/12/dropbox-cli-centos-5-easy-way">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="alanthing" type="application/atom+xml">
@@ -80,7 +80,7 @@
   
   <header>
     
-      <h1 class="entry-title">Tidy Up /tmp on Dev Servers</h1>
+      <h1 class="entry-title">Dropbox CLI for CentOS 5 the Easy Way</h1>
     
     
       <p class="meta">
@@ -96,36 +96,54 @@
   
 
 
-<time datetime="2010-07-15T16:53:00-04:00" pubdate data-updated="true">Jul 15<span>th</span>, 2010</time>
+<time datetime="2010-08-12T12:27:00-04:00" pubdate data-updated="true">Aug 12<span>th</span>, 2010</time>
         
       </p>
     
   </header>
 
 
-<div class="entry-content"><p>Today I was made aware of some strange MySQL errors on our development server that ended up being related to a lack of sufficient disk space. Upon inspection, the /tmp partition had completely filled up. A majority of the files were temporary files created by the <a href="http://drupal.org/project/devel">Drupal module devel</a> with devel_themer enabled. Turns out <a href="http://drupal.org/node/327512">these temporary files are not deleted at the end of a session</a>. There were also CURLCOOKIE files related to cron jobs to hit cron.php on various dev and production sites, and some other temporary files that if left unattended could result in the same errors.</p>
+<div class="entry-content"><p><a href="http://www.dropbox.com/">Dropbox</a> hardly needs any introduction; put files in your Dropbox and they show up everywhere else you have Dropbox installed and dropbox.com. A feature about Dropbox that is probably not as widely known is that free accounts come with 30 days of undo history and Pro accounts can get &quot;Pack Rat&quot; that keeps unlimited history of changes. The history of files, including reverting deleted files, was particularly interesting to me, since I could hook in my latest daily MySQL dumps from <a href="http://sourceforge.net/projects/automysqlbackup/">AutoMySQLBackup</a> to Dropbox and have 30 days of backups for free available from anywhere dropbox.com is accessible. </p>
 
-<p>My solution is to have these files deleted every night, but only if they&#39;re three days old, which should be adequate time for the developer to need access to these temporary files. I added this to root&#39;s cron.</p>
+<p>The problem is that we use <a href="http://centos.org/">CentOS</a> for our servers and the Dropbox Linux builds are geared for distributions like Ubuntu and Debian that have updated versions of required software like Python, libc, and others, that I did not want to upgrade by hand on my systems and risk the integrity of the system packages. But, I got it to work anyway, read on for how I got Dropbox CLI installed on CentOS without replacing any system files.</p>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<ul>
+<li><p>Download <a href="http://www.getdropbox.com/download?plat=lnx.x86">http://www.getdropbox.com/download?plat=lnx.x86</a> or <a href="http://www.getdropbox.com/download?plat=lnx.x86_64">http://www.getdropbox.com/download?plat=lnx.x86_64</a> <a href="http://forums.dropbox.com/topic.php?id=8386#post-53456">(ref)</a></p></li>
+<li><p>Extract tar.gz file downloaded and leave in ~ of desired user</p></li>
+<li><p>Run <code>~/.dropbox-dist/dropboxd</code> to get Dropbox to provide a URL to go to in your browser to link this computer to your Dropbox account</p></li>
+</ul>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'># Delete some /tmp files older than 3 days
-</span><span class='line'>5 4 * * * find /tmp -type f -name "Apache-Session*" -mtime +3 -exec rm -f {} \;
-</span><span class='line'>6 4 * * * find /tmp -type f -name "backup_migrate_*" -mtime +3 -exec rm -f {} \;
-</span><span class='line'>7 4 * * * find /tmp -type f -name "devel_themer_*" -mtime +3 -exec rm -f {} \;
-</span><span class='line'>8 4 * * * find /tmp -type f -name "CURLCOOKIE_*" -mtime +3 -exec rm -f {} \;</span></code></pre></td></tr></table></div></figure>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>./dropboxd
+</span><span class='line'>This client is not linked to any account...
+</span><span class='line'>Please visit https: //www.dropbox.com/cli_link?host_id<span class="o">=</span>xxxxxxxxxxxxxxxxxxxxxxxxxxxx to link this machine.
+</span></code></pre></td></tr></table></div></figure>
 
-<p>Similarly, I have a cron job to remove old Apache logs, which is helpful since an old project will never have it&#39;s logs deleted unless they&#39;re removed manually.</p>
+<ul>
+<li>  After visiting the URL in a browser to which you&#39;ve logged into dropbox.com, you&#39;ll see the following output:</li>
+</ul>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'># Delete Apache logs older than 30 days
-</span><span class='line'>30 3 * * * find /var/log/httpd -type f -mtime +30 -exec rm -f {} \;</span></code></pre></td></tr></table></div></figure>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>/usr/bin/nautilus
+</span><span class='line'>cannot open display:
+</span><span class='line'>Run <span class="s1">&#39;nautilus --help&#39;</span> to see a full list of available <span class="nb">command </span>line options.
+</span></code></pre></td></tr></table></div></figure>
 
-<p>Do you have other ideas for managing temporary files that don&#39;t clean up after themselves? Let me know in the comments.</p>
+<ul>
+<li><p>If you cannot quit the app, open another a shell, get the PID by running <code>ps -ef|grep dropbox</code>, and kill PID. The output on your other shell should say:<br>
+Terminated</p></li>
+<li><p>Download the official Dropbox CLI: <a href="http://www.dropbox.com/download?dl=packages/dropbox.py">http://www.dropbox.com/download?dl=packages/dropbox.py</a> <a href="http://wiki.dropbox.com/TipsAndTricks/TextBasedLinuxInstall">(ref)</a></p></li>
+<li><p><code>dropbox.py</code> won&#39;t work without Python 2.6, but let&#39;s not risk messing up our official RHEL packages. Download ActivePython 2.6 (AS Package) from <a href="https://www.activestate.com/activepython/downloads">https://www.activestate.com/activepython/downloads</a> <a href="http://stackoverflow.com/questions/1465036/install-python-2-6-in-centos">(ref)</a></p></li>
+<li><p>As mentioned in the AP documentation <a href="http://docs.activestate.com/activepython/2.6/installnotes.html#aspackage">(ref)</a>, run the installer with <code>./install.sh</code> and install where desired. It defaults to <em>/opt/ActivePython-2.6</em>, which is fine because it does not conflcit with the system default python 2.4 install. For my purposes, I had created a user called <em>dropbox</em> that did not have root privileges, so I installed to <em>/home/dropbox/ActivePython-2.6</em>.</p></li>
+<li><p>Edit <em>dropbox.py</em> and change <code>#!/usr/bin/python</code> to the path you just installed AP to. For my installation, it&#39;s set to <code>#!/home/dropbox/bin/ActivePython-2.6/bin/python</code></p></li>
+<li><p>Run <code>dropbox.py</code> without commands to see your available options.</p></li>
+</ul>
+
+<p>Optional: To suppress LAN Sync broadcasts, download <a href="http://wiki.dropbox.com/TipsAndTricks/TextBasedLinuxInstall?action=AttachFile&amp;do=view&amp;target=dropboxp2p.py">dropboxp2p.py</a> <a href="http://wiki.dropbox.com/TipsAndTricks/TextBasedLinuxInstall">(ref)</a>, edit the first line to use the ActivePython binary as you did for dropbox.py, and run <code>./dropboxp2p -d</code> to disable LAN syncing (unless you have other machines in the LAN with Dropbox installed, and your firewalls are set up appropriately).</p>
 </div>
 
 
@@ -148,7 +166,7 @@
   
 
 
-<time datetime="2010-07-15T16:53:00-04:00" pubdate data-updated="true">Jul 15<span>th</span>, 2010</time>
+<time datetime="2010-08-12T12:27:00-04:00" pubdate data-updated="true">Aug 12<span>th</span>, 2010</time>
       
 
 
@@ -156,7 +174,7 @@
     
       <div class="sharing">
   
-  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://alanthing.com/blog/2010/07/15/tidy-tmp-dev-servers/" data-via="alanthing" data-counturl="http://alanthing.com/blog/2010/07/15/tidy-tmp-dev-servers/" >Tweet</a>
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://alanthing.com/blog/2010/08/12/dropbox-cli-centos-5-easy-way/" data-via="alanthing" data-counturl="http://alanthing.com/blog/2010/08/12/dropbox-cli-centos-5-easy-way/" >Tweet</a>
   
   
   <div class="g-plusone" data-size="medium"></div>
@@ -169,8 +187,10 @@
     
     <p class="meta">
       
+        <a class="basic-alignment left" href="/blog/2010/07/15/tidy-tmp-dev-servers/" title="Previous Post: Tidy up /tmp on dev servers">&laquo; Tidy up /tmp on dev servers</a>
       
-        <a class="basic-alignment right" href="/blog/2010/08/12/dropbox-cli-centos-5-easy-way/" title="Next Post: Dropbox CLI for CentOS 5 the easy way">Dropbox CLI for CentOS 5 the easy way &raquo;</a>
+      
+        <a class="basic-alignment right" href="/blog/2010/12/07/combined-apache-logs-for-load-balanced-web-servers/" title="Next Post: Combined Apache logs for load balanced web servers">Combined Apache logs for load balanced web servers &raquo;</a>
       
     </p>
   </footer>
@@ -265,8 +285,8 @@
       
         
         // var disqus_developer = 1;
-        var disqus_identifier = 'http://alanthing.com/blog/2010/07/15/tidy-tmp-dev-servers/';
-        var disqus_url = 'http://alanthing.com/blog/2010/07/15/tidy-tmp-dev-servers/';
+        var disqus_identifier = 'http://alanthing.com/blog/2010/08/12/dropbox-cli-centos-5-easy-way/';
+        var disqus_url = 'http://alanthing.com/blog/2010/08/12/dropbox-cli-centos-5-easy-way/';
         var disqus_script = 'embed.js';
       
     (function () {
