@@ -9,7 +9,7 @@
   <meta name="author" content="Alan Ivey">
 
   
-  <meta name="description" content="On Snow Leopard, you can install drush without using sudo. A dependency for installing drush is downloading a Pear library. The following example &hellip;">
+  <meta name="description" content="In this example, we choose one of our servers to receive the Syslog traffic and the others will send traffic to it. In a large environment, you &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -77,6 +77,183 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2011/08/17/use-syslog-instead-watchdog/">Use Syslog Instead of Watchdog</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-08-17T16:02:00-04:00" pubdate data-updated="true">Aug 17<span>th</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>In this example, we choose one of our servers to receive the Syslog traffic and the others will send traffic to it. In a large environment, you should use a non-public-facing server to act as a syslog server for your sites, ideally using a database to store data, but we&#39;ll just output everything to a file to keep things simple for this guide. If you decide to use a database like MySQL to store your data, this can still provide you with a starting point, but just know that using your same production database server defeats my intended purpose since I was ultimately trying to alleviate the amount of writes on the database. </p>
+
+<p>Start by using yum to install <strong>rsyslog</strong>. If you&#39;re using another distro, rsyslog is likely included in the base repositories. Also, note that CentOS 6 uses rsyslog by default so you may skip this step if it&#39;s already installed on your system. You&#39;ll need this on all servers running Drupal or your rsyslog server:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>yum install rsyslog
+</span></code></pre></td></tr></table></div></figure>
+
+<p>For CentOS 5, you&#39;ll need to unload the default syslog and switch to rsyslog. The following will ensure it starts on boot as well. Until otherwise noted, run the following commands on all servers:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>/sbin/service syslog stop <span class="o">&amp;&amp;</span> /sbin/service rsyslog start
+</span><span class='line'>/sbin/chkconfig rsyslog on
+</span><span class='line'>/sbin/chkconfig syslog off
+</span></code></pre></td></tr></table></div></figure>
+
+<p>Rather than hacking the config file to bits, I find it easier to create an include folder and keep things organized by files. I also like to back up default files created by RPMs so if an update leaves behind rsyslog.rpmnew, you can compare it to the default to see the changes:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>mkdir -v /etc/rsyslog.d
+</span><span class='line'>cp -av /etc/rsyslog.conf<span class="o">{</span>,-default<span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+<p>Add the following to <strong>/etc/rsyslog.conf</strong> below the last line containing &quot;$ModLoad&quot;:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># Include all files in /etc/rsyslog.d</span>
+</span><span class='line'><span class="nv">$IncludeConfig</span> /etc/rsyslog.d/*.conf
+</span></code></pre></td></tr></table></div></figure>
+
+<p>Reload the current rsyslog configuration:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>/sbin/service rsyslog reload
+</span></code></pre></td></tr></table></div></figure>
+
+<p>The next several steps will only need to be run on the syslog server. Back up and edit <strong>/etc/sysconfig/rsyslog</strong> to accept UDP connections from other servers. If you&#39;re using iptables, open up port 514 on UDP.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>cp -a /etc/sysconfig/rsyslog /etc/sysconfig/rsyslog-default
+</span></code></pre></td></tr></table></div></figure>
+
+<p>Edit /etc/sysconfig.rsyslog and change <strong>SYSLOGD_OPTIONS=&quot;-m 0&quot;</strong> to <strong>SYSLOGD_OPTIONS=&quot;-m 0 -r514&quot;</strong></p>
+
+<p>Create a root folder for website logs to go:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>mkdir /var/log/websites
+</span></code></pre></td></tr></table></div></figure>
+
+<p>Create the following file to work with example.com (this format will allow you to create other files for anotherexample.org, etc.): <strong>/etc/rsyslog.d/example.conf</strong>. Add the following:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># example.com</span>
+</span><span class='line'><span class="nv">$template</span> DailyPerHostLogs-example,<span class="s2">&quot;/var/log/websites/%SYSLOGTAG:F,58:1%/%SYSLOGTAG:F,58:1%.%$YEAR%-%$MONTH%-%$DAY%.log&quot;</span>
+</span><span class='line'>:syslogtag, contains, <span class="s2">&quot;example&quot;</span>                    -?DailyPerHostLogs-example
+</span><span class='line'>&amp; ~
+</span></code></pre></td></tr></table></div></figure>
+
+<p>This will create <strong>/var/log/websites/example/example.2011-08-17.log</strong> and new files for each day. To add other websites, duplicate the file and replace example with another string. We&#39;ll later use &quot;example&quot; in the Drupal configuration for Syslog later that will correlate to the correct file.</p>
+
+<p>For those curious about this configuration: a template is needed for dynamic file paths with year-month-day. The syslogtag variable will use the string sent by Drupal in the Syslog module settings. Drupal will send it as <strong>example:</strong>, so <em>:F,58:1</em> will use the colon as the field separator and grab the first field. Even though it would appear as though this single template could be used on multiple sites, I found I still had to have a unique template for each website or all websites would dump into the same file (perhaps this is remedied in newer versions of rsyslog). The last line means that the syslog input will not be sent to any other syslog files.</p>
+
+<p>Reload the current rsyslog configuration, and the server is set up:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>/sbin/service rsyslog reload
+</span></code></pre></td></tr></table></div></figure>
+
+<p>On the clients, we&#39;ll create simple .conf files for each website. Create <strong>/etc/rsyslog.d/example.conf</strong> on each additional web server containing:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># example.com</span>
+</span><span class='line'>:syslogtag, contains, <span class="s2">&quot;example&quot;</span>     @192.168.1.20
+</span></code></pre></td></tr></table></div></figure>
+
+<p>Note that the IP address can also be a domain name, though I would not recommend it to keep another process from being needed for the lookup.</p>
+
+<p>Reload the current rsyslog configuration, and each web client is set up:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>/sbin/service rsyslog reload
+</span></code></pre></td></tr></table></div></figure>
+
+<p>Enable the syslog module and go to <strong><a href="http://example.com/admin/settings/logging/syslog">http://example.com/admin/settings/logging/syslog</a></strong>. Set the Syslog Identity to match the value used in /etc/rsyslog.d/example.conf; in this case, <strong>example</strong>. Using the rsyslog filter we&#39;re using, it does not matter which facility we send to. Save the configuration.</p>
+
+<p><img src="http://echoditto.com/sites/default/files/rsyslog-screenshot.png" alt="rsyslog-screenshot"></p>
+
+<p>Go to your rsyslog server and watch the <strong>/var/log/websites/example/example.2011-08-16.log</strong> file. After verifying that the server is receiving all messages, disable the Watchdog module in <strong><a href="http://example.org/admin/build/modules/list">http://example.org/admin/build/modules/list</a></strong>.</p></p>
+
+<p>There are improvements that can be had here, like using TCP instead of UDP, using <a href="http://loganalyzer.adiscon.com">LogAnalyzer</a> to filter through the files, and more. This was meant to be an introduction into getting combined text files of your watchdog output while reducing the strain on your database by not writing to it as often.</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2011/02/22/dump-each-mysql-table-file/">Dump Each MySQL Table to a File</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-02-22T14:30:00-05:00" pubdate data-updated="true">Feb 22<span>nd</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Here&#39;s a one-liner to dump each table in a database to it&#39;s own .sql file. Crack open your shell of choice and follow along.</p>
+
+<p>Replace the USER, PASSWORD, and DBNAME values with your own. If you&#39;re not running this to connect to a local database, add &#8211;host=domain.tld after each password to connect to your remote server.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>for i in $(mysql -uUSER -p'PASSWORD' --batch --skip-column-names DBNAME -e'show tables;'); do mysqldump -uUSER -p'PASSWORD' DBNAME $i &gt; DBNAME-$i.sql; done</span></code></pre></td></tr></table></div></figure>
+
+<p>Users, passwords, and database names are case sensitive, I made them uppercase here to call them out. Leave a comment if you have a question or notice a problem or typo.</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>

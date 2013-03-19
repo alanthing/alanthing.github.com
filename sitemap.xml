@@ -39,6 +39,18 @@
         <lastmod>2013-03-18T20:08:17-04:00</lastmod>
     </url>
     <url>
+        <loc>
+            http://alanthing.com/blog/2011/08/24/os-x-107-lion-development-native-mamp-mysql-installer/
+        </loc>
+        <lastmod>2013-03-18T20:56:21-04:00</lastmod>
+    </url>
+    <url>
+        <loc>
+            http://alanthing.com/blog/2011/09/07/os-x-107-lion-development-native-apache-php-homebrew-mysql-or-mariadb/
+        </loc>
+        <lastmod>2013-03-18T21:12:05-04:00</lastmod>
+    </url>
+    <url>
         <loc>http://alanthing.com/blog/2012/02/10/nodejs-and-npm-centos/</loc>
         <lastmod>2013-03-17T23:31:43-04:00</lastmod>
     </url>
@@ -74,11 +86,11 @@
     </url>
     <url>
         <loc>http://alanthing.com/blog/archives/</loc>
-        <lastmod>2013-03-18T20:08:17-04:00</lastmod>
+        <lastmod>2013-03-18T21:12:05-04:00</lastmod>
     </url>
     <url>
         <loc>http://alanthing.com/</loc>
-        <lastmod>2013-03-18T20:08:17-04:00</lastmod>
+        <lastmod>2013-03-18T21:12:05-04:00</lastmod>
     </url>
     <url>
         <loc>http://alanthing.com/robots.txt</loc>

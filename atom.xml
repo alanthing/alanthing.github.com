@@ -4,7 +4,7 @@
   <title><![CDATA[alanthing]]></title>
   <link href="http://alanthing.com/atom.xml" rel="self"/>
   <link href="http://alanthing.com/"/>
-  <updated>2013-03-18T20:08:45-04:00</updated>
+  <updated>2013-03-18T21:12:05-04:00</updated>
   <id>http://alanthing.com/</id>
   <author>
     <name><![CDATA[Alan Ivey]]></name>
@@ -647,6 +647,594 @@ Reference 2: <a href="http://jsdelfino.blogspot.com/2012/08/autoconf-and-automak
 <div class="highlight"><pre><code class="text">sudo ln -s /usr/bin/nodejs /usr/bin/node
 </code></pre></div>
 <p>Now I&#39;m able to install anything I need to with NPM and run my Node.js applications with Forever. I&#39;m still very new to Node, so if you think I should be doing things a better way, let me know in the comments!</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[OS X 10.7 Lion Development: Native Apache & PHP with Homebrew MySQL or MariaDB]]></title>
+    <link href="http://alanthing.com/blog/2011/09/07/os-x-107-lion-development-native-apache-php-homebrew-mysql-or-mariadb/"/>
+    <updated>2011-09-07T17:45:00-04:00</updated>
+    <id>http://alanthing.com/blog/2011/09/07/os-x-107-lion-development-native-apache-php-homebrew-mysql-or-mariadb</id>
+    <content type="html"><![CDATA[<p>OS X Lion ships with Apache and PHP, which both require a little bit of tweaking to get fully-functional for &quot;MAMP&quot; local development. The one thing Lion does not ship with is a database. This will be very similar to my <a href="http://echodittolabs.org/blog/2011/08/os-x-107-lion-development-native-mamp-mysql-installer">previous post on local development</a> but this time we&#39;ll be using Homebrew to install either MySQL or MariaDB for the database. Since we&#39;ll be using a compiler for Homebrew, I&#39;ll also cover how to add APC and other PECL modules that you can add to OS X. </p>
+
+<p>Note that for all commands before that are starting with a $, the dollar sign is showing a command-line prompt in <a href="http://www.apple.com/macosx/apps/all.html#terminal">Terminal</a>, and you should not actually type it as part of the commands.</p>
+
+<h2 id="toc_0">Apache</h2>
+
+<p>We&#39;ll set things up so we won&#39;t need sudo often in the future, and so we can manage multiple VirtualHosts. We&#39;ll keep the Apache information and our website roots in ~/Sites, and Apache logs in ~/Sites/logs</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span> ! -d ~/Sites <span class="o">]</span> <span class="o">&amp;&amp;</span> mkdir ~/Sites
+</span><span class='line'>touch ~/Sites/httpd-vhosts.conf
+</span><span class='line'>sudo ln -s ~/Sites/httpd-vhosts.conf /etc/apache2/other
+</span><span class='line'>mkdir ~/Sites/logs
+</span><span class='line'>chmod 0777 ~/Sites/logs
+</span></code></pre></td></tr></table></div></figure>
+
+<p>Edit the new <strong>~/Sites/httpd-vhosts.conf</strong> file and add the following. Note that you&#39;ll need to change all instances of &quot;/Users/name&quot; to your actual home folder path.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+</pre></td><td class='code'><pre><code class='apache'><span class='line'><span class="c"># </span>
+</span><span class='line'><span class="c"># Use name-based virtual hosting. </span>
+</span><span class='line'><span class="c"># </span>
+</span><span class='line'><span class="nb">NameVirtualHost</span> *:80
+</span><span class='line'>
+</span><span class='line'><span class="c"># </span>
+</span><span class='line'><span class="c"># Set up permissions for VirtualHosts in ~/Sites </span>
+</span><span class='line'><span class="c"># </span>
+</span><span class='line'><span class="nt">&lt;Directory</span> <span class="s">&quot;/Users/name/Sites&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>    <span class="nb">Options</span> Indexes FollowSymLinks MultiViews
+</span><span class='line'>    <span class="nb">AllowOverride</span> <span class="k">All</span>
+</span><span class='line'>    <span class="nb">Order</span> allow,deny
+</span><span class='line'>    <span class="nb">Allow</span> from <span class="k">all</span>
+</span><span class='line'><span class="nt">&lt;/Directory&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># For http://localhost in the OS X default location </span>
+</span><span class='line'><span class="nt">&lt;VirtualHost</span> <span class="s">_default_:80</span><span class="nt">&gt;</span>
+</span><span class='line'>    <span class="nb">ServerName</span> localhost
+</span><span class='line'>    <span class="nb">DocumentRoot</span> <span class="sx">/Library/WebServer/Documents</span>
+</span><span class='line'><span class="nt">&lt;/VirtualHost&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># </span>
+</span><span class='line'><span class="c"># VirtualHosts below </span>
+</span><span class='line'><span class="c"># </span>
+</span><span class='line'>
+</span><span class='line'><span class="c">## Template </span>
+</span><span class='line'><span class="c">#&lt;VirtualHost *:80&gt; </span>
+</span><span class='line'><span class="c">#    ServerName domain.local </span>
+</span><span class='line'><span class="c">#    CustomLog &quot;/Users/name/Sites/logs/domain.local-access_log&quot; combined </span>
+</span><span class='line'><span class="c">#    ErrorLog &quot;/Users/name/Sites/logs/domain.local-error_log&quot; </span>
+</span><span class='line'><span class="c">#    DocumentRoot &quot;/Users/name/Sites/domain.local&quot; </span>
+</span><span class='line'><span class="c">#&lt;/VirtualHost&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+<p>Launch <strong>System Preferences</strong> and go to <strong>Sharing</strong> and toggle <strong>Web Sharing</strong> off and on so it&#39;s started and reloaded with the new settings. Then click on the blue underlined link under <em>&quot;Your computer&#39;s website is available at this address:&quot;</em> to ensure Apache is working correctly, and you should see text saying &quot;It works!&quot;</p>
+
+<p>To add a site, duplicate the &lt;VirtualHost&gt; section under the Template, remove the comments, and edit appropriately. Edit /etc/hosts (or use <a href="http://code.google.com/p/gmask/">Gas Mask</a>) and add an entry for 127.0.0.1 for your project.local, and make the appropriate change in the conf file, along with the correct DocumentRoot and Log file locations. See <a href="http://httpd.apache.org/docs/2.2/vhosts/name-based.html">Apache&#39;s documentation</a> for more information.</p>
+
+<h2 id="toc_1">PHP</h2>
+
+<p>OS X has shipped with PHP for quite some time, but not had it enabled by default. We&#39;ll enable mod_php for Apache, and also set up an /etc/php.ini file based on the default one shipped with Lion with some development-friendly changes. Change your timezone as needed.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sudo sh -c <span class="s2">&quot;grep php /etc/apache2/httpd.conf|grep LoadModule|cut -d&#39;#&#39; -f2 &gt; /etc/apache2/other/php5-loadmodule.conf&quot;</span>
+</span><span class='line'><span class="nv">$ </span>sudo cp -a /etc/php.ini.default /etc/php.ini
+</span><span class='line'><span class="nv">$ </span>sudo sh -c <span class="s2">&quot;cat &gt;&gt; /etc/php.ini &lt;&lt;&#39;EOF&#39; </span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="s2">;; </span>
+</span><span class='line'><span class="s2">;; User customizations below </span>
+</span><span class='line'><span class="s2">;; </span>
+</span><span class='line'>
+</span><span class='line'><span class="s2">; Original - memory_limit = 128M </span>
+</span><span class='line'><span class="s2">memory_limit = 196M </span>
+</span><span class='line'><span class="s2">; Original - post_max_size = 8M </span>
+</span><span class='line'><span class="s2">post_max_size = 200M </span>
+</span><span class='line'><span class="s2">; Original - upload_max_filesize = 2M </span>
+</span><span class='line'><span class="s2">upload_max_filesize = 100M </span>
+</span><span class='line'><span class="s2">; Original - default_socket_timeout = 60 </span>
+</span><span class='line'><span class="s2">default_socket_timeout = 600 </span>
+</span><span class='line'><span class="s2">; Original - max_execution_time = 30 </span>
+</span><span class='line'><span class="s2">max_execution_time = 300 </span>
+</span><span class='line'><span class="s2">; Original - max_input_time = 60 </span>
+</span><span class='line'><span class="s2">max_input_time = 600 </span>
+</span><span class='line'><span class="s2">; Original - display_errors = Off </span>
+</span><span class='line'><span class="s2">display_errors = on </span>
+</span><span class='line'><span class="s2">; Original - display_startup_errors = Off </span>
+</span><span class='line'><span class="s2">display_startup_errors = on </span>
+</span><span class='line'><span class="s2">; Original - ;date.timezone = </span>
+</span><span class='line'><span class="s2">date.timezone = &#39;America/New_York&#39; </span>
+</span><span class='line'><span class="s2">EOF&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+<p><strong>Optional:</strong> Lion ships with PEAR but not installed, whereas Snow Leopard it was installed. This will install PEAR from the phar archive, upgrade it, and add &#39;pear&#39; and &#39;pecl&#39; aliases to your shell.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sudo /usr/bin/php /usr/lib/php/install-pear-nozlib.phar
+</span><span class='line'><span class="nv">$ </span>cat &gt;&gt; ~/.bashrc <span class="s">&lt;&lt;&#39;EOF&#39; </span>
+</span><span class='line'>
+</span><span class='line'><span class="s">alias pear=&quot;php /usr/lib/php/pear/pearcmd.php&quot; </span>
+</span><span class='line'><span class="s">alias pecl=&quot;php /usr/lib/php/pear/peclcmd.php&quot; </span>
+</span><span class='line'><span class="s">EOF</span>
+</span><span class='line'><span class="nv">$ </span>. ~/.bashrc
+</span><span class='line'><span class="nv">$ </span>sudo pear channel-update pear.php.net
+</span><span class='line'><span class="nv">$ </span>sudo pecl channel-update pecl.php.net
+</span><span class='line'><span class="nv">$ </span>sudo pear upgrade --force pear
+</span><span class='line'><span class="nv">$ </span>sudo pear upgrade
+</span><span class='line'><span class="nv">$ </span>sudo pecl upgrade
+</span><span class='line'><span class="nv">$ </span>sudo sh -c <span class="s2">&quot;cat &gt;&gt; /etc/php.ini &lt;&lt;&#39;EOF&#39; </span>
+</span><span class='line'><span class="s2">; Original - ;include_path = &quot;</span>.:/php/includes<span class="s2">&quot; </span>
+</span><span class='line'><span class="s2">include_path = &quot;</span>.:/usr/lib/php/pear<span class="s2">&quot; </span>
+</span><span class='line'><span class="s2">EOF&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+<p>We&#39;ll cover APC and other PECL modules after we have Homebrew up and running.</p>
+
+<p>Toggle <strong>Web Sharing</strong> in <strong>System Preferences &gt; Sharing</strong> for the new PHP options to take effect.</p>
+
+<h2 id="toc_2">Homebrew</h2>
+
+<p>Hop onto the Mac App Store and download Xcode 4. It&#39;s free! When it&#39;s finished downloading, you&#39;ll have an Application called <strong>Install Xcode</strong> in the Applications folder, so run that and click through and you&#39;ll be all set. If it seems like overkill since we&#39;re not covering iOS or Mac app development, Xcode ships with the compiler we need for Homebrew and installing PECL modules.</p>
+
+<p>To install Homebrew, go to <a href="https://github.com/mxcl/homebrew/wiki/installation">https://github.com/mxcl/homebrew/wiki/installation</a> and run the ruby script in Terminal. If you get the error message: <em>Error: Cannot write to /usr/local</em>, run:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>sudo chmod g+w /usr/local
+</span><span class='line'>sudo chgrp staff /usr/local
+</span></code></pre></td></tr></table></div></figure>
+
+<h2 id="toc_3">MariaDB / MySQL</h2>
+
+<p><a href="http://mariadb.org/">MariaDB</a> is a fork of MySQL that has <a href="http://kb.askmonty.org/en/mariadb-versus-mysql">additional features</a> and is a drop-in replacement for MySQL. MariaDB is <a href="http://drupal.org/node/861192">supported by Drupal 7</a>, and works with Drupal 6 as well. Make the choice to go with either MariaDB or MySQL and continue; I&#39;ll cover how to setup and use both.</p>
+
+<h3 id="toc_4">MySQL</h3>
+
+<p>To install MySQL, simply run:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>brew install mysql
+</span></code></pre></td></tr></table></div></figure>
+
+<p>cmake is a dependency of MySQL, and cmake needs java, so if you get a pop-up asking you to install a Java runtime, be sure to click Install and proceed. Grab a book because compiling MySQL and its dependencies will take several minutes. Now, to configure MySQL (includes raising packet limits for easier use in a non-production scenario) and start:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">unset </span>TMPDIR
+</span><span class='line'>mysql_install_db --verbose --user<span class="o">=</span><span class="sb">`</span>whoami<span class="sb">`</span> --basedir<span class="o">=</span><span class="s2">&quot;$(brew --prefix mysql)&quot;</span> --datadir<span class="o">=</span>/usr/local/var/mysql --tmpdir<span class="o">=</span>/tmp
+</span><span class='line'>cp <span class="k">$(</span>brew --prefix mysql<span class="k">)</span>/support-files/my-small.cnf /usr/local/var/mysql/my.cnf
+</span><span class='line'>sed -i <span class="s2">&quot;&quot;</span> <span class="s1">&#39;s/max_allowed_packet = 1.*M/max_allowed_packet = 2G/g&#39;</span> /usr/local/var/mysql/my.cnf
+</span><span class='line'><span class="o">[</span> ! -d ~/Library/LaunchAgents <span class="o">]</span> <span class="o">&amp;&amp;</span> mkdir ~/Library/LaunchAgents
+</span></code></pre></td></tr></table></div></figure>
+
+<h3 id="toc_5">MariaDB</h3>
+
+<p>To install MariaDB, run:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>brew install mariadb pidof
+</span></code></pre></td></tr></table></div></figure>
+
+<p><em>pidof</em> is referenced in some of the MariaDB scripts but is not listed as a prerequisite in MariaDB&#39;s Homebrew formula, so we need to install it. To configure and start:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">unset </span>TMPDIR
+</span><span class='line'>mysql_install_db --verbose --user<span class="o">=</span><span class="sb">`</span>whoami<span class="sb">`</span> --basedir<span class="o">=</span><span class="s2">&quot;$(brew --prefix mariadb)&quot;</span> --datadir<span class="o">=</span>/usr/local/var/mysql --tmpdir<span class="o">=</span>/tmp
+</span><span class='line'>cp <span class="k">$(</span>brew --prefix mariadb<span class="k">)</span>/share/mysql/my-small.cnf /usr/local/var/mysql/my.cnf
+</span><span class='line'>sed -i <span class="s2">&quot;&quot;</span> <span class="s1">&#39;s/max_allowed_packet = 1.*M/max_allowed_packet = 2G/g&#39;</span> /usr/local/var/mysql/my.cnf
+</span><span class='line'><span class="o">[</span> ! -d ~/Library/LaunchAgents <span class="o">]</span> <span class="o">&amp;&amp;</span> mkdir ~/Library/LaunchAgents
+</span></code></pre></td></tr></table></div></figure>
+
+<h2 id="toc_6">APC and other PECL modules</h2>
+
+<p>PECL modules require compiling, which is why I excluded it from my previous blog post because I did not require Xcode to be installed. An easy one is <strong>uploadprogress</strong> which is often recommended for Drupal development:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sudo pecl install uploadprogress
+</span><span class='line'><span class="nv">$ </span>sudo sh -c <span class="s2">&quot;cat &gt;&gt; /etc/php.ini &lt;&lt;&#39;EOF&#39; </span>
+</span><span class='line'>
+</span><span class='line'><span class="s2">; Enable PECL extension uploadprogress </span>
+</span><span class='line'><span class="s2">extension=uploadprogress.so </span>
+</span><span class='line'><span class="s2">EOF&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+<p>APC is easy too, but requires you to install pcre libraries. With Homebrew, this is easy, and we&#39;ll add some basic APC parameters:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>brew install pcre
+</span><span class='line'><span class="nv">$ </span>sudo pecl install apc
+</span><span class='line'><span class="nv">$ </span>sudo sh -c <span class="s2">&quot;cat &gt;&gt; /etc/php.ini &lt;&lt;&#39;EOF&#39; </span>
+</span><span class='line'>
+</span><span class='line'><span class="s2">; Enable PECL extension APC </span>
+</span><span class='line'><span class="s2">extension=apc.so </span>
+</span><span class='line'><span class="s2">apc.enabled = 1 </span>
+</span><span class='line'><span class="s2">apc.shm_segments = 1 </span>
+</span><span class='line'><span class="s2">apc.shm_size = 96M </span>
+</span><span class='line'><span class="s2">apc.cache_by_default = 1 </span>
+</span><span class='line'><span class="s2">apc.stat = 1 </span>
+</span><span class='line'><span class="s2">apc.rfc1867 = 1 </span>
+</span><span class='line'><span class="s2">EOF&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+<p>Non-PECL extensions, like mcrypt, require some additional work. Check out <a href="http://blog.rogeriopvl.com/archives/php-mcrypt-in-snow-leopard-with-homebrew/">this guide for building mcrypt</a>.</p>
+
+<h2 id="toc_7">Make PHP and MariaDB / MySQL Play Nice</h2>
+
+<p>If you were to run <code>php -i|egrep &#39;mysql.*default_socket&#39;</code> you would see that PHP was compiled to expect the MySQL socket file in /var/mysql, but MariaDB / MySQL will place it in /tmp. This easiest fix is to tell PHP to look in /tmp:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>sudo sed -i <span class="s2">&quot;&quot;</span> <span class="s1">&#39;s|/var/mysql/mysql\.sock|/tmp/mysql.sock|g&#39;</span> /etc/php.ini
+</span></code></pre></td></tr></table></div></figure>
+
+<p>Toggle <strong>Web Sharing</strong> in <strong>System Preferences &gt; Sharing</strong> for the new PHP options to take effect.</p>
+
+<h2 id="toc_8">Hooray!</h2>
+
+<p>You should now be all set to keep adding more VirtualHosts in httpd-vhosts.conf and begin development on your local machine. Stay tuned for instructions on how to use <a href="http://www.macports.org/">MacPorts</a>!</p>
+
+<p><strong>Update:</strong> If you&#39;re interested in leveraging more from Homebrew, like replacing Apache and PHP all from Homebrew, check out the <a href="https://github.com/adamv/homebrew-alt">homebrew-alt repository</a> on GitHub. Newer versions of Homebrew allow you to install formulae from URLs or alternate folders, and homebrew-alt provides formulae that replace built-in OS X applications (something official formulae will not do). For example, you could install PHP with PHP-FPM, something the OS X-provided PHP does not offer. Have fun exploring!</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[OS X 10.7 Lion Development: Native MAMP with MySQL installer]]></title>
+    <link href="http://alanthing.com/blog/2011/08/24/os-x-107-lion-development-native-mamp-mysql-installer/"/>
+    <updated>2011-08-24T15:30:00-04:00</updated>
+    <id>http://alanthing.com/blog/2011/08/24/os-x-107-lion-development-native-mamp-mysql-installer</id>
+    <content type="html"><![CDATA[<p>With the release of Lion, there are some subtle differences to setting up a local MAMP (Mac OS X, Apache, MySQL, PHP) environment compared to Snow Leopard. In an effort to keep this from being overly wordy and just get to the good stuff, we&#39;ll dive right in, so read on to get started.</p>
+
+<p>Note that for all commands before that are starting with a $, the dollar sign is showing a command-line prompt in <a href="http://www.apple.com/macosx/apps/all.html#terminal">Terminal</a>, and you should not actually type it as part of the commands.</p>
+
+<h2 id="toc_0">Apache</h2>
+
+<p>We&#39;ll set things up so we won&#39;t need sudo often in the future, and so we can manage multiple VirtualHosts. We&#39;ll keep the Apache information and our website roots in ~/Sites, and Apache logs in ~/Sites/logs</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span><span class="o">[</span> ! -d ~/Sites <span class="o">]</span> <span class="o">&amp;&amp;</span> mkdir ~/Sites
+</span><span class='line'><span class="nv">$ </span>touch ~/Sites/httpd-vhosts.conf
+</span><span class='line'><span class="nv">$ </span>sudo ln -s ~/Sites/httpd-vhosts.conf /etc/apache2/other
+</span><span class='line'><span class="nv">$ </span>mkdir ~/Sites/logs
+</span><span class='line'><span class="nv">$ </span>chmod 0777 ~/Sites/logs
+</span></code></pre></td></tr></table></div></figure>
+
+<p>Edit the new <strong>~/Sites/httpd-vhosts.conf</strong> file and add the following. Note that you&#39;ll need to change all instances of &quot;/Users/name&quot; to your actual home folder path.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+</pre></td><td class='code'><pre><code class='apache'><span class='line'><span class="c"># </span>
+</span><span class='line'><span class="c"># Use name-based virtual hosting. </span>
+</span><span class='line'><span class="c"># </span>
+</span><span class='line'><span class="nb">NameVirtualHost</span> *:80
+</span><span class='line'>
+</span><span class='line'><span class="c"># </span>
+</span><span class='line'><span class="c"># Set up permissions for VirtualHosts in ~/Sites </span>
+</span><span class='line'><span class="c"># </span>
+</span><span class='line'><span class="nt">&lt;Directory</span> <span class="s">&quot;/Users/name/Sites&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>    <span class="nb">Options</span> Indexes FollowSymLinks MultiViews
+</span><span class='line'>    <span class="nb">AllowOverride</span> <span class="k">All</span>
+</span><span class='line'>    <span class="nb">Order</span> allow,deny
+</span><span class='line'>    <span class="nb">Allow</span> from <span class="k">all</span>
+</span><span class='line'><span class="nt">&lt;/Directory&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># For http://localhost in the OS X default location </span>
+</span><span class='line'><span class="nt">&lt;VirtualHost</span> <span class="s">_default_:80</span><span class="nt">&gt;</span>
+</span><span class='line'>    <span class="nb">ServerName</span> localhost
+</span><span class='line'>    <span class="nb">DocumentRoot</span> <span class="sx">/Library/WebServer/Documents</span>
+</span><span class='line'><span class="nt">&lt;/VirtualHost&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># </span>
+</span><span class='line'><span class="c"># VirtualHosts below </span>
+</span><span class='line'><span class="c"># </span>
+</span><span class='line'>
+</span><span class='line'><span class="c">## Template </span>
+</span><span class='line'><span class="c">#&lt;VirtualHost *:80&gt; </span>
+</span><span class='line'><span class="c">#    ServerName domain.local </span>
+</span><span class='line'><span class="c">#    CustomLog &quot;/Users/name/Sites/logs/domain.local-access_log&quot; combined </span>
+</span><span class='line'><span class="c">#    ErrorLog &quot;/Users/name/Sites/logs/domain.local-error_log&quot; </span>
+</span><span class='line'><span class="c">#    DocumentRoot &quot;/Users/name/Sites/domain.local&quot; </span>
+</span><span class='line'><span class="c">#&lt;/VirtualHost&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+<p>Launch <strong>System Preferences</strong> and go to <strong>Sharing</strong> and toggle <strong>Web Sharing</strong> off and on so it&#39;s started and reloaded with the new settings. Then click on the blue underlined link under <em>&quot;Your computer&#39;s website is available at this address:&quot;</em> to ensure Apache is working correctly, and you should see text saying &quot;It works!&quot;</p>
+
+<p>To add a site, duplicate the &lt;VirtualHost&gt; section under the Template, remove the comments, and edit appropriately. Edit /etc/hosts (or use <a href="http://code.google.com/p/gmask/">Gas Mask</a>) and add an entry for 127.0.0.1 for your project.local, and make the appropriate change in the conf file, along with the correct DocumentRoot and Log file locations. See <a href="http://httpd.apache.org/docs/2.2/vhosts/name-based.html">Apache&#39;s documentation</a> for more information.</p>
+
+<h2 id="toc_1">PHP</h2>
+
+<p>OS X has shipped with PHP for quite some time, but not had it enabled by default. We&#39;ll enable mod_php for Apache, and also set up an /etc/php.ini file based on the default one shipped with Lion with some development-friendly changes. Change your timezone as needed.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sudo bash -c <span class="s2">&quot;grep php /etc/apache2/httpd.conf|grep LoadModule|cut -d&#39;#&#39; -f2 &gt; /etc/apache2/other/php5-loadmodule.conf&quot;</span>
+</span><span class='line'><span class="nv">$ </span>sudo cp -a /etc/php.ini.default /etc/php.ini
+</span><span class='line'><span class="nv">$ </span>sudo bash -c <span class="s2">&quot;cat &gt;&gt; /etc/php.ini &lt;&lt;&#39;EOF&#39; </span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="s2">;; </span>
+</span><span class='line'><span class="s2">;; User customizations below </span>
+</span><span class='line'><span class="s2">;; </span>
+</span><span class='line'>
+</span><span class='line'><span class="s2">; Original - memory_limit = 128M </span>
+</span><span class='line'><span class="s2">memory_limit = 196M </span>
+</span><span class='line'><span class="s2">; Original - post_max_size = 8M </span>
+</span><span class='line'><span class="s2">post_max_size = 200M </span>
+</span><span class='line'><span class="s2">; Original - upload_max_filesize = 2M </span>
+</span><span class='line'><span class="s2">upload_max_filesize = 100M </span>
+</span><span class='line'><span class="s2">; Original - default_socket_timeout = 60 </span>
+</span><span class='line'><span class="s2">default_socket_timeout = 600 </span>
+</span><span class='line'><span class="s2">; Original - max_execution_time = 30 </span>
+</span><span class='line'><span class="s2">max_execution_time = 300 </span>
+</span><span class='line'><span class="s2">; Original - max_input_time = 60 </span>
+</span><span class='line'><span class="s2">max_input_time = 600 </span>
+</span><span class='line'><span class="s2">; Original - display_errors = Off </span>
+</span><span class='line'><span class="s2">display_errors = on </span>
+</span><span class='line'><span class="s2">; Original - display_startup_errors = Off </span>
+</span><span class='line'><span class="s2">display_startup_errors = on </span>
+</span><span class='line'><span class="s2">; Original - ;date.timezone = </span>
+</span><span class='line'><span class="s2">date.timezone = &#39;America/New_York&#39; </span>
+</span><span class='line'><span class="s2">EOF&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+<p><strong>Optional:</strong> Lion ships with PEAR but not installed, whereas Snow Leopard it was installed. This will install PEAR from the phar archive, upgrade it, and add <code>pear</code> and <code>pecl</code> aliases to your shell.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sudo /usr/bin/php /usr/lib/php/install-pear-nozlib.phar
+</span><span class='line'><span class="nv">$ </span>cat &gt;&gt; ~/.bashrc <span class="s">&lt;&lt;&#39;EOF&#39; </span>
+</span><span class='line'>
+</span><span class='line'><span class="s">alias pear=&quot;php /usr/lib/php/pear/pearcmd.php&quot; </span>
+</span><span class='line'><span class="s">alias pecl=&quot;php /usr/lib/php/pear/peclcmd.php&quot; </span>
+</span><span class='line'><span class="s">EOF</span>
+</span><span class='line'><span class="nv">$ </span>. ~/.bashrc
+</span><span class='line'><span class="nv">$ </span>sudo pear channel-update pear.php.net
+</span><span class='line'><span class="nv">$ </span>sudo pecl channel-update pecl.php.net
+</span><span class='line'><span class="nv">$ </span>sudo pear upgrade --force pear
+</span><span class='line'><span class="nv">$ </span>sudo pear upgrade
+</span><span class='line'><span class="nv">$ </span>sudo pecl upgrade
+</span><span class='line'><span class="nv">$ </span>sudo sh -c <span class="s2">&quot;cat &gt;&gt; /etc/php.ini &lt;&lt;&#39;EOF&#39; </span>
+</span><span class='line'><span class="s2">; Original - ;include_path = &quot;</span>.:/php/includes<span class="s2">&quot; </span>
+</span><span class='line'><span class="s2">include_path = &quot;</span>.:/usr/lib/php/pear<span class="s2">&quot; </span>
+</span><span class='line'><span class="s2">EOF&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+<p>Note that installing most pecl modules will require having a compiler installed via Xcode. I&#39;ll be addressing installing <a href="http://pecl.php.net/package/uploadprogress">uploadprogress</a> and <a href="http://pecl.php.net/package/apc">APC</a> in a later post, since this walkthrough requires no compiling.</p>
+
+<p>Toggle <strong>Web Sharing</strong> in <strong>System Preferences &gt; Sharing</strong> for the new PHP options to take effect.</p>
+
+<h2 id="toc_2">MySQL</h2>
+
+<p>MySQL is the only thing not shipped with OS X that we need for our development environment. Go to the download site for OS X pre-built binaries at <a href="http://dev.mysql.com/downloads/mysql/index.html#macosx-dmg">http://dev.mysql.com/downloads/mysql/index.html#macosx-dmg</a> and choose the <strong>DMG Archive</strong> most appropriate for your system. As of this writing, the most recent version says <em>OS X 10.6</em>, but it will work on 10.7 as well.</p>
+
+<p>Open the downloaded disk image and begin by installing the <em>mysql-5.x.x-osx10.6-x86_64.pkg</em> file. Once the Installer script is completed, install the Preference Pane by double-clicking on MySQL.prefPane. If you are not sure where to install the preference pane, choose &quot;Install for this user only.&quot;</p>
+
+<p><strong>Optional:</strong> If you wish to have MySQL start on boot, you do need to additionally install the MySQLStartupItem.pkg file. The preference pane has a toggle for starting on boot, but it will not work until you install the pkg and you run the following in Terminal:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>sudo chown -R root:wheel /Library/StartupItems/MySQLCOM
+</span></code></pre></td></tr></table></div></figure>
+
+<p>Open <strong>System Preferences</strong> and <strong>MySQL</strong> and start the database by clicking the <strong>Start MySQL Server</strong> button.</p>
+
+<p><strong>Optional:</strong> The MySQL installer installed its files to /usr/local/mysql, and the binaries are in /usr/local/mysql/bin which is not in the $PATH of any user by default. Rather than edit the $PATH shell variable, we add symbolic links in /usr/local/bin (a location already in $PATH) to a few MySQL binaries. Add more or omit more binaries as desired:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span> ! -d /usr/local/bin <span class="o">]</span> <span class="o">&amp;&amp;</span> sudo mkdir -p /usr/local <span class="o">&amp;&amp;</span> sudo chmod 0777 /usr/local <span class="o">&amp;&amp;</span> mkdir /usr/local/bin <span class="o">&amp;&amp;</span> sudo chmod 0755 /usr/local
+</span><span class='line'><span class="nb">cd</span> /usr/local/bin
+</span><span class='line'>ln -s /usr/local/mysql/bin/mysql
+</span><span class='line'>ln -s /usr/local/mysql/bin/mysqladmin
+</span><span class='line'>ln -s /usr/local/mysql/bin/mysqldump
+</span><span class='line'>ln -s /usr/local/mysql/support-files/mysql.server
+</span></code></pre></td></tr></table></div></figure>
+
+<p>This script ships with MySQL and only needs to be run once, and it should be run with sudo. As you run it, you can accept all other defaults after you set the root user&#39;s password:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>sudo /usr/local/mysql/bin/mysql_secure_installation
+</span></code></pre></td></tr></table></div></figure>
+
+<p>After installing MySQL, several sample my.cnf files are created but none is placed where MySQL can find it. Start with a &quot;small&quot; configuration file and make a few changes to increase the max_allowed_packet variable:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>sudo cp /usr/local/mysql/support-files/my-small.cnf /usr/local/mysql/data/my.cnf
+</span><span class='line'>sudo sed -i <span class="s2">&quot;&quot;</span> <span class="s1">&#39;s/max_allowed_packet = 1.*M/max_allowed_packet = 2G/g&#39;</span> /usr/local/mysql/data/my.cnf
+</span></code></pre></td></tr></table></div></figure>
+
+<p>To load in these changes, go back to the MySQL System Preferences pane, and restart the server by pressing &quot;Stop MySQL Server&quot; followed by &quot;Start MySQL Server.&quot;</p>
+
+<h2 id="toc_3">Make PHP and MySQL Play Nice</h2>
+
+<p>If you were to run <code>php -i|egrep &#39;mysql.*default_socket&#39;</code> you would see that PHP was compiled to expect the MySQL socket file in /var/mysql, but MySQL will place it in /tmp. This easiest fix is to tell PHP to look in /tmp:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>sudo sed -i <span class="s2">&quot;&quot;</span> <span class="s1">&#39;s/\/var\/mysql\/mysql\.sock/\/tmp\/mysql\.sock/g&#39;</span> /etc/php.ini
+</span></code></pre></td></tr></table></div></figure>
+
+<p>Toggle <strong>Web Sharing</strong> in <strong>System Preferences &gt; Sharing</strong> for the new PHP options to take effect.</p>
+
+<h2 id="toc_4">Hooray!</h2>
+
+<p>You should now be all set to keep adding more VirtualHosts in httpd-vhosts.conf and begin development on your local machine. Stay tuned for instructions on how to use <a href="http://mariadb.org/">MariaDB</a> or MySQL with <a href="http://mxcl.github.com/homebrew/">Homebrew</a> instead of the Oracle MySQL installer, and <a href="http://www.macports.org/">MacPorts</a>!</p>
 ]]></content>
   </entry>
   
