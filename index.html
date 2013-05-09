@@ -116,29 +116,31 @@
 
 <p>We frequently use turbo_realpath on a per-VirtualHost basis with Apache 2.2 and mod_php. If you use PHP-FPM, you can apply similar settings in your FPM pool configuration files. If you install our RPM and don&#39;t edit <code>/etc/php.d/turbo_realpath.ini</code>, add something similar to the following to each VirtualHost:</p>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;IfModule php5_module&gt;
-</span><span class='line'>  php_admin_value realpath_cache_basedir "/var/www/vhosts/domain.com:/usr/share/pear:/usr/share/php:/usr/lib64/php:/usr/lib/php:/tmp:/var/tmp"
-</span><span class='line'>&lt;/IfModule&gt;</span></code></pre></td></tr></table></div></figure>
+</pre></td><td class='code'><pre><code class='apache'><span class='line'><span class="nt">&lt;IfModule</span> <span class="s">php5_module</span><span class="nt">&gt;</span>
+</span><span class='line'>  <span class="nb">php_admin_value</span> realpath_cache_basedir <span class="s2">&quot;/var/www/vhosts/domain.com:/usr/share/pear:/usr/share/php:/usr/lib64/php:/usr/lib/php:/tmp:/var/tmp&quot;</span>
+</span><span class='line'><span class="nt">&lt;/IfModule&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
 
 <p>This is effectively the same using <code>open_basedir</code>; any directories referenced in <code>realpath_cache_basedir</code> will be the only ones the website is allowed to access, and they will be cached as determined by the <a href="http://www.php.net/manual/en/ini.core.php#ini.realpath-cache-size">realpath_cache_size</a> and <a href="http://www.php.net/manual/en/ini.core.php#ini.realpath-cache-ttl">realpath_cache_ttl</a>. If you look in <code>php.ini</code>, you may notice the default values for these are:</p>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
 <span class='line-number'>5</span>
 <span class='line-number'>6</span>
 <span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>; Determines the size of the realpath cache to be used by PHP. This value should
-</span><span class='line'>; http://www.php.net/manual/en/ini.core.php#ini.realpath-cache-size
-</span><span class='line'>;realpath_cache_size = 16k
+</pre></td><td class='code'><pre><code class='ini'><span class='line'><span class="c1">; Determines the size of the realpath cache to be used by PHP. This value should</span>
+</span><span class='line'><span class="c1">; http://www.php.net/manual/en/ini.core.php#ini.realpath-cache-size</span>
+</span><span class='line'><span class="na">realpath_cache_size</span> <span class="o">=</span> <span class="s">16k</span>
 </span><span class='line'>
-</span><span class='line'>; Duration of time, in seconds for which to cache realpath information for a given
-</span><span class='line'>; http://www.php.net/manual/en/ini.core.php#ini.realpath-cache-ttl
-</span><span class='line'>;realpath_cache_ttl = 120</span></code></pre></td></tr></table></div></figure>
+</span><span class='line'><span class="c1">; Duration of time, in seconds for which to cache realpath information for a given</span>
+</span><span class='line'><span class="c1">; http://www.php.net/manual/en/ini.core.php#ini.realpath-cache-ttl</span>
+</span><span class='line'><span class="na">realpath_cache_ttl</span> <span class="o">=</span> <span class="s">120</span>
+</span></code></pre></td></tr></table></div></figure>
 
 <p>You may want to increase these if you&#39;re finding your website is still not loading quickly. On our systems, we have bumped the <code>realpath_cache_size</code> and <code>realpath_cache_ttl</code> settings up to <code>1m</code> and <code>300</code>, respectively.</p>
 
