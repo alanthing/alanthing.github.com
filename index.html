@@ -9,7 +9,7 @@
   <meta name="author" content="Alan Ivey">
 
   
-  <meta name="description" content="Just installed VirtualBox on OS X and need the Extension Pack? This (really long) one-liner will download and install it for you. Run in terminal and &hellip;">
+  <meta name="description" content="If you run a website based on PHP, and have your source files on a network file system like NFS, OCFS2, or GlusterFS, and combine it with PHP&#39;s &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -77,6 +77,88 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/05/09/speed-up-php-on-nfs-with-turbo-realpath/">Speed Up PHP on NFS With Turbo_realpath</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-05-09T11:50:00-04:00" pubdate data-updated="true">May 9<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>If you run a website based on PHP, and have your source files on a network file system like NFS, OCFS2, or GlusterFS, and combine it with PHP&#39;s <a href="http://www.php.net/manual/en/ini.core.php#ini.open-basedir">open_basedir</a> protection, you&#39;ll quickly notice that the performance will degrade substantially. Normally, PHP can cache various path locations it learns after processing <a href="http://us2.php.net/manual/en/function.include-once.php">include_once</a> and <a href="http://us2.php.net/manual/en/function.require-once.php">require_once</a> calls via the <a href="http://www.php.net/manual/en/ini.core.php#ini.realpath-cache-size">realpath_cache</a>. There&#39;s a <a href="https://bugs.php.net/bug.php?id=52312">bug in PHP</a> that effectively disables the realpath_cache entirely when combined with open_basedir. Popular PHP applications with Drupal and WordPress make heavy use of these functions to include other files, so you would very quickly notice the drop in performance in this scenario. If you want to isolate your websites from each other (or from the rest of the operating system), how can you retain any shred of performance?</p>
+
+<p>This is where <a href="http://php.webtutor.pl/">Artur Graniszewski</a>&#39;s <a href="http://php.webtutor.pl/en/2011/07/12/running-php-on-nfs-version-1-2-of-turbo_realpath-extension/">turbo_realpath</a> extension really comes in handy. I won&#39;t retype his installation instructions, so follow the previous link to get it installed manually. </p>
+
+<p>If you&#39;re running CentOS 5 or CentOS 6, check out <a href="http://yum.echoditto.com/">yum.echoditto.com</a> and you&#39;ll find source and compiled RPMs that will install alongside the RedHat/CentOS-supplied PHP packages. The RPM will create a basic configuration file at <code>/etc/php.d/turbo_realpath.ini</code>. Essentially, it enables the PHP module but defaults all settings off, so you will need to read the comments (taken from <a href="http://php.webtutor.pl/en/2011/07/12/running-php-on-nfs-version-1-2-of-turbo_realpath-extension/">Artur&#39;s most recent post on turbo_realpath</a>) to determine how you want to use it.</p>
+
+<h1 id="toc_0">Configuration</h1>
+
+<p>We frequently use turbo_realpath on a per-VirtualHost basis with Apache 2.2 and mod_php. If you use PHP-FPM, you can apply similar settings in your FPM pool configuration files. If you install our RPM and don&#39;t edit <code>/etc/php.d/turbo_realpath.ini</code>, add something similar to the following to each VirtualHost:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;IfModule php5_module&gt;
+</span><span class='line'>  php_admin_value realpath_cache_basedir "/var/www/vhosts/domain.com:/usr/share/pear:/usr/share/php:/usr/lib64/php:/usr/lib/php:/tmp:/var/tmp"
+</span><span class='line'>&lt;/IfModule&gt;</span></code></pre></td></tr></table></div></figure>
+
+<p>This is effectively the same using <code>open_basedir</code>; any directories referenced in <code>realpath_cache_basedir</code> will be the only ones the website is allowed to access, and they will be cached as determined by the <a href="http://www.php.net/manual/en/ini.core.php#ini.realpath-cache-size">realpath_cache_size</a> and <a href="http://www.php.net/manual/en/ini.core.php#ini.realpath-cache-ttl">realpath_cache_ttl</a>. If you look in <code>php.ini</code>, you may notice the default values for these are:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>; Determines the size of the realpath cache to be used by PHP. This value should
+</span><span class='line'>; http://www.php.net/manual/en/ini.core.php#ini.realpath-cache-size
+</span><span class='line'>;realpath_cache_size = 16k
+</span><span class='line'>
+</span><span class='line'>; Duration of time, in seconds for which to cache realpath information for a given
+</span><span class='line'>; http://www.php.net/manual/en/ini.core.php#ini.realpath-cache-ttl
+</span><span class='line'>;realpath_cache_ttl = 120</span></code></pre></td></tr></table></div></figure>
+
+<p>You may want to increase these if you&#39;re finding your website is still not loading quickly. On our systems, we have bumped the <code>realpath_cache_size</code> and <code>realpath_cache_ttl</code> settings up to <code>1m</code> and <code>300</code>, respectively.</p>
+
+<h1 id="toc_1">Speed and Security!</h1>
+
+<p>With turbo_realpath enabled, <code>realpath_cache_basedir</code> set to appropriate <code>open_basedir</code>-like values, and <code>realpath_cache_size</code> and <code>realpath_cache_ttl</code> increased from defaults, we&#39;re able to have isolated PHP sites and have better performance by caching the locations of included/required files effectively. Hopefully, our RPMs will help you on your system for a quick installation of the excellent turbo_realpath module!</p>
+
+<h1 id="toc_2">References</h1>
+
+<ul>
+<li><a href="http://php.webtutor.pl/en/2011/06/02/running-php-on-nfs-huge-performance-problems-and-one-simple-solution/">Running PHP on NFS: huge performance problems and one simple solution.</a></li>
+<li><a href="http://php.webtutor.pl/en/2011/07/01/running-php-on-nfs-new-version-of-turbo_realpath-extension/">Running PHP on NFS: new version of turbo_realpath extension</a></li>
+<li><a href="http://php.webtutor.pl/en/2011/07/12/running-php-on-nfs-version-1-2-of-turbo_realpath-extension/">Running PHP on NFS: version 1.2 of turbo_realpath extension</a></li>
+</ul>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1176,305 +1258,6 @@ OS X comes with PHP installed, but it doesn&#8217;t come with PHP-FPM. While it&
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2011/10/11/os-x-107-lion-development-macports/">OS X 10.7 Lion Development: MacPorts</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2011-10-11T14:13:00-04:00" pubdate data-updated="true">Oct 11<span>th</span>, 2011</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>OS X Lion comes with most of the tools you would need to do &quot;MAMP&quot; (Mac OS X, Apache, MySQL/MariaDB, PHP) development, as outlined in my <a href="http://echodittolabs.org/blog/2011/08/os-x-107-lion-development-native-mamp-mysql-installer">previous</a> <a href="http://echodittolabs.org/blog/2011/09/os-x-107-lion-development-native-apache-php-homebrew-mysql-or-mariadb">posts</a> once you add a database. So then why would you want to use MacPorts? Setting your development environment up in MacPorts isolates the binaries, libraries, and configuration files, completely separate from the existing OS X install (with the exception of startup scripts). You can also tweak the configuration files on your own, apply your own patches, and apply updates that MacPorts may get before Apple pushes them. It will take more time because you&#39;ll be compiling everything, but you have all of the control. Read on for how to get things set up. </p>
-
-<h2 id="toc_0">Prerequisites</h2>
-
-<p>We&#39;ll going to be compiling a lot of source code so you&#39;ll need to have <a href="http://itunes.apple.com/us/app/xcode/id448457090">Xcode 4</a> installed. I initially tried with the <a href="https://github.com/kennethreitz/osx-gcc-installer">OS X GCC Installer</a> but eventually ran into a problem where a portfile was expecting an Xcode binary to check to a prerequisite. I&#39;m sure some hacking could&#39;ve resolved it to avoid having to install the very large Xcode package, but at the end of the day it&#39;s better to just know that it&#39;ll work as expected. </p>
-
-<p>Once you have Xcode 4 installed, you&#39;ll need to <a href="http://www.macports.org/install.php">install MacPorts</a>. It&#39;s a simple click-through installer. Come back to this guide once MacPorts is ready. </p>
-
-<p>Note that for all commands before that are starting with a $, the dollar sign is showing a command-line prompt in <a href="http://www.apple.com/macosx/apps/all.html#terminal">Terminal</a>, and you should not actually type it as part of the commands. </p>
-
-<h2 id="toc_1">Install packages</h2>
-
-<p>Update the ports tree to get the latest from the MacPorts server in case the installer had an older tree:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>sudo /opt/local/bin/port selfupdate
-</span></code></pre></td></tr></table></div></figure>
-
-<p>All of the packages that we need can be installed with a single command:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>sudo /opt/local/bin/port install apache2 php5 php5-mysql mysql5-server php5-gd php5-mbstring php5-apc lynx phpmyadmin
-</span></code></pre></td></tr></table></div></figure>
-
-<p>Compiling all of these tools will take a while, so grab a book and come back when the command is completed. </p>
-
-<h2 id="toc_2">Configure PHP</h2>
-
-<p>The following will set up PHP with some development-friendly settings. </p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sudo cp -av /opt/local/etc/php5/php.ini-development /opt/local/etc/php5/php.ini
-</span><span class='line'><span class="nv">$ </span>sudo sed -i <span class="s2">&quot;&quot;</span> <span class="s1">&#39;s/\(default_socket[ ]\{0,1\}=\)/\1 \/opt\/local\/var\/run\/mysql5\/mysqld.sock/g&#39;</span> /opt/local/etc/php5/php.ini
-</span><span class='line'><span class="nv">$ </span>sudo sh -c <span class="s2">&quot;cat &gt;&gt; /opt/local/etc/php5/php.ini &lt;&lt;&#39;EOF&#39;</span>
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'><span class="s2">;;</span>
-</span><span class='line'><span class="s2">;; User customizations below</span>
-</span><span class='line'><span class="s2">;;</span>
-</span><span class='line'>
-</span><span class='line'><span class="s2">; Original - memory_limit = 128M</span>
-</span><span class='line'><span class="s2">memory_limit = 196M</span>
-</span><span class='line'><span class="s2">; Original - post_max_size = 8M</span>
-</span><span class='line'><span class="s2">post_max_size = 200M</span>
-</span><span class='line'><span class="s2">; Original - upload_max_filesize = 2M</span>
-</span><span class='line'><span class="s2">upload_max_filesize = 100M</span>
-</span><span class='line'><span class="s2">; Original - default_socket_timeout = 60</span>
-</span><span class='line'><span class="s2">default_socket_timeout = 600</span>
-</span><span class='line'><span class="s2">; Original - max_execution_time = 30</span>
-</span><span class='line'><span class="s2">max_execution_time = 300</span>
-</span><span class='line'><span class="s2">; Original - max_input_time = 60</span>
-</span><span class='line'><span class="s2">max_input_time = 600</span>
-</span><span class='line'><span class="s2">; Original - ;date.timezone =</span>
-</span><span class='line'><span class="s2">date.timezone = &#39;America/New_York&#39;</span>
-</span><span class='line'><span class="s2">EOF&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-<p>Now configure the APC extension (installed above with php5-apc) which will increase PHP performance dramatically.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sudo sh -c <span class="s2">&quot;cat &gt; /opt/local/var/db/php5/apc-config.ini &lt;&lt;&#39;EOF&#39;</span>
-</span><span class='line'><span class="s2">[apc]</span>
-</span><span class='line'><span class="s2">apc.enabled = 1</span>
-</span><span class='line'><span class="s2">apc.shm_segments = 1</span>
-</span><span class='line'><span class="s2">apc.shm_size = 96M</span>
-</span><span class='line'><span class="s2">apc.cache_by_default = 1</span>
-</span><span class='line'><span class="s2">apc.stat = 1</span>
-</span><span class='line'><span class="s2">apc.rfc1867 = 1</span>
-</span><span class='line'><span class="s2">apc.stat = 7200</span>
-</span><span class='line'><span class="s2">EOF&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-<h2 id="toc_3">Configure Apache</h2>
-
-<p>Start by setting up PHP to work with Apache properly:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sudo cp -av /opt/local/apache2/conf/httpd.conf /opt/local/apache2/conf/httpd.conf-default
-</span><span class='line'><span class="nv">$ </span>sudo /opt/local/apache2/bin/apxs -a -e -n <span class="s2">&quot;php5&quot;</span> /opt/local/apache2/modules/libphp5.so
-</span><span class='line'><span class="nv">$ </span>sudo bash -c <span class="s2">&quot;cat &gt;&gt; /opt/local/apache2/conf/httpd.conf &lt;&lt;&#39;EOF&#39;</span>
-</span><span class='line'>
-</span><span class='line'><span class="s2">## Add mod_php information</span>
-</span><span class='line'><span class="s2">Include conf/extra/mod_php.conf</span>
-</span><span class='line'><span class="s2"># Add index.php to the list of files that will be served as directory indexes.</span>
-</span><span class='line'><span class="s2">&lt;IfModule dir_module&gt;</span>
-</span><span class='line'><span class="s2">  DirectoryIndex index.php index.html</span>
-</span><span class='line'><span class="s2">&lt;/IfModule&gt;</span>
-</span><span class='line'><span class="s2">EOF&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-<p>Now we&#39;ll move httpd-vhosts.conf to ~/Sites for easy editing of new virtual hosts, as well as create a ~/Sites/logs folder:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sudo mv -v /opt/local/apache2/conf/extra/httpd-vhosts.conf /opt/local/apache2/conf/extra/httpd-vhosts.conf-default &lt;/br&gt;
-</span><span class='line'><span class="nv">$ </span><span class="o">[</span> ! -d ~/Sites <span class="o">]</span> <span class="o">&amp;&amp;</span> mkdir -v ~/Sites
-</span><span class='line'><span class="nv">$ </span>cp -av /opt/local/apache2/conf/extra/httpd-vhosts.conf-default ~/Sites/httpd-vhosts.conf
-</span><span class='line'><span class="nv">$ </span>sudo ln -s ~/Sites/httpd-vhosts.conf /opt/local/apache2/conf/extra/httpd-vhosts.conf
-</span><span class='line'><span class="nv">$ </span>sudo sed -i <span class="s2">&quot;&quot;</span> <span class="s1">&#39;s/\#\(.*httpd-vhosts\.conf\)/\1/&#39;</span> /opt/local/apache2/conf/httpd.conf
-</span><span class='line'><span class="nv">$ </span><span class="o">[</span> ! -d ~/Sites/logs <span class="o">]</span> <span class="o">&amp;&amp;</span> mkdir ~/Sites/logs
-</span><span class='line'><span class="nv">$ </span>sudo perl -pi -e <span class="s1">&#39;BEGIN{undef $/;} s/\&lt;VirtualHost .*\n//sg;&#39;</span> <span class="k">${</span><span class="nv">USERHOME</span><span class="k">}</span>/Sites/httpd-vhosts.conf &lt;/br&gt;
-</span><span class='line'><span class="nv">$ </span>sudo sh -c <span class="s2">&quot;cat &gt;&gt; ~/Sites/httpd-vhosts.conf &lt;&lt;&#39;EOF&#39; &lt;/br&gt;</span>
-</span><span class='line'><span class="s2"> &lt;/br&gt;</span>
-</span><span class='line'><span class="s2">## Change /Users/name to the path of your home folder &lt;/br&gt;</span>
-</span><span class='line'><span class="s2">#&lt;VirtualHost *:80&gt; &lt;/br&gt;</span>
-</span><span class='line'><span class="s2">#  ServerName project.local &lt;/br&gt;</span>
-</span><span class='line'><span class="s2">#  CustomLog &quot;</span>/Users/name/Sites/logs/project.local-access_log<span class="s2">&quot; combined &lt;/br&gt;</span>
-</span><span class='line'><span class="s2">#  ErrorLog &quot;</span>/Users/name/Sites/logs/project.local-error_log<span class="s2">&quot; &lt;/br&gt;</span>
-</span><span class='line'><span class="s2">#  DocumentRoot &quot;</span>/Users/name/Sites/project.local<span class="s2">&quot; &lt;/br&gt;</span>
-</span><span class='line'><span class="s2">#&lt;/VirtualHost&gt; &lt;/br&gt;</span>
-</span><span class='line'><span class="s2">EOF&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-<p>Allow userdirs so the MacPorts Apache &quot;feels&quot; more like the built-in Apache:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>sudo sed -i <span class="s2">&quot;&quot;</span> <span class="s1">&#39;s/\#\(.*httpd-userdir\.conf\)/\1/&#39;</span> /opt/local/apache2/conf/httpd.conf
-</span></code></pre></td></tr></table></div></figure>
-
-<p>Start Apache and set it to load on boot:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>sudo /opt/local/bin/port load apache2
-</span></code></pre></td></tr></table></div></figure>
-
-<h2 id="toc_4">Configure MySQL</h2>
-
-<p>Set up the configuration file:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>sudo cp -av /opt/local/share/mysql5/mysql/my-small.cnf /opt/local/etc/mysql5/my.cnf
-</span><span class='line'>sudo sed -i <span class="s2">&quot;&quot;</span> <span class="s1">&#39;s/max_allowed_packet = 1.*M/max_allowed_packet = 1G/g&#39;</span> /opt/local/etc/mysql5/my.cnf
-</span></code></pre></td></tr></table></div></figure>
-
-<p>Initialize MySQL and run the secure installation script:<br>
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span><br>
-<span class='line-number'>2</span><br>
-<span class='line-number'>3</span><br>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>sudo -u _mysql /opt/local/bin/mysql_install_db5<br>
-</span><span class='line'>sudo /opt/local/bin/port load mysql5-server<br>
-</span><span class='line'>sudo /opt/local/lib/mysql5/bin/mysql_secure_installation<br>
-</span></code></pre></td></tr></table></div></figure></p>
-
-<h2 id="toc_5">Configure phpMyAdmin</h2>
-
-<p>Add a config file for Apache and reload Apache:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sudo sh -c <span class="s2">&quot;cat &gt;&gt; /opt/local/apache2/conf/httpd.conf &lt;&lt;&#39;EOF&#39;</span>
-</span><span class='line'>
-</span><span class='line'><span class="s2"># phpMyAdmin</span>
-</span><span class='line'><span class="s2">Include conf/extra/phpmyadmin.conf</span>
-</span><span class='line'><span class="s2">EOF&quot;</span>
-</span><span class='line'><span class="nv">$ </span>sudo sh -c <span class="s2">&quot;cat &gt;&gt; /opt/local/apache2/conf/extra/phpmyadmin.conf &lt;&lt;&#39;EOF&#39;</span>
-</span><span class='line'><span class="s2">AliasMatch ^/phpmyadmin(?:/)?(/.*)?$ /opt/local/www/phpmyadmin$1</span>
-</span><span class='line'><span class="s2">AliasMatch ^/phpMyAdmin(?:/)?(/.*)?$ /opt/local/www/phpmyadmin$1</span>
-</span><span class='line'>
-</span><span class='line'><span class="s2">&lt;Directory &quot;</span>/opt/local/www/phpmyadmin<span class="s2">&quot;&gt;</span>
-</span><span class='line'><span class="s2"> Options -Indexes</span>
-</span><span class='line'><span class="s2"> AllowOverride None</span>
-</span><span class='line'><span class="s2"> Order allow,deny</span>
-</span><span class='line'><span class="s2"> Allow from all</span>
-</span><span class='line'>
-</span><span class='line'><span class="s2"> LanguagePriority en de es fr ja ko pt-br ru</span>
-</span><span class='line'><span class="s2"> ForceLanguagePriority Prefer Fallback</span>
-</span><span class='line'><span class="s2">&lt;/Directory&gt;</span>
-</span><span class='line'><span class="s2">EOF&quot;</span>
-</span><span class='line'><span class="nv">$ </span>sudo /opt/local/bin/port unload apache2
-</span><span class='line'><span class="nv">$ </span>sudo /opt/local/bin/port load apache2
-</span></code></pre></td></tr></table></div></figure>
-
-<p>Basic set up of phpMyAdmin:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>sudo sed -i <span class="s2">&quot;&quot;</span> <span class="s2">&quot;s/blowfish_secret\&#39;\] = \&#39;/blowfish_secret\&#39;\] = \&#39;`cat /dev/urandom | strings | grep -o &#39;[[:alnum:]]&#39; | head -n 50 | tr -d &#39;\n&#39;`/&quot;</span> /opt/local/www/phpmyadmin/config.inc.php
-</span><span class='line'>sudo /opt/local/bin/mysql5 -uroot -proot &lt; /opt/local/www/phpmyadmin/scripts/create_tables.sql
-</span><span class='line'>sudo /opt/local/bin/mysql5 -uroot -proot -e<span class="s2">&quot;CREATE USER &#39;pma&#39;@&#39;localhost&#39; IDENTIFIED BY &#39;pmapass&#39;; GRANT SELECT, INSERT, DELETE, UPDATE ON phpmyadmin.* TO pma@localhost;&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-<h2 id="toc_6">Hooray!</h2>
-
-<p>Now you can edit ~/Sites/httpd-vhosts.conf and add a new virtual host. You&#39;d need to reload Apache after doing so by running <code>sudo port unload apache2 &amp;&amp; sudo port load apache2</code>. phpMyAdmin or the mysql5 binary should provide you a way to create new databases and database users and you can then set up a local site.</p>
-
-<p>If you find MacPorts too heavy a separation from OSX, or too slow to compile, you should check out my previous blog posts on setting up a MAMP environment with as many built-in tools as possible only by adding a <a href="http://echodittolabs.org/blog/2011/08/os-x-107-lion-development-native-mamp-mysql-installer">MySQL installer</a> or <a href="http://echodittolabs.org/blog/2011/09/os-x-107-lion-development-native-apache-php-homebrew-mysql-or-mariadb">MySQL/MariaDB via Homebrew</a>.</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/2/">&larr; Older</a>
@@ -1490,6 +1273,10 @@ OS X comes with PHP installed, but it doesn&#8217;t come with PHP-FPM. While it&
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2013/05/09/speed-up-php-on-nfs-with-turbo-realpath/">Speed up PHP on NFS with turbo_realpath</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2013/03/17/virtualbox-extension-pack-with-one-line/">VirtualBox Extension Pack With One Line</a>
       </li>
     
@@ -1503,10 +1290,6 @@ OS X comes with PHP installed, but it doesn&#8217;t come with PHP-FPM. While it&
     
       <li class="post">
         <a href="/blog/2012/09/04/apache-modules-on-os-x-with-homebrew/">Apache modules on OS X with Homebrew</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2012/08/29/three-ways-get-drush-os-x/">Three ways to get Drush on OS X</a>
       </li>
     
   </ul>
