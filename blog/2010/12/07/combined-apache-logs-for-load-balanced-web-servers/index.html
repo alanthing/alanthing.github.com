@@ -108,26 +108,38 @@
 <p>Luckily, if you have shared storage, it’s pretty simple to write to a single log file. Apache allows for log file locations to go to a pipe, which means you can redirect the output anywhere else. This was initially done to allow Apache to release open file descriptors since it can begin to create problems with more than 300 domains. But you don’t need to have 300 websites to see the benefits of using a pipe for logging.</p>
 
 <p>In your VirtualHost declaration, change your logging options from:</p>
-<div class="highlight"><pre><code class="text">CustomLog logs/domain.com-access_log combined
-</code></pre></div>
+
+<pre><code>CustomLog logs/domain.com-access_log combined
+</code></pre>
+
 <p>to:</p>
-<div class="highlight"><pre><code class="text">CustomLog &quot;|/bin/cat » /var/www/vhosts/_logs/domain.com-access_log&quot; combined
-</code></pre></div>
+
+<pre><code>CustomLog "|/bin/cat » /var/www/vhosts/_logs/domain.com-access_log" combined
+</code></pre>
+
 <p>In this example, /var/www/vhosts is the shared SAN storage device, and by using “cat »” we append Apache output in real-time to the log file. As multiple machines do this simultaneously, you begin to have a single log file from multiple machines. You can do the same thing with your ErrorLog:</p>
-<div class="highlight"><pre><code class="text">ErrorLog  &quot;|/bin/cat » /var/www/vhosts/_logs/domain.com-error_log&quot;
-</code></pre></div>
-<p>There is a slight problem with this approach: it doesn’t give us enough information. If one of the 4 servers behind the load balancer was the source of a problem, it would be helpful to determine which server each log entry is coming from. </p>
+
+<pre><code>ErrorLog  "|/bin/cat » /var/www/vhosts/_logs/domain.com-error_log"
+</code></pre>
+
+<p>There is a slight problem with this approach: it doesn’t give us enough information. If one of the 4 servers behind the load balancer was the source of a problem, it would be helpful to determine which server each log entry is coming from.</p>
 
 <p>For CustomLog, we can create a new LogType that adds the server’s IP address at the end of the line, and the LogType name will be “combinedIP”:</p>
-<div class="highlight"><pre><code class="text">LogFormat &quot;%h %l %u %t &quot;%r&quot; %&gt;s %b &quot;%{Referer}i&quot; &quot;%{User-Agent}i&quot; %A&quot; combinedIP
-</code></pre></div>
+
+<pre><code>LogFormat "%h %l %u %t "%r" %&gt;s %b "%{Referer}i" "%{User-Agent}i" %A" combinedIP
+</code></pre>
+
 <p>This format is identical to “combined” and just adds %A at the end. Then, simply change the end of the CustomLog line:</p>
-<div class="highlight"><pre><code class="text">CustomLog &quot;|/bin/cat » /var/www/vhosts/_logs/domain.com-access_log&quot; combinedIP
-</code></pre></div>
+
+<pre><code>CustomLog "|/bin/cat » /var/www/vhosts/_logs/domain.com-access_log" combinedIP
+</code></pre>
+
 <p>Here’s an example of what your log file will look like, showing entries from two servers:</p>
-<div class="highlight"><pre><code class="text">1.2.3.4 - - [07/Dec/2010:11:22:08 -0500] &quot;GET /blog/feed HTTP/1.1&quot; 304 - &quot;-&quot; &quot;-&quot; 192.168.1.6
-5.6.7.8 - - [07/Dec/2010:11:22:08 -0500] &quot;GET /blog/feed HTTP/1.1&quot; 304 - &quot;-&quot; &quot;-&quot; 192.168.1.8
-</code></pre></div>
+
+<pre><code>1.2.3.4 - - [07/Dec/2010:11:22:08 -0500] "GET /blog/feed HTTP/1.1" 304 - "-" "-" 192.168.1.6
+5.6.7.8 - - [07/Dec/2010:11:22:08 -0500] "GET /blog/feed HTTP/1.1" 304 - "-" "-" 192.168.1.8
+</code></pre>
+
 <p>These log entries are the same as the typical “combined” LogType but with the addition of the IP address at the end.</p>
 
 <p>But what about the ErrorLog? There is no way to define a LogType for the ErrorLog, and it would be helpful to know which server originated error, say, if MaxClients was reached, or there is a misconfiguration in a configuration file. Since we’re piping the ErrorLog output to /bin/cat, we can instead pipe it to a script that simply adds the server hostname on the end (I chose not to use an IP address because 1) some servers have multiple IP addresses, and 2) I cannot insert the VirtualHost’s IP address automatically. Better to know the server and then determine the IP address is necessary). We’ll start by creating a simple script at /usr/local/bin/httpd_errors (I’m not using bash since I was not able to get it to write to the log file in real time, it would only write once Apache was reloaded. I did not spend much time to determine why, and I knew it would work in PHP):</p>
@@ -152,13 +164,18 @@
 </span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
 </span></code></pre></td></tr></table></div></figure>
 
+
 <p>Make the script executable with “chmod +x /usr/local/bin/httpd_errors”, and then change your ErrorLog in your Apache configuration:</p>
-<div class="highlight"><pre><code class="text">ErrorLog  ”|/usr/local/bin/httpd_errors » /var/www/vhosts/_logs/domain.com-error_log”
-</code></pre></div>
+
+<pre><code>ErrorLog  ”|/usr/local/bin/httpd_errors » /var/www/vhosts/_logs/domain.com-error_log”
+</code></pre>
+
 <p>And your error logs will now reveal which server the error originated from:</p>
-<div class="highlight"><pre><code class="text">[Tue Dec 07 11:20:51 2010] [error] [client 1.2.3.4] File does not exist: /var/www/vhosts/domain.com/favicon.ico - wsrv1
+
+<pre><code>[Tue Dec 07 11:20:51 2010] [error] [client 1.2.3.4] File does not exist: /var/www/vhosts/domain.com/favicon.ico - wsrv1
 [Tue Dec 07 11:24:27 2010] [error] [client 5.6.7.8] File does not exist: /var/www/vhosts/domain.com/favicon.ico - wsrv2
-</code></pre></div>
+</code></pre>
+
 <p>There you have it, combined Apache logs for multiple web servers. If you have any suggestions, questions, tips, etc, leave a comment!</p>
 </div>
 
@@ -190,7 +207,7 @@
     
       <div class="sharing">
   
-  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://alanthing.com/blog/2010/12/07/combined-apache-logs-for-load-balanced-web-servers/" data-via="alanthing" data-counturl="http://alanthing.com/blog/2010/12/07/combined-apache-logs-for-load-balanced-web-servers/" >Tweet</a>
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://alanthing.com/blog/2010/12/07/combined-apache-logs-for-load-balanced-web-servers/" data-via="alanthing" data-counturl="http://alanthing.com/blog/2010/12/07/combined-apache-logs-for-load-balanced-web-servers/" >Tweet</a>
   
   
   <div class="g-plusone" data-size="medium"></div>
@@ -227,7 +244,7 @@
   <ul id="recent_posts">
     
       <li class="post">
-        <a href="/blog/2013/05/09/speed-up-php-on-nfs-with-turbo-realpath/">Speed up PHP on NFS with turbo_realpath</a>
+        <a href="/blog/2013/05/09/speed-up-php-on-nfs-with-turbo-realpath/">Speed Up PHP on NFS With Turbo_realpath</a>
       </li>
     
       <li class="post">
@@ -243,34 +260,77 @@
       </li>
     
       <li class="post">
-        <a href="/blog/2012/09/04/apache-modules-on-os-x-with-homebrew/">Apache modules on OS X with Homebrew</a>
+        <a href="/blog/2012/09/04/apache-modules-on-os-x-with-homebrew/">Apache Modules on OS X With Homebrew</a>
       </li>
     
   </ul>
 </section>
 
 <section>
-  <h1>Coderwall Badges</h1>
-  <p>
-    <script type="text/javascript">
-      function display_coderwall(args) {
-        var badges = args["data"]["badges"];
-        var wall = '';
-        for ( var i = 0; i < badges.length; i++ ) {
-          var alt_txt = badges[i]["name"];
-          var title_txt = badges[i]["name"] + ' - ' + badges[i]["description"];
-          wall += '<a href="http://coderwall.com/alanthing/"><img src="'
-            + badges[i]["badge"]
-            + '" width="48" height="48" alt="' + alt_txt
-            + '" title="' + title_txt
-            + '"/></a>';
-        }
-        document.write(wall);
-      }
-    </script>
-    <script src="http://coderwall.com/alanthing.json?callback=display_coderwall"></script>
-  </p>
+  <h1>Coderwall</h1>
+  <ul id="cw_badges">
+    <li class="loading">Status updating...</li>
+  </ul>
   
+  <div>
+    <a href="http://coderwall.com/alanthing" target="_blank" class="cw_badge"><img
+       alt="Endorse alanthing on Coderwall"
+       src="http://api.coderwall.com/alanthing/endorsecount.png" /></a>
+  </div>
+  
+
+  <script type="text/javascript">
+    var coderwall = (function(){
+      function render(options, badges){
+        var fragment = '',
+            t = $(options.target)[0],
+            height = 65,
+            width = 65,
+            index;
+
+        for (index in badges) {
+          fragment += '<a class="cw_badge"title="' + badges[index].description + '" target="_blank" href="http://coderwall.com/' + options.user + '">';
+          fragment +=   '<img alt="' + badges[index].description + '" height="' + width + '" width="' + height + '" src="' + badges[index].badge + '"/>';
+          fragment += '</a>';
+        }
+
+        t.innerHTML = fragment;
+      }
+      return {
+        showBadges: function(options){
+          $.ajax({
+              url: 'http://coderwall.com/' + options.user + '.json?callback=?'
+            , type: 'jsonp'
+            , error: function (err) { $(options.target + ' li.loading').addClass('error').text("Error loading feed"); }
+            , success: function(res) {
+                render(options, res.data.badges);
+            }
+          });
+        }
+      };
+    })();
+
+    $.domReady(function(){
+      if (!window.jXHR){
+        var jxhr = document.createElement('script');
+        jxhr.type = 'text/javascript';
+        jxhr.src = '/javascripts/libs/jXHR.js';
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(jxhr, s);
+      }
+      if (!window.$){
+        var b = document.createElement('script');
+        b.type = 'text/javascript';
+        b.src = '/javascripts/ender.js';
+        var sc = document.getElementsByTagName('script')[0];
+        sc.parentNode.insertBefore(jxhr, s);
+      }
+      coderwall.showBadges({
+        user: 'alanthing',
+        target: '#cw_badges'
+      });
+    });
+  </script>
 </section>
 
 
@@ -365,7 +425,7 @@
       var twitterWidgets = document.createElement('script');
       twitterWidgets.type = 'text/javascript';
       twitterWidgets.async = true;
-      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
       document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
     })();
   </script>

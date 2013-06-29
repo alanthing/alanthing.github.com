@@ -9,7 +9,7 @@
   <meta name="author" content="Alan Ivey">
 
   
-  <meta name="description" content="If you run a website based on PHP, and have your source files on a network file system like NFS, OCFS2, or GlusterFS, and combine it with PHP&#39;s &hellip;">
+  <meta name="description" content="If you run a website based on PHP, and have your source files on a network file system like NFS, OCFS2, or GlusterFS, and combine it with PHP&rsquo;s &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -106,15 +106,15 @@
   </header>
 
 
-  <div class="entry-content"><p>If you run a website based on PHP, and have your source files on a network file system like NFS, OCFS2, or GlusterFS, and combine it with PHP&#39;s <a href="http://www.php.net/manual/en/ini.core.php#ini.open-basedir">open_basedir</a> protection, you&#39;ll quickly notice that the performance will degrade substantially. Normally, PHP can cache various path locations it learns after processing <a href="http://us2.php.net/manual/en/function.include-once.php">include_once</a> and <a href="http://us2.php.net/manual/en/function.require-once.php">require_once</a> calls via the <a href="http://www.php.net/manual/en/ini.core.php#ini.realpath-cache-size">realpath_cache</a>. There&#39;s a <a href="https://bugs.php.net/bug.php?id=52312">bug in PHP</a> that effectively disables the realpath_cache entirely when combined with open_basedir. Popular PHP applications with Drupal and WordPress make heavy use of these functions to include other files, so you would very quickly notice the drop in performance in this scenario. If you want to isolate your websites from each other (or from the rest of the operating system), how can you retain any shred of performance?</p>
+  <div class="entry-content"><p>If you run a website based on PHP, and have your source files on a network file system like NFS, OCFS2, or GlusterFS, and combine it with PHP&rsquo;s <a href="http://www.php.net/manual/en/ini.core.php#ini.open-basedir">open_basedir</a> protection, you&rsquo;ll quickly notice that the performance will degrade substantially. Normally, PHP can cache various path locations it learns after processing <a href="http://us2.php.net/manual/en/function.include-once.php">include_once</a> and <a href="http://us2.php.net/manual/en/function.require-once.php">require_once</a> calls via the <a href="http://www.php.net/manual/en/ini.core.php#ini.realpath-cache-size">realpath_cache</a>. There&rsquo;s a <a href="https://bugs.php.net/bug.php?id=52312">bug in PHP</a> that effectively disables the realpath_cache entirely when combined with open_basedir. Popular PHP applications with Drupal and WordPress make heavy use of these functions to include other files, so you would very quickly notice the drop in performance in this scenario. If you want to isolate your websites from each other (or from the rest of the operating system), how can you retain any shred of performance?</p>
 
-<p>This is where <a href="http://php.webtutor.pl/">Artur Graniszewski</a>&#39;s <a href="http://php.webtutor.pl/en/2011/07/12/running-php-on-nfs-version-1-2-of-turbo_realpath-extension/">turbo_realpath</a> extension really comes in handy. I won&#39;t retype his installation instructions, so follow the previous link to get it installed manually. </p>
+<p>This is where <a href="http://php.webtutor.pl/">Artur Graniszewski</a>&rsquo;s <a href="http://php.webtutor.pl/en/2011/07/12/running-php-on-nfs-version-1-2-of-turbo_realpath-extension/">turbo_realpath</a> extension really comes in handy. I won&rsquo;t retype his installation instructions, so follow the previous link to get it installed manually.</p>
 
-<p>If you&#39;re running CentOS 5 or CentOS 6, check out <a href="http://yum.echoditto.com/">yum.echoditto.com</a> and you&#39;ll find source and compiled RPMs that will install alongside the RedHat/CentOS-supplied PHP packages. The RPM will create a basic configuration file at <code>/etc/php.d/turbo_realpath.ini</code>. Essentially, it enables the PHP module but defaults all settings off, so you will need to read the comments (taken from <a href="http://php.webtutor.pl/en/2011/07/12/running-php-on-nfs-version-1-2-of-turbo_realpath-extension/">Artur&#39;s most recent post on turbo_realpath</a>) to determine how you want to use it.</p>
+<p>If you&rsquo;re running CentOS 5 or CentOS 6, check out <a href="http://yum.echoditto.com/">yum.echoditto.com</a> and you&rsquo;ll find source and compiled RPMs that will install alongside the RedHat/CentOS-supplied PHP packages. The RPM will create a basic configuration file at <code>/etc/php.d/turbo_realpath.ini</code>. Essentially, it enables the PHP module but defaults all settings off, so you will need to read the comments (taken from <a href="http://php.webtutor.pl/en/2011/07/12/running-php-on-nfs-version-1-2-of-turbo_realpath-extension/">Artur&rsquo;s most recent post on turbo_realpath</a>) to determine how you want to use it.</p>
 
-<h1 id="toc_0">Configuration</h1>
+<h1>Configuration</h1>
 
-<p>We frequently use turbo_realpath on a per-VirtualHost basis with Apache 2.2 and mod_php. If you use PHP-FPM, you can apply similar settings in your FPM pool configuration files. If you install our RPM and don&#39;t edit <code>/etc/php.d/turbo_realpath.ini</code>, add something similar to the following to each VirtualHost:</p>
+<p>We frequently use turbo_realpath on a per-VirtualHost basis with Apache 2.2 and mod_php. If you use PHP-FPM, you can apply similar settings in your FPM pool configuration files. If you install our RPM and don&rsquo;t edit <code>/etc/php.d/turbo_realpath.ini</code>, add something similar to the following to each VirtualHost:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -123,6 +123,7 @@
 </span><span class='line'>  <span class="nb">php_admin_value</span> realpath_cache_basedir <span class="s2">&quot;/var/www/vhosts/domain.com:/usr/share/pear:/usr/share/php:/usr/lib64/php:/usr/lib/php:/tmp:/var/tmp&quot;</span>
 </span><span class='line'><span class="nt">&lt;/IfModule&gt;</span>
 </span></code></pre></td></tr></table></div></figure>
+
 
 <p>This is effectively the same using <code>open_basedir</code>; any directories referenced in <code>realpath_cache_basedir</code> will be the only ones the website is allowed to access, and they will be cached as determined by the <a href="http://www.php.net/manual/en/ini.core.php#ini.realpath-cache-size">realpath_cache_size</a> and <a href="http://www.php.net/manual/en/ini.core.php#ini.realpath-cache-ttl">realpath_cache_ttl</a>. If you look in <code>php.ini</code>, you may notice the default values for these are:</p>
 
@@ -142,19 +143,21 @@
 </span><span class='line'><span class="na">realpath_cache_ttl</span> <span class="o">=</span> <span class="s">120</span>
 </span></code></pre></td></tr></table></div></figure>
 
-<p>You may want to increase these if you&#39;re finding your website is still not loading quickly. On our systems, we have bumped the <code>realpath_cache_size</code> and <code>realpath_cache_ttl</code> settings up to <code>1m</code> and <code>300</code>, respectively.</p>
 
-<h1 id="toc_1">Speed and Security!</h1>
+<p>You may want to increase these if you&rsquo;re finding your website is still not loading quickly. On our systems, we have bumped the <code>realpath_cache_size</code> and <code>realpath_cache_ttl</code> settings up to <code>1m</code> and <code>300</code>, respectively.</p>
 
-<p>With turbo_realpath enabled, <code>realpath_cache_basedir</code> set to appropriate <code>open_basedir</code>-like values, and <code>realpath_cache_size</code> and <code>realpath_cache_ttl</code> increased from defaults, we&#39;re able to have isolated PHP sites and have better performance by caching the locations of included/required files effectively. Hopefully, our RPMs will help you on your system for a quick installation of the excellent turbo_realpath module!</p>
+<h1>Speed and Security!</h1>
 
-<h1 id="toc_2">References</h1>
+<p>With turbo_realpath enabled, <code>realpath_cache_basedir</code> set to appropriate <code>open_basedir</code>-like values, and <code>realpath_cache_size</code> and <code>realpath_cache_ttl</code> increased from defaults, we&rsquo;re able to have isolated PHP sites and have better performance by caching the locations of included/required files effectively. Hopefully, our RPMs will help you on your system for a quick installation of the excellent turbo_realpath module!</p>
+
+<h1>References</h1>
 
 <ul>
 <li><a href="http://php.webtutor.pl/en/2011/06/02/running-php-on-nfs-huge-performance-problems-and-one-simple-solution/">Running PHP on NFS: huge performance problems and one simple solution.</a></li>
 <li><a href="http://php.webtutor.pl/en/2011/07/01/running-php-on-nfs-new-version-of-turbo_realpath-extension/">Running PHP on NFS: new version of turbo_realpath extension</a></li>
 <li><a href="http://php.webtutor.pl/en/2011/07/12/running-php-on-nfs-version-1-2-of-turbo_realpath-extension/">Running PHP on NFS: version 1.2 of turbo_realpath extension</a></li>
 </ul>
+
 </div>
   
   
@@ -190,10 +193,11 @@
   </header>
 
 
-  <div class="entry-content"><p>Just installed <a href="http://www.virtualbox.org">VirtualBox</a> on OS X and need the <a href="http://www.virtualbox.org/wiki/Downloads">Extension Pack</a>? This (really long) one-liner will download and install it for you. Run in terminal and enter your password once and you&#39;re off to the races!</p>
+  <div class="entry-content"><p>Just installed <a href="http://www.virtualbox.org">VirtualBox</a> on OS X and need the <a href="http://www.virtualbox.org/wiki/Downloads">Extension Pack</a>? This (really long) one-liner will download and install it for you. Run in terminal and enter your password once and you&rsquo;re off to the races!</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class=''><span class='line'>export version=$(/usr/bin/vboxmanage -v) && export var1=$(echo ${version} | cut -d 'r' -f 1) && export var2=$(echo ${version} | cut -d 'r' -f 2) && export file="Oracle_VM_VirtualBox_Extension_Pack-${var1}-${var2}.vbox-extpack" && curl --silent --location http://download.virtualbox.org/virtualbox/${var1}/${file} -o ~/Downloads/${file} && VBoxManage extpack install ~/Downloads/${file} --replace && rm ~/Downloads/${file} && unset version var1 var2 file</span></code></pre></td></tr></table></div></figure>
+
 
 <p>Note that VirtualBox must be installed first :)</p>
 </div>
@@ -231,54 +235,61 @@
   </header>
 
 
-  <div class="entry-content"><p>Recently, I&#39;ve been working on adding functionality for <a href="http://www.stormondemand.com">Storm on Demand</a>&#39;s <a href="https://www.stormondemand.com/api/docs/1.0/">API</a> to the excellent <a href="http://fog.io">fog</a> library. There didn&#39;t seem to be a clear way, that I could find, to work on a Ruby gem in real-time, meaning I save the file in my editor and immediately run some code. Most <a href="http://gembundler.com/rubygems.html">guides</a> I <a href="http://blog.thepete.net/2010/11/creating-and-publishing-your-first-ruby.html">found</a> tended to advise to create the gem file and install it. <a href="http://rakeroutes.com/blog/lets-write-a-gem-part-two/">Stephen Ball demostrates</a> the use of <code>bundle console</code> which drops you into <code>irb</code> for testing, but I was looking for a way to test my own scripts outside of a shell with my recently-saved gem files. </p>
+  <div class="entry-content"><p>Recently, I&rsquo;ve been working on adding functionality for <a href="http://www.stormondemand.com">Storm on Demand</a>&rsquo;s <a href="https://www.stormondemand.com/api/docs/1.0/">API</a> to the excellent <a href="http://fog.io">fog</a> library. There didn&rsquo;t seem to be a clear way, that I could find, to work on a Ruby gem in real-time, meaning I save the file in my editor and immediately run some code. Most <a href="http://gembundler.com/rubygems.html">guides</a> I <a href="http://blog.thepete.net/2010/11/creating-and-publishing-your-first-ruby.html">found</a> tended to advise to create the gem file and install it. <a href="http://rakeroutes.com/blog/lets-write-a-gem-part-two/">Stephen Ball demostrates</a> the use of <code>bundle console</code> which drops you into <code>irb</code> for testing, but I was looking for a way to test my own scripts outside of a shell with my recently-saved gem files.</p>
 
-<p>Thankfully this isn&#39;t too difficult to set up and this will allow you to work on your gem in &quot;real-time;&quot; save and test, without <code>bundle console</code> or installing lots of dev gems.</p>
+<p>Thankfully this isn&rsquo;t too difficult to set up and this will allow you to work on your gem in &ldquo;real-time;&rdquo; save and test, without <code>bundle console</code> or installing lots of dev gems.</p>
 
-<p>I should note two things here: I&#39;m not a Ruby developer, and I&#39;ve really only tested this thoroughly with fog, no others. If this ends up being a terrible way to do things, please let me know.</p>
+<p>I should note two things here: I&rsquo;m not a Ruby developer, and I&rsquo;ve really only tested this thoroughly with fog, no others. If this ends up being a terrible way to do things, please let me know.</p>
 
-<p>I&#39;m using <a href="http://rvm.io/">RVM</a> to keep my gem development isolated from the rest of my system. If you haven&#39;t already, <a href="https://rvm.io/rvm/install/">set up rvm</a> on your system. If you&#39;re using <a href="https://github.com/sstephenson/rbenv">rbenv</a> instead, use <a href="https://github.com/jamis/rbenv-gemset">applicable commands</a>.</p>
+<p>I&rsquo;m using <a href="http://rvm.io/">RVM</a> to keep my gem development isolated from the rest of my system. If you haven&rsquo;t already, <a href="https://rvm.io/rvm/install/">set up rvm</a> on your system. If you&rsquo;re using <a href="https://github.com/sstephenson/rbenv">rbenv</a> instead, use <a href="https://github.com/jamis/rbenv-gemset">applicable commands</a>.</p>
 
-<p>You&#39;ll obviously need to start in a gem development directory. In my case, I start with fog:</p>
+<p>You&rsquo;ll obviously need to start in a gem development directory. In my case, I start with fog:</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 </pre></td><td class='code'><pre><code class=''><span class='line'>git clone git@github.com:fog/fog.git
 </span><span class='line'>cd fog</span></code></pre></td></tr></table></div></figure>
 
-<p>I&#39;m going to switch to ruby 1.9.3 and use a new gemset called fogdev:</p>
+
+<p>I&rsquo;m going to switch to ruby 1.9.3 and use a new gemset called fogdev:</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class=''><span class='line'>rvm use 1.9.3 && rvm gemset create fogdev && rvm use 1.9.3@fogdev</span></code></pre></td></tr></table></div></figure>
 
-<p>You may want to create a <code>.rvmrc</code> file so you don&#39;t have to use <code>rvm use</code> constantly.</p>
+
+<p>You may want to create a <code>.rvmrc</code> file so you don&rsquo;t have to use <code>rvm use</code> constantly.</p>
 
 <p>Install the prerequesite gems as listed in the gemspec file with bundler:</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class=''><span class='line'>bundle install</span></code></pre></td></tr></table></div></figure>
 
-<p>I&#39;m going to grab the version number of fog from the gemspec file so I can reuse it later (if there are multiple &#39;.gemspec&#39; files in your directory, change &#39;*.gemspec&#39; to &#39;name.gemspec&#39; as appropriate):</p>
+
+<p>I&rsquo;m going to grab the version number of fog from the gemspec file so I can reuse it later (if there are multiple &lsquo;.gemspec&rsquo; files in your directory, change &lsquo;*.gemspec&rsquo; to &lsquo;name.gemspec&rsquo; as appropriate):</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class=''><span class='line'>export GEMVERSION=$(grep -E '^[ \t]+s.version' *.gemspec | awk '{print $3}' | sed 's/'\''//g')</span></code></pre></td></tr></table></div></figure>
 
-<p>Now at this point, you can build and install the gem with <code>rake build &amp;&amp; gem install pkg/fog-${GEMVERSION}.gem</code> or <code>gem build</code> or any other tools as most tutorials advise, but then whenever you edit the source files you&#39;ll have to repeat. Let&#39;s create some symbolic links instead. Start by going to the rvm gemset folder (this may be a different location for your environment):</p>
+
+<p>Now at this point, you can build and install the gem with <code>rake build &amp;&amp; gem install pkg/fog-${GEMVERSION}.gem</code> or <code>gem build</code> or any other tools as most tutorials advise, but then whenever you edit the source files you&rsquo;ll have to repeat. Let&rsquo;s create some symbolic links instead. Start by going to the rvm gemset folder (this may be a different location for your environment):</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class=''><span class='line'>cd ~/.rvm/gems/ruby-1.9.3-p286\@fogdev/</span></code></pre></td></tr></table></div></figure>
 
-<p>It seems as though the earlier <code>bundle install</code> command created the file bin/fog for me, but it doesn&#39;t work without either installing a gem or running the remaining commands below. Particularly for fog, if this bin/fog file is missing and you need it, you can grab it with the following:</p>
+
+<p>It seems as though the earlier <code>bundle install</code> command created the file bin/fog for me, but it doesn&rsquo;t work without either installing a gem or running the remaining commands below. Particularly for fog, if this bin/fog file is missing and you need it, you can grab it with the following:</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class=''><span class='line'>[ ! -f bin/fog ] && curl --silent --output bin/fog https://gist.github.com/alanthing/5004411/raw/13f748f1cc19df7511ea2a01de6824eac3358905/fog && chmod +x bin/fog</span></code></pre></td></tr></table></div></figure>
 
-<p>Let&#39;s add our development gem with symbolic links (again, change as appropriate for your gem):</p>
+
+<p>Let&rsquo;s add our development gem with symbolic links (again, change as appropriate for your gem):</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 </pre></td><td class='code'><pre><code class=''><span class='line'>ln -s ~/fog/fog.gemspec specifications/fog-${GEMVERSION}.gemspec
 </span><span class='line'>ln -s ~/fog gems/fog-${GEMVERSION}</span></code></pre></td></tr></table></div></figure>
+
 
 <p>Now if you run <code>gem list</code> you should see your gem listed:</p>
 
@@ -299,6 +310,7 @@
 </span><span class='line'>jekyll (0.12.0)
 </span><span class='line'>...snip...</span></code></pre></td></tr></table></div></figure>
 
+
 <p>And, in my case, running <code>fog</code> uses the gemset file bin/fog and drops me into a fog-ised irb:</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
@@ -309,6 +321,7 @@
 </span><span class='line'>  Welcome to fog interactive!
 </span><span class='line'>  :default provides VirtualBox and Vmfusion
 </span><span class='line'>&gt;&gt; </span></code></pre></td></tr></table></div></figure>
+
 
 <p>If you see any mistakes or have any questions, let me know!</p>
 </div>
@@ -346,17 +359,17 @@
   </header>
 
 
-  <div class="entry-content"><h2 id="toc_0">Install MAMP</h2>
+  <div class="entry-content"><h2>Install MAMP</h2>
 
 <p>Download the latest MAMP from <a href="http://mamp.info/en/downloads/index.html">http://mamp.info/en/downloads/index.html</a> and run the installer.</p>
 
-<h2 id="toc_1">Choose APC Cache</h2>
+<h2>Choose APC Cache</h2>
 
-<p>Open the MAMP app, open <strong>Preferences&#8230;</strong>, click the <strong>PHP</strong> tab, and change <strong>Cache</strong> to <strong>APC</strong>. Click <strong>OK</strong> to close Preferences and <strong>Quit</strong> MAMP.</p>
+<p>Open the MAMP app, open <strong>Preferences&hellip;</strong>, click the <strong>PHP</strong> tab, and change <strong>Cache</strong> to <strong>APC</strong>. Click <strong>OK</strong> to close Preferences and <strong>Quit</strong> MAMP.</p>
 
-<p><img src="http://i46.tinypic.com/2wltqpw.png" alt="MAMP Screenshot"></p>
+<p><img src="http://i46.tinypic.com/2wltqpw.png" alt="MAMP Screenshot" /></p>
 
-<h2 id="toc_2">PATH variable</h2>
+<h2>PATH variable</h2>
 
 <p>Put MAMP binaries, including PHP, in the front of your $PATH (this is a single command):</p>
 
@@ -364,7 +377,8 @@
 </pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">echo</span> <span class="s1">&#39;export PATH=&quot;/Applications/MAMP/bin:/Applications/MAMP/Library/bin:$(find /Applications/MAMP/bin/php -type d -name &quot;php5.4*&quot; | sort | tail -1)/bin:$PATH&quot;&#39;</span> &gt;&gt; ~/.bash_profile <span class="o">&amp;&amp;</span> <span class="nb">source</span> ~/.bash_profile
 </span></code></pre></td></tr></table></div></figure>
 
-<h2 id="toc_3">MySQL</h2>
+
+<h2>MySQL</h2>
 
 <p>Set up MySQL and stop it (default MySQL password is <strong>root</strong>, you do not have to change it when running <code>mysql_secure_installation</code>, though I recommend all of the other defaults):</p>
 
@@ -400,7 +414,8 @@
 </span><span class='line'>/Applications/MAMP/bin/stopMysql.sh
 </span></code></pre></td></tr></table></div></figure>
 
-<h2 id="toc_4">PHP</h2>
+
+<h2>PHP</h2>
 
 <p>Set timezone, and increase timeouts and memory values:</p>
 
@@ -412,11 +427,12 @@
 </span><span class='line'><span class="nb">echo</span> -e <span class="s2">&quot;\n[apc]\napc.shm_size = 192M\napc.rfc1867 = 1&quot;</span> &gt;&gt; <span class="k">$(</span>find /Applications/MAMP/bin/php -type d -name <span class="s2">&quot;php5.4*&quot;</span> | sort | tail -1<span class="k">)</span>/conf/php.ini
 </span></code></pre></td></tr></table></div></figure>
 
-<h3 id="toc_5">PECL Uploadprogress</h3>
 
-<p><strong>Feel free to skip:</strong> This is quite involved when <code>apc.rfc1867=1</code> does the job in most cases. This is mostly an exercise in building PHP modules for MAMP. </p>
+<h3>PECL Uploadprogress</h3>
 
-<p><strong>You&#39;ll need to install Xcode Command Line Tools from <a href="http://develop.apple.com/downloads">http://develop.apple.com/downloads</a> in order to complete all of the steps below.</strong></p>
+<p><strong>Feel free to skip:</strong> This is quite involved when <code>apc.rfc1867=1</code> does the job in most cases. This is mostly an exercise in building PHP modules for MAMP.</p>
+
+<p><strong>You&rsquo;ll need to install Xcode Command Line Tools from <a href="http://develop.apple.com/downloads">http://develop.apple.com/downloads</a> in order to complete all of the steps below.</strong></p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -520,12 +536,13 @@
 </span><span class='line'><span class="nb">echo</span> -e <span class="s2">&quot;\n[uploadprogress]\nextension=uploadprogress.so&quot;</span> &gt;&gt; <span class="k">$(</span>find /Applications/MAMP/bin/php -type d -name <span class="s2">&quot;php5.4*&quot;</span> | sort | tail -1<span class="k">)</span>/conf/php.ini
 </span></code></pre></td></tr></table></div></figure>
 
-<p>Reference 1: <a href="http://www.lullabot.com/articles/installing-php-pear-and-pecl-extensions-on-mamp-mac-os-x-107-lion">http://www.lullabot.com/articles/installing-php-pear-and-pecl-extensions-on-mamp-mac-os-x-107-lion</a><br>
+
+<p>Reference 1: <a href="http://www.lullabot.com/articles/installing-php-pear-and-pecl-extensions-on-mamp-mac-os-x-107-lion">http://www.lullabot.com/articles/installing-php-pear-and-pecl-extensions-on-mamp-mac-os-x-107-lion</a>
 Reference 2: <a href="http://jsdelfino.blogspot.com/2012/08/autoconf-and-automake-on-mac-os-x.html">http://jsdelfino.blogspot.com/2012/08/autoconf-and-automake-on-mac-os-x.html</a></p>
 
-<h2 id="toc_6">Apache</h2>
+<h2>Apache</h2>
 
-<p>Set up VirtualHosts in <strong>~/Sites/mamp-vhosts.conf</strong> so it&#39;s easy to edit later:</p>
+<p>Set up VirtualHosts in <strong>~/Sites/mamp-vhosts.conf</strong> so it&rsquo;s easy to edit later:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -538,6 +555,7 @@ Reference 2: <a href="http://jsdelfino.blogspot.com/2012/08/autoconf-and-automak
 </span><span class='line'>
 </span><span class='line'><span class="o">[</span> ! -d ~/Sites/logs <span class="o">]</span> <span class="o">&amp;&amp;</span> mkdir -pv ~/Sites/logs
 </span></code></pre></td></tr></table></div></figure>
+
 
 <p><strong><em>IMPORTANT!</em></strong> Be sure to copy and paste the lines containing <code>PORTNUM</code> through the last <code>EOF</code> as a <strong><em>single</em></strong> command (this entire block is a single copy+paste):</p>
 
@@ -645,15 +663,16 @@ Reference 2: <a href="http://jsdelfino.blogspot.com/2012/08/autoconf-and-automak
 </span><span class='line'><span class="nb">EOF</span>
 </span></code></pre></td></tr></table></div></figure>
 
-<p>If you read that closely, you&#39;ll see that it&#39;s set up to do <a href="http://httpd.apache.org/docs/2.2/vhosts/mass.html">MassVirtualHosts</a> using the <code>*.dev</code> tld. For example, set up a web root at <code>$HOME/Sites/project</code> and you will be able to view it at <a href="http://project.dev:8888">http://project.dev:8888</a> without needing to create a separate VirtualHost. A custom log format is used, putting the domain name at the beginning of the line, so you can easily see the output as it related to a project.</p>
 
-<h2 id="toc_7">Finishing Up</h2>
+<p>If you read that closely, you&rsquo;ll see that it&rsquo;s set up to do <a href="http://httpd.apache.org/docs/2.2/vhosts/mass.html">MassVirtualHosts</a> using the <code>*.dev</code> tld. For example, set up a web root at <code>$HOME/Sites/project</code> and you will be able to view it at <a href="http://project.dev:8888">http://project.dev:8888</a> without needing to create a separate VirtualHost. A custom log format is used, putting the domain name at the beginning of the line, so you can easily see the output as it related to a project.</p>
 
-<p>Open the MAMP application to <strong>Start Servers</strong>. Note that if you ever change the Apache port number, you&#39;ll need to edit <code>~/Sites/mamp-vhosts.conf</code> appropriately.</p>
+<h2>Finishing Up</h2>
+
+<p>Open the MAMP application to <strong>Start Servers</strong>. Note that if you ever change the Apache port number, you&rsquo;ll need to edit <code>~/Sites/mamp-vhosts.conf</code> appropriately.</p>
 
 <p>As always with MAMP, you can work out of <a href="http://localhost:8888/">http://localhost:8888/</a> by putting files in <code>/Applications/MAMP/htdocs</code>. For example, the folder <code>/Applications/MAMP/drupal</code> will be accessible at <a href="http://localhost:8888/drupal">http://localhost:8888/drupal</a>. You can find other MAMP tools at <a href="http://localhost:8888/MAMP">http://localhost:8888/MAMP</a>.</p>
 
-<p>If you&#39;re having trouble connecting to MySQL with Sequel Pro or another utility, use <code>/Applications/MAMP/tmp/mysql/mysql.sock</code> as the socket path. If MAMP&#39;s MySQL is the only service running mysqld, this should not be necessary but YMMV&#8230;</p>
+<p>If you&rsquo;re having trouble connecting to MySQL with Sequel Pro or another utility, use <code>/Applications/MAMP/tmp/mysql/mysql.sock</code> as the socket path. If MAMP&rsquo;s MySQL is the only service running mysqld, this should not be necessary but YMMV&hellip;</p>
 </div>
   
   
@@ -689,7 +708,7 @@ Reference 2: <a href="http://jsdelfino.blogspot.com/2012/08/autoconf-and-automak
   </header>
 
 
-  <div class="entry-content"><p>I have long been a big fan of <a href="http://mxcl.github.com/homebrew">Homebrew</a>, a way of adding open-source software to OS X without much of the overhead and systems link <a href="http://www.macports.org">MacPorts</a> and <a href="http://www.finkproject.org">Fink</a> introduce. It&#39;s quickly become my favorite way to do PHP-based development on a Mac, and I&#39;ve <a href="http://echodittolabs.org/blog/2012/04/os-x-107-lion-development-nginx-php-mariadb-homebrew">blogged</a> <a href="http://echodittolabs.org/blog/2011/09/os-x-107-lion-development-native-apache-php-homebrew-mysql-or-mariadb">before</a> about various ways to integrate Homebrew-based software into your workflow.</p>
+  <div class="entry-content"><p>I have long been a big fan of <a href="http://mxcl.github.com/homebrew">Homebrew</a>, a way of adding open-source software to OS X without much of the overhead and systems link <a href="http://www.macports.org">MacPorts</a> and <a href="http://www.finkproject.org">Fink</a> introduce. It&rsquo;s quickly become my favorite way to do PHP-based development on a Mac, and I&rsquo;ve <a href="http://echodittolabs.org/blog/2012/04/os-x-107-lion-development-nginx-php-mariadb-homebrew">blogged</a> <a href="http://echodittolabs.org/blog/2011/09/os-x-107-lion-development-native-apache-php-homebrew-mysql-or-mariadb">before</a> about various ways to integrate Homebrew-based software into your workflow.</p>
 
 <p>In preparing new documentation for using Homebrew on 10.7 and 10.8 (coming soon to <a href="http://echodittolabs.org/blogs/alan-ivey">my EchoDitto blog</a>), I wanted to find a way to run either <a href="http://httpd.apache.org/docs/2.2/mod/mod_suexec.html">mod_suexec</a> or <a href="http://www.fastcgi.com/mod_fastcgi/docs/mod_fastcgi.html">mod_fastcgi</a> so I could use the built-in version of Apache without having to change folder ownership in random places where the web server needed to modify files. Homebrew did not have any formulas, but I found that <a href="http://github.com/lifepillar">Lifepillar</a> had written formulas <a href="https://github.com/mxcl/homebrew/pull/12093/files">(mod_fastcgi)</a> <a href="https://github.com/mxcl/homebrew/pull/12091">(mod_suexec)</a> for them both and was hoping to get them into Homebrew.</p>
 
@@ -698,12 +717,13 @@ Reference 2: <a href="http://jsdelfino.blogspot.com/2012/08/autoconf-and-automak
 <p>As of today, here are the modules available in the tap:</p>
 
 <ul>
-<li><a href="https://github.com/Homebrew/homebrew-apache/blob/master/mod_fastcgi.rb">mod_fastcgi</a> - written by <a href="https://github.com/lifepillar">lifepillar</a></li>
-<li><a href="https://github.com/Homebrew/homebrew-apache/blob/master/mod_suexec.rb">mod_suexec</a> - written by <a href="https://github.com/lifepillar">lifepillar</a>, 10.8 work by <a href="https://github.com/alanthing">me</a></li>
-<li><a href="https://github.com/Homebrew/homebrew-apache/blob/master/mod_fcgid.rb">mod_fcgid</a> - written by <a href="https://github.com/rjocoleman">rjocoleman</a></li>
-<li><a href="https://github.com/Homebrew/homebrew-apache/blob/master/mod_bonjour.rb">mod_bonjour</a> - written by <a href="https://github.com/joemaller">joemaller</a></li>
-<li><a href="https://github.com/Homebrew/homebrew-apache/blob/master/mod_python.rb">mod_python</a> and <a href="https://github.com/Homebrew/homebrew-apache/blob/master/mod_wsgi.rb">mod_wsgi</a> - copied from main Homebrew formulas</li>
+<li><a href="https://github.com/Homebrew/homebrew-apache/blob/master/mod_fastcgi.rb">mod_fastcgi</a> &ndash; written by <a href="https://github.com/lifepillar">lifepillar</a></li>
+<li><a href="https://github.com/Homebrew/homebrew-apache/blob/master/mod_suexec.rb">mod_suexec</a> &ndash; written by <a href="https://github.com/lifepillar">lifepillar</a>, 10.8 work by <a href="https://github.com/alanthing">me</a></li>
+<li><a href="https://github.com/Homebrew/homebrew-apache/blob/master/mod_fcgid.rb">mod_fcgid</a> &ndash; written by <a href="https://github.com/rjocoleman">rjocoleman</a></li>
+<li><a href="https://github.com/Homebrew/homebrew-apache/blob/master/mod_bonjour.rb">mod_bonjour</a> &ndash; written by <a href="https://github.com/joemaller">joemaller</a></li>
+<li><a href="https://github.com/Homebrew/homebrew-apache/blob/master/mod_python.rb">mod_python</a> and <a href="https://github.com/Homebrew/homebrew-apache/blob/master/mod_wsgi.rb">mod_wsgi</a> &ndash; copied from main Homebrew formulas</li>
 </ul>
+
 
 <p>If you have any problems or questions, let me know in the issue queue! Or write a formula and submit a pull request!</p>
 </div>
@@ -741,11 +761,11 @@ Reference 2: <a href="http://jsdelfino.blogspot.com/2012/08/autoconf-and-automak
   </header>
 
 
-  <div class="entry-content"><p><a href="http://echodittolabs.org/blog/2011/03/keep-drush-up-to-date">As I&#39;ve said before</a>, we love <a href="http://drupal.org/project/drush">drush</a>. It&#39;s hard to imagine doing Drupal work without it. If OS X is your workstation, it&#39;s pretty simple to install with pear, as described on the project page. Let&#39;s review that method and cover two others, git and Homebrew, and how to keep them updated.</p>
+  <div class="entry-content"><p><a href="http://echodittolabs.org/blog/2011/03/keep-drush-up-to-date">As I&rsquo;ve said before</a>, we love <a href="http://drupal.org/project/drush">drush</a>. It&rsquo;s hard to imagine doing Drupal work without it. If OS X is your workstation, it&rsquo;s pretty simple to install with pear, as described on the project page. Let&rsquo;s review that method and cover two others, git and Homebrew, and how to keep them updated.</p>
 
 <p>All commands listed below are to be executed on the command line with the Terminal application. But if you use Drush regularly then you already knew that!</p>
 
-<h2 id="toc_0">Homebrew</h2>
+<h2>Homebrew</h2>
 
 <p>If you need introduced to Homebrew, or need help installing it, check out the <a href="http://mxcl.github.com/homebrew/">Homebrew project homepage</a>. The installation script is at the bottom.</p>
 
@@ -754,21 +774,24 @@ Reference 2: <a href="http://jsdelfino.blogspot.com/2012/08/autoconf-and-automak
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class=''><span class='line'>brew install drush</span></code></pre></td></tr></table></div></figure>
 
-<p>Yup, that&#39;s it! Upgrading is simple as well, as explained in the <a href="https://github.com/mxcl/homebrew/wiki/FAQ">Homebrew FAQ</a>:</p>
+
+<p>Yup, that&rsquo;s it! Upgrading is simple as well, as explained in the <a href="https://github.com/mxcl/homebrew/wiki/FAQ">Homebrew FAQ</a>:</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 </pre></td><td class='code'><pre><code class=''><span class='line'>brew update
 </span><span class='line'>brew upgrade drush</span></code></pre></td></tr></table></div></figure>
 
-<h2 id="toc_1">PEAR</h2>
 
-<p>Whether you&#39;ve installed your own copy of PHP with Homebrew, are using the one included with MAMP, or the version provided by OS X, drush is easy to install using the <code>pear</code> command.</p>
+<h2>PEAR</h2>
 
-<p>If you are using the built-in php with OS X, you&#39;ll need to prefix each command with <code>sudo</code>.</p>
+<p>Whether you&rsquo;ve installed your own copy of PHP with Homebrew, are using the one included with MAMP, or the version provided by OS X, drush is easy to install using the <code>pear</code> command.</p>
+
+<p>If you are using the built-in php with OS X, you&rsquo;ll need to prefix each command with <code>sudo</code>.</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class=''><span class='line'>pear channel-discover pear.drush.org</span></code></pre></td></tr></table></div></figure>
+
 
 <p><strong>Homebrew Note:</strong> If you are using Homebrew and get an error about not being able to create a lock file, run the following command (change php54 to php53 if applicable): <code>touch $(brew --prefix php54)/lib/php/.lock &amp;&amp; chmod 0644 $(brew --prefix php54)/lib/php/.lock</code></p>
 
@@ -778,7 +801,7 @@ Reference 2: <a href="http://jsdelfino.blogspot.com/2012/08/autoconf-and-automak
 <span class='line-number'>2</span>
 </pre></td><td class='code'><pre><code class=''><span class='line'>pear install drush/drush
 </span><span class='line'>pear upgrade --force Console_Getopt</span></code></pre></td></tr></table></div></figure>
-    
+
 
 <p><strong>Homebrew Note:</strong> If you do not have drush available in your path after installing, relink PHP and you should then have the symlink available in <em>/usr/local/bin</em>: <code>brew unlink php54 &amp;&amp; brew link php54</code></p>
 
@@ -789,7 +812,8 @@ Reference 2: <a href="http://jsdelfino.blogspot.com/2012/08/autoconf-and-automak
 </pre></td><td class='code'><pre><code class=''><span class='line'>pear channel-update pear.drush.org
 </span><span class='line'>pear upgrade drush</span></code></pre></td></tr></table></div></figure>
 
-<h2 id="toc_2">Git</h2>
+
+<h2>Git</h2>
 
 <p>If you would prefer to keep track of the source code for Drush, or perhaps be a contributor, you will want to use Git so you can easily make and keep track of changes. If you do not have git installed on your system, install <a href="http://itunes.apple.com/us/app/xcode/id497799835?mt=12">Xcode</a> or <a href="http://developer.apple.com/downloads">Command Line Tools for Xcode</a> and then proceed. These commands will clone the drush repository, checkout the latest stable tag, and create a symlink in <em>/usr/local/bin</em>:</p>
 
@@ -806,6 +830,7 @@ Reference 2: <a href="http://jsdelfino.blogspot.com/2012/08/autoconf-and-automak
 </span><span class='line'>cd /usr/local/bin 2&gt;/dev/null || mkdir /usr/local/bin && cd /usr/local/bin
 </span><span class='line'>ln -s ../drush/drush || sudo ln -s ../drush/drush</span></code></pre></td></tr></table></div></figure>
 
+
 <p>To update, fetch the latest code and grab the latest stable tag:</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
@@ -814,6 +839,7 @@ Reference 2: <a href="http://jsdelfino.blogspot.com/2012/08/autoconf-and-automak
 </pre></td><td class='code'><pre><code class=''><span class='line'>cd /usr/local/drush
 </span><span class='line'>git fetch
 </span><span class='line'>git checkout $(git tag|grep "^[0-9]"|egrep -v "alpha|beta|rc"|tail -1)</span></code></pre></td></tr></table></div></figure>
+
 
 <p>If you have any questions or improvements, please leave a comment!</p>
 </div>
@@ -851,11 +877,11 @@ Reference 2: <a href="http://jsdelfino.blogspot.com/2012/08/autoconf-and-automak
   </header>
 
 
-  <div class="entry-content"><p>In each of my posts on setting up a <a href="http://echodittolabs.org/blog/2012/04/os-x-107-lion-development-nginx-php-mariadb-homebrew">local</a> <a href="http://echodittolabs.org/blog/2011/10/os-x-107-lion-development-macports">development</a> <a href="http://echodittolabs.org/blog/2011/09/os-x-107-lion-development-native-apache-php-homebrew-mysql-or-mariadb">environment</a> <a href="http://echodittolabs.org/blog/2011/08/os-x-107-lion-development-native-mamp-mysql-installer">on OS X</a>, it&#39;s mentioned that you need to add your website&#39;s domain, even though it&#39;s local, in your /etc/hosts file. My preferred way to edit the hosts file on OS X is using <a href="http://code.google.com/p/gmask/">Gas Mask</a>. If you wanted to create the local virtual host <strong>projectx.dev</strong>, you would add the line <code>127.0.0.1 projectx.dev</code> in /etc/hosts or with Gas Mask, and then use that same value in either <strong>ServerName</strong> in Apache or <strong>server_name</strong> in Nginx. This can be tedious for adding new sites. Luckily there&#39;s a way to set this up once and then never have to edit your hosts file again for adding new local virtual hosts.</p>
+  <div class="entry-content"><p>In each of my posts on setting up a <a href="http://echodittolabs.org/blog/2012/04/os-x-107-lion-development-nginx-php-mariadb-homebrew">local</a> <a href="http://echodittolabs.org/blog/2011/10/os-x-107-lion-development-macports">development</a> <a href="http://echodittolabs.org/blog/2011/09/os-x-107-lion-development-native-apache-php-homebrew-mysql-or-mariadb">environment</a> <a href="http://echodittolabs.org/blog/2011/08/os-x-107-lion-development-native-mamp-mysql-installer">on OS X</a>, it&rsquo;s mentioned that you need to add your website&rsquo;s domain, even though it&rsquo;s local, in your /etc/hosts file. My preferred way to edit the hosts file on OS X is using <a href="http://code.google.com/p/gmask/">Gas Mask</a>. If you wanted to create the local virtual host <strong>projectx.dev</strong>, you would add the line <code>127.0.0.1 projectx.dev</code> in /etc/hosts or with Gas Mask, and then use that same value in either <strong>ServerName</strong> in Apache or <strong>server_name</strong> in Nginx. This can be tedious for adding new sites. Luckily there&rsquo;s a way to set this up once and then never have to edit your hosts file again for adding new local virtual hosts.</p>
 
-<p>You&#39;ll need a copy of dnsmasq, and I find this is most easily installed via Homebrew. If you haven&#39;t already, grab either <a href="http://itunes.apple.com/us/app/xcode/id448457090">Xcode</a> or <a href="http://kennethreitz.com/xcode-gcc-and-homebrew.html">Xcode Command Line Tools</a> and <a href="https://github.com/mxcl/homebrew/wiki/installation">install Homebrew</a>.</p>
+<p>You&rsquo;ll need a copy of dnsmasq, and I find this is most easily installed via Homebrew. If you haven&rsquo;t already, grab either <a href="http://itunes.apple.com/us/app/xcode/id448457090">Xcode</a> or <a href="http://kennethreitz.com/xcode-gcc-and-homebrew.html">Xcode Command Line Tools</a> and <a href="https://github.com/mxcl/homebrew/wiki/installation">install Homebrew</a>.</p>
 
-<p>The steps below will install dnsmasq from Homebrew, configure dnsmasq to return the IP address &#39;127.0.0.1&#39; for all requests to the fake top-level-domain &quot;.dev,&quot; start dnsmasq on boot (don&#39;t worry, it&#39;s an extremely light-weight process), and configure OS X to use dnsmasq for queries ending in &quot;.dev.&quot;</p>
+<p>The steps below will install dnsmasq from Homebrew, configure dnsmasq to return the IP address &lsquo;127.0.0.1&rsquo; for all requests to the fake top-level-domain &ldquo;.dev,&rdquo; start dnsmasq on boot (don&rsquo;t worry, it&rsquo;s an extremely light-weight process), and configure OS X to use dnsmasq for queries ending in &ldquo;.dev.&rdquo;</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -872,7 +898,8 @@ Reference 2: <a href="http://jsdelfino.blogspot.com/2012/08/autoconf-and-automak
 </span><span class='line'>sudo mkdir -v /etc/resolver
 </span><span class='line'>sudo bash -c 'echo "nameserver 127.0.0.1" &gt; /etc/resolver/dev'</span></code></pre></td></tr></table></div></figure>
 
-<p>That&#39;s it! You can run <code>scutil --dns</code> to show all of your current resolvers, and you should see that all requests for a domain ending in .dev will go to the DNS server at 127.0.0.1:</p>
+
+<p>That&rsquo;s it! You can run <code>scutil --dns</code> to show all of your current resolvers, and you should see that all requests for a domain ending in .dev will go to the DNS server at 127.0.0.1:</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -881,7 +908,8 @@ Reference 2: <a href="http://jsdelfino.blogspot.com/2012/08/autoconf-and-automak
 </span><span class='line'>  domain   : dev
 </span><span class='line'>  nameserver[0] : 127.0.0.1</span></code></pre></td></tr></table></div></figure>
 
-<p>If you ping any domain that ends in .dev, you&#39;ll get the IP address 127.0.0.1 back as a result:</p>
+
+<p>If you ping any domain that ends in .dev, you&rsquo;ll get the IP address 127.0.0.1 back as a result:</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -890,9 +918,10 @@ Reference 2: <a href="http://jsdelfino.blogspot.com/2012/08/autoconf-and-automak
 </span><span class='line'>PING thereisnowaythisisarealdomain.dev (127.0.0.1): 56 data bytes
 </span><span class='line'>64 bytes from 127.0.0.1: icmp_seq=0 ttl=64 time=0.057 ms</span></code></pre></td></tr></table></div></figure>
 
-<p>Note that if you&#39;re using Mountain Lion you may need to reboot before the /etc/resolver settings take effect globally. I was able to get pings to work right away but Chrome would not resolve properly until I restarted.</p>
 
-<p>Now you can set up a new virtual host with <strong>anydomain.dev</strong>, and it&#39;ll be available as soon as you reload Apache or Nginx! You could extend this by enabling <a href="http://httpd.apache.org/docs/2.2/vhosts/mass.html">Mass Virtual Hosting for Apache</a> or <a href="http://forum.nginx.org/read.php?2,218617,218617#msg-218617">similar with Nginx</a>, though both require consistent layout of directories. Have fun configuring less stuff on your system!</p>
+<p>Note that if you&rsquo;re using Mountain Lion you may need to reboot before the /etc/resolver settings take effect globally. I was able to get pings to work right away but Chrome would not resolve properly until I restarted.</p>
+
+<p>Now you can set up a new virtual host with <strong>anydomain.dev</strong>, and it&rsquo;ll be available as soon as you reload Apache or Nginx! You could extend this by enabling <a href="http://httpd.apache.org/docs/2.2/vhosts/mass.html">Mass Virtual Hosting for Apache</a> or <a href="http://forum.nginx.org/read.php?2,218617,218617#msg-218617">similar with Nginx</a>, though both require consistent layout of directories. Have fun configuring less stuff on your system!</p>
 </div>
   
   
@@ -928,13 +957,14 @@ Reference 2: <a href="http://jsdelfino.blogspot.com/2012/08/autoconf-and-automak
   </header>
 
 
-  <div class="entry-content"><p><a href="http://echodittolabs.org/blog/2012/04/os-x-107-lion-development-nginx-php-mariadb-homebrew">In my previous post</a>, I walked through how to set up a local environment using Nginx running on port 8080 so as to avoid running anything as root or with sudo. Something that I&#39;ve found incredibly annoying is when I forget to specify the port I get an error in my browser, or Chrome might even suggest something based on a search term. It&#39;s fairly easy though to configure Apache to route everything to another port.</p>
+  <div class="entry-content"><p><a href="http://echodittolabs.org/blog/2012/04/os-x-107-lion-development-nginx-php-mariadb-homebrew">In my previous post</a>, I walked through how to set up a local environment using Nginx running on port 8080 so as to avoid running anything as root or with sudo. Something that I&rsquo;ve found incredibly annoying is when I forget to specify the port I get an error in my browser, or Chrome might even suggest something based on a search term. It&rsquo;s fairly easy though to configure Apache to route everything to another port.</p>
 
-<p>Create the file <em>/etc/apache2/other/port8080-redirect.conf</em> as root. It&#39;s probably easiest to hop into Terminal and use nano:</p>
+<p>Create the file <em>/etc/apache2/other/port8080-redirect.conf</em> as root. It&rsquo;s probably easiest to hop into Terminal and use nano:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'>sudo nano -w /etc/apache2/other/port8080-redirect.conf
 </span></code></pre></td></tr></table></div></figure>
+
 
 <p>Enter the following lines and save and exit the editor.</p>
 
@@ -952,11 +982,12 @@ Reference 2: <a href="http://jsdelfino.blogspot.com/2012/08/autoconf-and-automak
 </span><span class='line'><span class="nt">&lt;/VirtualHost&gt;</span>
 </span></code></pre></td></tr></table></div></figure>
 
-<p>Even though the <em>DocumentRoot</em> doesn&#39;t appear to be necessary, I wasn&#39;t able to get this working without it.</p>
 
-<p>Go into System Preferences, open the Sharing preference pane, and check the box for Web Sharing. If you have trouble getting the check to &quot;stick,&quot; you can run the following in Terminal: <code>sudo apachectl restart</code></p>
+<p>Even though the <em>DocumentRoot</em> doesn&rsquo;t appear to be necessary, I wasn&rsquo;t able to get this working without it.</p>
 
-<p>Now if you go in your browser and hit a domain you have defined in <em>/etc/hosts</em>, like <strong><a href="http://drupal.local/">http://drupal.local/</a></strong>, you&#39;ll automatically be redirected to <strong><a href="http://drupal.local:8080/">http://drupal.local:8080/</a></strong></p>
+<p>Go into System Preferences, open the Sharing preference pane, and check the box for Web Sharing. If you have trouble getting the check to &ldquo;stick,&rdquo; you can run the following in Terminal: <code>sudo apachectl restart</code></p>
+
+<p>Now if you go in your browser and hit a domain you have defined in <em>/etc/hosts</em>, like <strong><a href="http://drupal.local/**,">http://drupal.local/**,</a> you&rsquo;ll automatically be redirected to </strong><a href="http://drupal.local:8080/**">http://drupal.local:8080/**</a></p>
 </div>
   
   
@@ -992,11 +1023,11 @@ Reference 2: <a href="http://jsdelfino.blogspot.com/2012/08/autoconf-and-automak
   </header>
 
 
-  <div class="entry-content"><p><a href="http://wiki.nginx.org">Nginx</a> is quickly becoming a popular, low resource alternative to Apache for many websites. This doesn&#39;t come without challenges, such as using PHP as CGI due to not having mod_php available. Nginx also does not use any Apache configuration rules, nor does it use .htaccess or anything like it, so it requires additional configuration regardless of the web application being deployed. A big help in getting Nginx started with Drupal is <a href="https://github.com/perusio">António P. P. Almeida&#39;s</a> <a href="https://github.com/perusio/drupal-with-nginx/">drupal-with-nginx configuration</a>, which makes it fairly simple to deploy in Linux. But what about local development on OS X? Read on to learn get all of the required components set up for your system, as well as the modifications necessary to get drupal-with-nginx set up on OS X.</p>
+  <div class="entry-content"><p><a href="http://wiki.nginx.org">Nginx</a> is quickly becoming a popular, low resource alternative to Apache for many websites. This doesn&rsquo;t come without challenges, such as using PHP as CGI due to not having mod_php available. Nginx also does not use any Apache configuration rules, nor does it use .htaccess or anything like it, so it requires additional configuration regardless of the web application being deployed. A big help in getting Nginx started with Drupal is <a href="https://github.com/perusio">António P. P. Almeida&rsquo;s</a> <a href="https://github.com/perusio/drupal-with-nginx/">drupal-with-nginx configuration</a>, which makes it fairly simple to deploy in Linux. But what about local development on OS X? Read on to learn get all of the required components set up for your system, as well as the modifications necessary to get drupal-with-nginx set up on OS X.</p>
 
-<h2 id="toc_0">Prerequisites</h2>
+<h2>Prerequisites</h2>
 
-<p>We&#39;ll be building all of our packages with <a href="http://mxcl.github.com/homebrew/">Homebrew</a>, which is, in my opinion, one of the best ways to easily add lot&#39;s of great open-source software on OS X. Homebrew requires that you have a compiler, so you can either install the huge <a href="http://itunes.apple.com/us/app/xcode/id448457090">Xcode package</a>, or I would recommend Apple&#39;s <a href="http://kennethreitz.com/xcode-gcc-and-homebrew.html">Xcode Command Line Tools</a> which is a much smaller download and officially supported by Homebrew.</p>
+<p>We&rsquo;ll be building all of our packages with <a href="http://mxcl.github.com/homebrew/">Homebrew</a>, which is, in my opinion, one of the best ways to easily add lot&rsquo;s of great open-source software on OS X. Homebrew requires that you have a compiler, so you can either install the huge <a href="http://itunes.apple.com/us/app/xcode/id448457090">Xcode package</a>, or I would recommend Apple&rsquo;s <a href="http://kennethreitz.com/xcode-gcc-and-homebrew.html">Xcode Command Line Tools</a> which is a much smaller download and officially supported by Homebrew.</p>
 
 <p>Once you have either Xcode or Xcode Command Line Tools installed, <a href="https://github.com/mxcl/homebrew/wiki/installation">install Homebrew</a>.</p>
 
@@ -1004,9 +1035,9 @@ Reference 2: <a href="http://jsdelfino.blogspot.com/2012/08/autoconf-and-automak
 
 <p>Also note that many times in this post you will see <strong>/n</strong>; make sure you type those or include them with your copy and paste, they are not CMS errors :)</p>
 
-<h2 id="toc_1">Database: MariaDB</h2>
+<h2>Database: MariaDB</h2>
 
-<p>I&#39;ve <a href="http://echodittolabs.org/blog/2011/09/os-x-107-lion-development-native-apache-php-homebrew-mysql-or-mariadb">covered before why I like MariaDB</a>, but you could easily swap this out with MySQL if you would rather. We&#39;ll start by installing MariaDB with Homebrew.</p>
+<p>I&rsquo;ve <a href="http://echodittolabs.org/blog/2011/09/os-x-107-lion-development-native-apache-php-homebrew-mysql-or-mariadb">covered before why I like MariaDB</a>, but you could easily swap this out with MySQL if you would rather. We&rsquo;ll start by installing MariaDB with Homebrew.</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -1027,11 +1058,13 @@ Reference 2: <a href="http://jsdelfino.blogspot.com/2012/08/autoconf-and-automak
 </span><span class='line'><span class="o">[</span> -f ~/Library/LaunchAgents/homebrew.mxcl.mariadb.plist <span class="o">]</span> <span class="o">&amp;&amp;</span> launchctl load -w ~/Library/LaunchAgents/homebrew.mxcl.mariadb.plist
 </span><span class='line'><span class="k">$(</span>brew --prefix mariadb<span class="k">)</span>/bin/mysql_secure_installation
 </span></code></pre></td></tr></table></div></figure>
-Note: you could alternatively run: `$(brew &#8211;prefix mariadb)/bin/mysqladmin -u root password &#8216;new-password&#8217;` instead of `mysql_secure_installation`
 
-## PHP
 
-OS X comes with PHP installed, but it doesn&#8217;t come with PHP-FPM. While it&#8217;s likely possible to run PHP as FastCGI with the built-in OS X, I prefer to install PHP with Homebrew since we&#8217;re using Homebrew for everything else, and it keeps everything self-contained in Homebrew&#8217;s root (defaults to /usr/local). Note that the `brew tap` command requires [Homebrew 0.9 or greater](https://github.com/mxcl/homebrew/wiki/Homebrew-0.9).
+<p>Note: you could alternatively run: <code>$(brew --prefix mariadb)/bin/mysqladmin -u root password 'new-password'</code> instead of <code>mysql_secure_installation</code></p>
+
+<h2>PHP</h2>
+
+<p>OS X comes with PHP installed, but it doesn&rsquo;t come with PHP-FPM. While it&rsquo;s likely possible to run PHP as FastCGI with the built-in OS X, I prefer to install PHP with Homebrew since we&rsquo;re using Homebrew for everything else, and it keeps everything self-contained in Homebrew&rsquo;s root (defaults to /usr/local). Note that the <code>brew tap</code> command requires <a href="https://github.com/mxcl/homebrew/wiki/Homebrew-0.9">Homebrew 0.9 or greater</a>.</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -1051,6 +1084,7 @@ OS X comes with PHP installed, but it doesn&#8217;t come with PHP-FPM. While it&
 </span><span class='line'><span class="o">[</span> -f ~/Library/LaunchAgents/org.php-fpm.plist <span class="o">]</span> <span class="o">&amp;&amp;</span> launchctl load -w ~/Library/LaunchAgents/org.php-fpm.plist
 </span></code></pre></td></tr></table></div></figure>
 
+
 <p>I would recommend the following settings for full compatibility with drupal-with-nginx, and to set the time zone to silence a lot of PHP warnings:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
@@ -1063,15 +1097,17 @@ OS X comes with PHP installed, but it doesn&#8217;t come with PHP-FPM. While it&
 </span><span class='line'>sed -i <span class="s1">&#39;&#39;</span> <span class="s2">&quot;s|;\(date\.timezone[[:space:]]*=\).*|\1 $(php -d &#39;error_reporting=&#39; -r &#39;echo date(&quot;</span>e<span class="s2">&quot;, time());&#39;)|g&quot;</span> <span class="k">$(</span>brew --prefix<span class="k">)</span>/etc/php.ini
 </span></code></pre></td></tr></table></div></figure>
 
+
 <p>By default, PHP-FPM runs on a socket, which means that connections to PHP-FPM will require using TCP. You also have the option to use Unix sockets, which means slightly less overhead in PHP-FPM connections. Note that the drupal-with-nginx repository is set up for TCP by default, though if you choose to run the following command I will tell you how to use Unix sockets with Nginx.</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'>sed -i <span class="s1">&#39;&#39;</span> <span class="s1">&#39;s|\(listen[[:space:]]*=[[:space:]]*\)127.0.0.1:9000|\1var/www.sock|g&#39;</span> <span class="k">$(</span>brew --prefix<span class="k">)</span>/etc/php-fpm.conf
 </span></code></pre></td></tr></table></div></figure>
 
-<h3 id="toc_2">Optional: PHP Extensions</h3>
 
-<p>The <a href="https://github.com/josegonzalez/homebrew-php">third-party Homebrew keg that we &quot;tapped&quot; into</a> also provides easy formulas for PHP extensions. None of these are required to run Nginx and Drupal locally. You may also note that <em>uploadprogress</em> does not work with anything but mod_php, but by installing it now you could theoretically use the same PHP installation with Apache if you wanted and already have it ready to go. Feel free to omit it, or any of these below, though I would at least recommend APC for performance reasons.</p>
+<h3>Optional: PHP Extensions</h3>
+
+<p>The <a href="https://github.com/josegonzalez/homebrew-php">third-party Homebrew keg that we &ldquo;tapped&rdquo; into</a> also provides easy formulas for PHP extensions. None of these are required to run Nginx and Drupal locally. You may also note that <em>uploadprogress</em> does not work with anything but mod_php, but by installing it now you could theoretically use the same PHP installation with Apache if you wanted and already have it ready to go. Feel free to omit it, or any of these below, though I would at least recommend APC for performance reasons.</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -1097,15 +1133,17 @@ OS X comes with PHP installed, but it doesn&#8217;t come with PHP-FPM. While it&
 </span><span class='line'><span class="nb">echo</span> -e <span class="s2">&quot;\n[xhprof]\nextension=\&quot;$(brew --prefix xhprof-php)/xhprof.so\&quot;&quot;</span> &gt;&gt; <span class="k">$(</span>brew --prefix<span class="k">)</span>/etc/php.ini
 </span></code></pre></td></tr></table></div></figure>
 
-<p>Once you&#39;ve finished configuring PHP, you can reload the settings for PHP-FPM (or, you could find the pid of the first php-fpm process and send it the SIGUSR2 signal; this is easier):</p>
+
+<p>Once you&rsquo;ve finished configuring PHP, you can reload the settings for PHP-FPM (or, you could find the pid of the first php-fpm process and send it the SIGUSR2 signal; this is easier):</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span> -f ~/Library/LaunchAgents/org.php-fpm.plist <span class="o">]</span> <span class="o">&amp;&amp;</span> launchctl unload -w ~/Library/LaunchAgents/org.php-fpm.plist <span class="o">&amp;&amp;</span> launchctl load -w ~/Library/LaunchAgents/org.php-fpm.plist
 </span></code></pre></td></tr></table></div></figure>
 
-<h2 id="toc_3">Nginx</h2>
 
-<p>After compiling MariaDB and PHP, you&#39;re probably not too excited about compiling another application. Luckily, Nginx is a faily quick build, at least compared to MariaDB and PHP. We&#39;ll include some build options not on by default since they add features references in drupal-with-nginx, and we&#39;ll also add some 3rd party extensions as well. We&#39;ll start by grabbing those extensions:</p>
+<h2>Nginx</h2>
+
+<p>After compiling MariaDB and PHP, you&rsquo;re probably not too excited about compiling another application. Luckily, Nginx is a faily quick build, at least compared to MariaDB and PHP. We&rsquo;ll include some build options not on by default since they add features references in drupal-with-nginx, and we&rsquo;ll also add some 3rd party extensions as well. We&rsquo;ll start by grabbing those extensions:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -1113,13 +1151,15 @@ OS X comes with PHP installed, but it doesn&#8217;t come with PHP-FPM. While it&
 </span><span class='line'>curl -s -L -o /tmp/nginx-fair.tar.gz http://github.com/gnosek/nginx-upstream-fair/tarball/master <span class="o">&amp;&amp;</span> mkdir /tmp/nginx-fair <span class="o">&amp;&amp;</span> tar zxpf /tmp/nginx-fair.tar.gz --strip-components 1 -C /tmp/nginx-fair <span class="o">&amp;&amp;</span> rm /tmp/nginx-fair.tar.gz
 </span></code></pre></td></tr></table></div></figure>
 
+
 <p>The next section is one giant line of sed regex that will edit the Homebrew formula for nginx to add the additional compile options that we need. Make sure it all gets entered as one line (yes, you should use copy and paste here)!</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'>sed -i <span class="s1">&#39;-default&#39;</span> <span class="s1">&#39;s/\([[:space:]]*\[&#39;</span><span class="se">\&#39;</span><span class="s1">&#39;--\)\(with-webdav\)\(&#39;</span><span class="se">\&#39;</span><span class="s1">&#39;,[[:space:]]*&quot;\)\(Compile with support for WebDAV module\)\(&quot;\]\)/\1\2\3\4\5,%\1with-realip\3Compile with support for RealIP module\5,%\1with-gzip_static\3Compile with support for Gzip Static module\5,%\1with-uploadprogress\3Compile with support for Upload Progress module\5,%\1with-fair\3Compile with support for Fair module\5,%\1with-mp4\3Compile with support for MP4 module\5,%\1with-flv\3Compile with support for FLV module\5,%\1with-stub_status\3Compile with support for Stub Status module\5/; s/\([[:space:]]* args &lt;&lt; &quot;--\)\(with-http_dav_module\)\(&quot; if ARGV.include? &#39;</span><span class="se">\&#39;</span><span class="s1">&#39;--with-\)\(webdav\)\(&#39;</span><span class="se">\&#39;</span><span class="s1">&#39;.*\)/\1\2\3\4\5%\1with-http_realip_module\3realip\5%\1with-http_gzip_static_module\3gzip_static\5%\1add-module=\/tmp\/nginx-upload-progress\3uploadprogress\5%\1add-module=\/tmp\/nginx-fair\3fair\5%\1with-http_mp4_module\3mp4\5%\1with-http_flv_module\3flv\5%\1with-http_stub_status_module\3stub_status\5/; y/%/\n/&#39;</span> <span class="k">$(</span>brew --prefix<span class="k">)</span>/Library/Formula/nginx.rb
 </span></code></pre></td></tr></table></div></figure>
 
-<p>Now we&#39;ll install Nginx with our new build options and extensions and start it.</p>
+
+<p>Now we&rsquo;ll install Nginx with our new build options and extensions and start it.</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -1135,9 +1175,10 @@ OS X comes with PHP installed, but it doesn&#8217;t come with PHP-FPM. While it&
 </span><span class='line'><span class="o">[</span> -f ~/Library/LaunchAgents/homebrew.mxcl.nginx.plist <span class="o">]</span> <span class="o">&amp;&amp;</span> launchctl load -w ~/Library/LaunchAgents/homebrew.mxcl.nginx.plist
 </span></code></pre></td></tr></table></div></figure>
 
-<h2 id="toc_4">Nginx-With-Drupal</h2>
 
-<p>We&#39;re now ready to set up Nginx to work with Drupal. <a href="https://github.com/alanthing/drupal-with-nginx/tree/osx-1.0.x">I&#39;ve created a fork of the original repository</a> to make some necessary changes for OS X. I also make several changes for the stable 1.0.x branch of Nginx, which we&#39;ve just installed, rather than the unstable 1.1.x branch that is in the original configuration.</p>
+<h2>Nginx-With-Drupal</h2>
+
+<p>We&rsquo;re now ready to set up Nginx to work with Drupal. <a href="https://github.com/alanthing/drupal-with-nginx/tree/osx-1.0.x">I&rsquo;ve created a fork of the original repository</a> to make some necessary changes for OS X. I also make several changes for the stable 1.0.x branch of Nginx, which we&rsquo;ve just installed, rather than the unstable 1.1.x branch that is in the original configuration.</p>
 
 <p>If you want to stick with the original project, <a href="https://github.com/alanthing/drupal-with-nginx/commit/f13f7d8ce9af0853a5601dcbb90c5e0c2ed8dadd">check out the changes I made for OS X and 1.0.x</a> and you can apply them yourself and skip the git steps below.</p>
 
@@ -1159,27 +1200,30 @@ OS X comes with PHP installed, but it doesn&#8217;t come with PHP-FPM. While it&
 </span><span class='line'>cp -a ../sites-available/example.com.conf yournewsite.conf
 </span></code></pre></td></tr></table></div></figure>
 
-<p>That&#39;s about as much as I can automate for you with copy+paste-able commands! You&#39;ll want to do the following to <em>yournewsite</em>.conf, which you can rename to be anything, to configure Nginx for your website:</p>
+
+<p>That&rsquo;s about as much as I can automate for you with copy+paste-able commands! You&rsquo;ll want to do the following to <em>yournewsite</em>.conf, which you can rename to be anything, to configure Nginx for your website:</p>
 
 <ul>
-<li>  Change <code>server_name</code>, <code>access_log</code>, and <code>error_log</code> to use your local domain name for your virtual host</li>
-<li>  Change root to the path of your Drupal installation. On my system, this may be <em>/Users/alan/Sites/drupal-7.14</em>. Note that you cannot use <em>~</em> in place of <em>/Users/name</em></li>
-<li>  Unless you have a valid SSL certificate, you&#39;ll probably want to completely delete the second half of the file. So find the line containing <code>} HTTP server</code> and remove all following lines</li>
-<li>  If you&#39;re using Boost with Drupal 7, or Drupal 6 with/without Boost, note that you&#39;ll want to comment out the <code>include sites-available/drupal.conf</code> line and uncomment the other relevant one for your site</li>
-<li>  If you want to get additional status messages from PHP-FPM, uncomment <code>include php_fpm_status_vhost.conf</code> in this file, and also <code>include php_fpm_status_allowed_hosts.conf</code> in <code>$(brew --prefix)/etc/nginx/nginx.conf</code></li>
-<li>  If you configured PHP-FPM earlier to use Unix sockets instead of TCP, open nginx.conf and comment out <code>include upstream_phpcgi_tcp.conf</code> and uncomment <code>include upstream_phpcgi_unix.conf</code></li>
-<li>  Depending on the location of your files directory, you may need to edit the <code>sites-available/drupal.conf</code> (or other drupal*.conf) file and change the relevant sites/default/files paths appropriately</li>
+<li>Change <code>server_name</code>, <code>access_log</code>, and <code>error_log</code> to use your local domain name for your virtual host</li>
+<li>Change root to the path of your Drupal installation. On my system, this may be <em>/Users/alan/Sites/drupal-7.14</em>. Note that you cannot use <em>~</em> in place of <em>/Users/name</em></li>
+<li>Unless you have a valid SSL certificate, you&rsquo;ll probably want to completely delete the second half of the file. So find the line containing <code>} HTTP server</code> and remove all following lines</li>
+<li>If you&rsquo;re using Boost with Drupal 7, or Drupal 6 with/without Boost, note that you&rsquo;ll want to comment out the <code>include sites-available/drupal.conf</code> line and uncomment the other relevant one for your site</li>
+<li>If you want to get additional status messages from PHP-FPM, uncomment <code>include php_fpm_status_vhost.conf</code> in this file, and also <code>include php_fpm_status_allowed_hosts.conf</code> in <code>$(brew --prefix)/etc/nginx/nginx.conf</code></li>
+<li>If you configured PHP-FPM earlier to use Unix sockets instead of TCP, open nginx.conf and comment out <code>include upstream_phpcgi_tcp.conf</code> and uncomment <code>include upstream_phpcgi_unix.conf</code></li>
+<li>Depending on the location of your files directory, you may need to edit the <code>sites-available/drupal.conf</code> (or other drupal*.conf) file and change the relevant sites/default/files paths appropriately</li>
 </ul>
 
-<p>Once you&#39;re finished editing your virtual host conf file (and possibly nginx.conf), you can reload nginx easily:</p>
+
+<p>Once you&rsquo;re finished editing your virtual host conf file (and possibly nginx.conf), you can reload nginx easily:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="k">$(</span>brew --prefix<span class="k">)</span>/sbin/nginx -s reload
 </span></code></pre></td></tr></table></div></figure>
 
-<h2 id="toc_5">Bonus: Drush</h2>
 
-<p>You&#39;ll need Drush to install a new Drupal site, as install.php is blocked for security reasons by default. Also, you&#39;ll find cron.php is inaccessible as well. There&#39;s a weird little hack required to get Drush installed with Homebrew without requiring sudo, so below is an example of how to both get around the sudo requirement and set up a blank Drupal 7 website (note that using the root MySQL user is bad form, but this is meant more as a quick demo of using drush with this setup than a recommended setup).</p>
+<h2>Bonus: Drush</h2>
+
+<p>You&rsquo;ll need Drush to install a new Drupal site, as install.php is blocked for security reasons by default. Also, you&rsquo;ll find cron.php is inaccessible as well. There&rsquo;s a weird little hack required to get Drush installed with Homebrew without requiring sudo, so below is an example of how to both get around the sudo requirement and set up a blank Drupal 7 website (note that using the root MySQL user is bad form, but this is meant more as a quick demo of using drush with this setup than a recommended setup).</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -1202,6 +1246,7 @@ OS X comes with PHP installed, but it doesn&#8217;t come with PHP-FPM. While it&
 </span><span class='line'><span class="nb">cd </span>drupal-7.14
 </span><span class='line'>drush si --db-url<span class="o">=</span>mysql://root:yourpassword@localhost/drupal
 </span></code></pre></td></tr></table></div></figure>
+
 </div>
   
   
@@ -1237,22 +1282,28 @@ OS X comes with PHP installed, but it doesn&#8217;t come with PHP-FPM. While it&
   </header>
 
 
-  <div class="entry-content"><p><strong><em>Update:</em> This no longer appears to be necessary as of nodejs 0.8.0.</strong> It may have been fixed earlier but I noticed neither of these changes are necessary anymore. Something new though, I had problems with node-gyp, and the solution was to install python26 with yum and then re-run the npm command with <code>PYTHON=&quot;/usr/bin/python26&quot; npm install -deps</code> or similar.</p>
+  <div class="entry-content"><p><strong><em>Update:</em> This no longer appears to be necessary as of nodejs 0.8.0.</strong> It may have been fixed earlier but I noticed neither of these changes are necessary anymore. Something new though, I had problems with node-gyp, and the solution was to install python26 with yum and then re-run the npm command with <code>PYTHON="/usr/bin/python26" npm install -deps</code> or similar.</p>
 
-<p>The preferred way to install node and NPM seems to be installing from source, but I&#39;m a perennial fan of using packages to keep things tidy, especially if I need to uninstall something. I started by going to the <a href="http://nodejs.org/#download">Node.js download page</a>, and through to <a href="https://github.com/joyent/node/wiki/Installing-Node.js-via-package-manager">Installing with a package manager</a>. I installed the yum release RPM for the <a href="http://nodejs.tchol.org/">tchol.org</a> repository as directed and installed <strong>nodejs</strong> and <strong>npm</strong> with yum. From there, I ran into two problems but thankfully they were fairly easy to resolve.</p>
+<p>The preferred way to install node and NPM seems to be installing from source, but I&rsquo;m a perennial fan of using packages to keep things tidy, especially if I need to uninstall something. I started by going to the <a href="http://nodejs.org/#download">Node.js download page</a>, and through to <a href="https://github.com/joyent/node/wiki/Installing-Node.js-via-package-manager">Installing with a package manager</a>. I installed the yum release RPM for the <a href="http://nodejs.tchol.org/">tchol.org</a> repository as directed and installed <strong>nodejs</strong> and <strong>npm</strong> with yum. From there, I ran into two problems but thankfully they were fairly easy to resolve.</p>
 
-<p>The first thing I wanted to do was install <a href="https://github.com/nodejitsu/forever">forever</a> globally so I could use it to keep applications running persistently. But running <code>npm install forever -g</code> kept stalling. The npm RPM installed from the tchol.org repository creates the symlink /usr/lib/node_modules to /usr/lib/nodejs. That&#39;s fine, but /usr/lib/nodejs is owned by root:root. Running a npm install command with sudo attempted to set the ownership of the NPM modules as nobody:user, and NPM wasn&#39;t exiting due to permissions for some reason.</p>
+<p>The first thing I wanted to do was install <a href="https://github.com/nodejitsu/forever">forever</a> globally so I could use it to keep applications running persistently. But running <code>npm install forever -g</code> kept stalling. The npm RPM installed from the tchol.org repository creates the symlink /usr/lib/node_modules to /usr/lib/nodejs. That&rsquo;s fine, but /usr/lib/nodejs is owned by root:root. Running a npm install command with sudo attempted to set the ownership of the NPM modules as nobody:user, and NPM wasn&rsquo;t exiting due to permissions for some reason.</p>
 
 <p>I have ACLs enabled on my file system, so I fixed this by allowing nobody write access to /usr/lib/nodejs:</p>
-<div class="highlight"><pre><code class="text">sudo setfacl -m u:nobody:rwx /usr/lib/nodejs
-</code></pre></div>
-<p>If you don&#39;t have ACLs enabled on your filesystem, you could allow nobody to be the folder owner:</p>
-<div class="highlight"><pre><code class="text">sudo chown nobody:nobody /usr/lib/nodejs
-</code></pre></div>
-<p>The second problem I ran into was, after installing forever, it wouldn&#39;t run. The nodejs package installed the binary as /usr/bin/nodejs but /usr/bin/forever begins with <strong>#!/usr/bin/env node</strong>, which will not return a valid interpreter. I wanted to install a symlink into /usr/local/bin, but some users don&#39;t always have that in their path, so I created a link via:</p>
-<div class="highlight"><pre><code class="text">sudo ln -s /usr/bin/nodejs /usr/bin/node
-</code></pre></div>
-<p>Now I&#39;m able to install anything I need to with NPM and run my Node.js applications with Forever. I&#39;m still very new to Node, so if you think I should be doing things a better way, let me know in the comments!</p>
+
+<pre><code>sudo setfacl -m u:nobody:rwx /usr/lib/nodejs
+</code></pre>
+
+<p>If you don&rsquo;t have ACLs enabled on your filesystem, you could allow nobody to be the folder owner:</p>
+
+<pre><code>sudo chown nobody:nobody /usr/lib/nodejs
+</code></pre>
+
+<p>The second problem I ran into was, after installing forever, it wouldn&rsquo;t run. The nodejs package installed the binary as /usr/bin/nodejs but /usr/bin/forever begins with <strong>#!/usr/bin/env node</strong>, which will not return a valid interpreter. I wanted to install a symlink into /usr/local/bin, but some users don&rsquo;t always have that in their path, so I created a link via:</p>
+
+<pre><code>sudo ln -s /usr/bin/nodejs /usr/bin/node
+</code></pre>
+
+<p>Now I&rsquo;m able to install anything I need to with NPM and run my Node.js applications with Forever. I&rsquo;m still very new to Node, so if you think I should be doing things a better way, let me know in the comments!</p>
 </div>
   
   
@@ -1275,7 +1326,7 @@ OS X comes with PHP installed, but it doesn&#8217;t come with PHP-FPM. While it&
   <ul id="recent_posts">
     
       <li class="post">
-        <a href="/blog/2013/05/09/speed-up-php-on-nfs-with-turbo-realpath/">Speed up PHP on NFS with turbo_realpath</a>
+        <a href="/blog/2013/05/09/speed-up-php-on-nfs-with-turbo-realpath/">Speed Up PHP on NFS With Turbo_realpath</a>
       </li>
     
       <li class="post">
@@ -1291,34 +1342,77 @@ OS X comes with PHP installed, but it doesn&#8217;t come with PHP-FPM. While it&
       </li>
     
       <li class="post">
-        <a href="/blog/2012/09/04/apache-modules-on-os-x-with-homebrew/">Apache modules on OS X with Homebrew</a>
+        <a href="/blog/2012/09/04/apache-modules-on-os-x-with-homebrew/">Apache Modules on OS X With Homebrew</a>
       </li>
     
   </ul>
 </section>
 
 <section>
-  <h1>Coderwall Badges</h1>
-  <p>
-    <script type="text/javascript">
-      function display_coderwall(args) {
-        var badges = args["data"]["badges"];
-        var wall = '';
-        for ( var i = 0; i < badges.length; i++ ) {
-          var alt_txt = badges[i]["name"];
-          var title_txt = badges[i]["name"] + ' - ' + badges[i]["description"];
-          wall += '<a href="http://coderwall.com/alanthing/"><img src="'
-            + badges[i]["badge"]
-            + '" width="48" height="48" alt="' + alt_txt
-            + '" title="' + title_txt
-            + '"/></a>';
-        }
-        document.write(wall);
-      }
-    </script>
-    <script src="http://coderwall.com/alanthing.json?callback=display_coderwall"></script>
-  </p>
+  <h1>Coderwall</h1>
+  <ul id="cw_badges">
+    <li class="loading">Status updating&#8230;</li>
+  </ul>
   
+  <div>
+    <a href="http://coderwall.com/alanthing" target="_blank" class="cw_badge"><img
+       alt="Endorse alanthing on Coderwall"
+       src="http://api.coderwall.com/alanthing/endorsecount.png" /></a>
+  </div>
+  
+
+  <script type="text/javascript">
+    var coderwall = (function(){
+      function render(options, badges){
+        var fragment = '',
+            t = $(options.target)[0],
+            height = 65,
+            width = 65,
+            index;
+
+        for (index in badges) {
+          fragment += '<a class="cw_badge"title="' + badges[index].description + '" target="_blank" href="http://coderwall.com/' + options.user + '">';
+          fragment +=   '<img alt="' + badges[index].description + '" height="' + width + '" width="' + height + '" src="' + badges[index].badge + '"/>';
+          fragment += '</a>';
+        }
+
+        t.innerHTML = fragment;
+      }
+      return {
+        showBadges: function(options){
+          $.ajax({
+              url: 'http://coderwall.com/' + options.user + '.json?callback=?'
+            , type: 'jsonp'
+            , error: function (err) { $(options.target + ' li.loading').addClass('error').text("Error loading feed"); }
+            , success: function(res) {
+                render(options, res.data.badges);
+            }
+          });
+        }
+      };
+    })();
+
+    $.domReady(function(){
+      if (!window.jXHR){
+        var jxhr = document.createElement('script');
+        jxhr.type = 'text/javascript';
+        jxhr.src = '/javascripts/libs/jXHR.js';
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(jxhr, s);
+      }
+      if (!window.$){
+        var b = document.createElement('script');
+        b.type = 'text/javascript';
+        b.src = '/javascripts/ender.js';
+        var sc = document.getElementsByTagName('script')[0];
+        sc.parentNode.insertBefore(jxhr, s);
+      }
+      coderwall.showBadges({
+        user: 'alanthing',
+        target: '#cw_badges'
+      });
+    });
+  </script>
 </section>
 
 
@@ -1409,7 +1503,7 @@ OS X comes with PHP installed, but it doesn&#8217;t come with PHP-FPM. While it&
       var twitterWidgets = document.createElement('script');
       twitterWidgets.type = 'text/javascript';
       twitterWidgets.async = true;
-      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
       document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
     })();
   </script>

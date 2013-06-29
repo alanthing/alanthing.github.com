@@ -103,13 +103,13 @@
   </header>
 
 
-<div class="entry-content"><p>With the release of Lion, there are some subtle differences to setting up a local MAMP (Mac OS X, Apache, MySQL, PHP) environment compared to Snow Leopard. In an effort to keep this from being overly wordy and just get to the good stuff, we&#39;ll dive right in, so read on to get started.</p>
+<div class="entry-content"><p>With the release of Lion, there are some subtle differences to setting up a local MAMP (Mac OS X, Apache, MySQL, PHP) environment compared to Snow Leopard. In an effort to keep this from being overly wordy and just get to the good stuff, we&rsquo;ll dive right in, so read on to get started.</p>
 
 <p>Note that for all commands before that are starting with a $, the dollar sign is showing a command-line prompt in <a href="http://www.apple.com/macosx/apps/all.html#terminal">Terminal</a>, and you should not actually type it as part of the commands.</p>
 
-<h2 id="toc_0">Apache</h2>
+<h2>Apache</h2>
 
-<p>We&#39;ll set things up so we won&#39;t need sudo often in the future, and so we can manage multiple VirtualHosts. We&#39;ll keep the Apache information and our website roots in ~/Sites, and Apache logs in ~/Sites/logs</p>
+<p>We&rsquo;ll set things up so we won&rsquo;t need sudo often in the future, and so we can manage multiple VirtualHosts. We&rsquo;ll keep the Apache information and our website roots in ~/Sites, and Apache logs in ~/Sites/logs</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -123,7 +123,8 @@
 </span><span class='line'><span class="nv">$ </span>chmod 0777 ~/Sites/logs
 </span></code></pre></td></tr></table></div></figure>
 
-<p>Edit the new <strong>~/Sites/httpd-vhosts.conf</strong> file and add the following. Note that you&#39;ll need to change all instances of &quot;/Users/name&quot; to your actual home folder path.</p>
+
+<p>Edit the new <strong>~/Sites/httpd-vhosts.conf</strong> file and add the following. Note that you&rsquo;ll need to change all instances of &ldquo;/Users/name&rdquo; to your actual home folder path.</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -191,13 +192,14 @@
 </span><span class='line'><span class="c">#&lt;/VirtualHost&gt;</span>
 </span></code></pre></td></tr></table></div></figure>
 
-<p>Launch <strong>System Preferences</strong> and go to <strong>Sharing</strong> and toggle <strong>Web Sharing</strong> off and on so it&#39;s started and reloaded with the new settings. Then click on the blue underlined link under <em>&quot;Your computer&#39;s website is available at this address:&quot;</em> to ensure Apache is working correctly, and you should see text saying &quot;It works!&quot;</p>
 
-<p>To add a site, duplicate the &lt;VirtualHost&gt; section under the Template, remove the comments, and edit appropriately. Edit /etc/hosts (or use <a href="http://code.google.com/p/gmask/">Gas Mask</a>) and add an entry for 127.0.0.1 for your project.local, and make the appropriate change in the conf file, along with the correct DocumentRoot and Log file locations. See <a href="http://httpd.apache.org/docs/2.2/vhosts/name-based.html">Apache&#39;s documentation</a> for more information.</p>
+<p>Launch <strong>System Preferences</strong> and go to <strong>Sharing</strong> and toggle <strong>Web Sharing</strong> off and on so it&rsquo;s started and reloaded with the new settings. Then click on the blue underlined link under <em>&ldquo;Your computer&rsquo;s website is available at this address:&rdquo;</em> to ensure Apache is working correctly, and you should see text saying &ldquo;It works!&rdquo;</p>
 
-<h2 id="toc_1">PHP</h2>
+<p>To add a site, duplicate the &lt;VirtualHost&gt; section under the Template, remove the comments, and edit appropriately. Edit /etc/hosts (or use <a href="http://code.google.com/p/gmask/">Gas Mask</a>) and add an entry for 127.0.0.1 for your project.local, and make the appropriate change in the conf file, along with the correct DocumentRoot and Log file locations. See <a href="http://httpd.apache.org/docs/2.2/vhosts/name-based.html">Apache&rsquo;s documentation</a> for more information.</p>
 
-<p>OS X has shipped with PHP for quite some time, but not had it enabled by default. We&#39;ll enable mod_php for Apache, and also set up an /etc/php.ini file based on the default one shipped with Lion with some development-friendly changes. Change your timezone as needed.</p>
+<h2>PHP</h2>
+
+<p>OS X has shipped with PHP for quite some time, but not had it enabled by default. We&rsquo;ll enable mod_php for Apache, and also set up an /etc/php.ini file based on the default one shipped with Lion with some development-friendly changes. Change your timezone as needed.</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -257,6 +259,7 @@
 </span><span class='line'><span class="s2">EOF&quot;</span>
 </span></code></pre></td></tr></table></div></figure>
 
+
 <p><strong>Optional:</strong> Lion ships with PEAR but not installed, whereas Snow Leopard it was installed. This will install PEAR from the phar archive, upgrade it, and add <code>pear</code> and <code>pecl</code> aliases to your shell.</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
@@ -293,21 +296,23 @@
 </span><span class='line'><span class="s2">EOF&quot;</span>
 </span></code></pre></td></tr></table></div></figure>
 
-<p>Note that installing most pecl modules will require having a compiler installed via Xcode. I&#39;ll be addressing installing <a href="http://pecl.php.net/package/uploadprogress">uploadprogress</a> and <a href="http://pecl.php.net/package/apc">APC</a> in a later post, since this walkthrough requires no compiling.</p>
+
+<p>Note that installing most pecl modules will require having a compiler installed via Xcode. I&rsquo;ll be addressing installing <a href="http://pecl.php.net/package/uploadprogress">uploadprogress</a> and <a href="http://pecl.php.net/package/apc">APC</a> in a later post, since this walkthrough requires no compiling.</p>
 
 <p>Toggle <strong>Web Sharing</strong> in <strong>System Preferences &gt; Sharing</strong> for the new PHP options to take effect.</p>
 
-<h2 id="toc_2">MySQL</h2>
+<h2>MySQL</h2>
 
 <p>MySQL is the only thing not shipped with OS X that we need for our development environment. Go to the download site for OS X pre-built binaries at <a href="http://dev.mysql.com/downloads/mysql/index.html#macosx-dmg">http://dev.mysql.com/downloads/mysql/index.html#macosx-dmg</a> and choose the <strong>DMG Archive</strong> most appropriate for your system. As of this writing, the most recent version says <em>OS X 10.6</em>, but it will work on 10.7 as well.</p>
 
-<p>Open the downloaded disk image and begin by installing the <em>mysql-5.x.x-osx10.6-x86_64.pkg</em> file. Once the Installer script is completed, install the Preference Pane by double-clicking on MySQL.prefPane. If you are not sure where to install the preference pane, choose &quot;Install for this user only.&quot;</p>
+<p>Open the downloaded disk image and begin by installing the <em>mysql-5.x.x-osx10.6-x86_64.pkg</em> file. Once the Installer script is completed, install the Preference Pane by double-clicking on MySQL.prefPane. If you are not sure where to install the preference pane, choose &ldquo;Install for this user only.&rdquo;</p>
 
 <p><strong>Optional:</strong> If you wish to have MySQL start on boot, you do need to additionally install the MySQLStartupItem.pkg file. The preference pane has a toggle for starting on boot, but it will not work until you install the pkg and you run the following in Terminal:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'>sudo chown -R root:wheel /Library/StartupItems/MySQLCOM
 </span></code></pre></td></tr></table></div></figure>
+
 
 <p>Open <strong>System Preferences</strong> and <strong>MySQL</strong> and start the database by clicking the <strong>Start MySQL Server</strong> button.</p>
 
@@ -327,13 +332,15 @@
 </span><span class='line'>ln -s /usr/local/mysql/support-files/mysql.server
 </span></code></pre></td></tr></table></div></figure>
 
-<p>This script ships with MySQL and only needs to be run once, and it should be run with sudo. As you run it, you can accept all other defaults after you set the root user&#39;s password:</p>
+
+<p>This script ships with MySQL and only needs to be run once, and it should be run with sudo. As you run it, you can accept all other defaults after you set the root user&rsquo;s password:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'>sudo /usr/local/mysql/bin/mysql_secure_installation
 </span></code></pre></td></tr></table></div></figure>
 
-<p>After installing MySQL, several sample my.cnf files are created but none is placed where MySQL can find it. Start with a &quot;small&quot; configuration file and make a few changes to increase the max_allowed_packet variable:</p>
+
+<p>After installing MySQL, several sample my.cnf files are created but none is placed where MySQL can find it. Start with a &ldquo;small&rdquo; configuration file and make a few changes to increase the max_allowed_packet variable:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -341,19 +348,21 @@
 </span><span class='line'>sudo sed -i <span class="s2">&quot;&quot;</span> <span class="s1">&#39;s/max_allowed_packet = 1.*M/max_allowed_packet = 2G/g&#39;</span> /usr/local/mysql/data/my.cnf
 </span></code></pre></td></tr></table></div></figure>
 
-<p>To load in these changes, go back to the MySQL System Preferences pane, and restart the server by pressing &quot;Stop MySQL Server&quot; followed by &quot;Start MySQL Server.&quot;</p>
 
-<h2 id="toc_3">Make PHP and MySQL Play Nice</h2>
+<p>To load in these changes, go back to the MySQL System Preferences pane, and restart the server by pressing &ldquo;Stop MySQL Server&rdquo; followed by &ldquo;Start MySQL Server.&rdquo;</p>
 
-<p>If you were to run <code>php -i|egrep &#39;mysql.*default_socket&#39;</code> you would see that PHP was compiled to expect the MySQL socket file in /var/mysql, but MySQL will place it in /tmp. This easiest fix is to tell PHP to look in /tmp:</p>
+<h2>Make PHP and MySQL Play Nice</h2>
+
+<p>If you were to run <code>php -i|egrep 'mysql.*default_socket'</code> you would see that PHP was compiled to expect the MySQL socket file in /var/mysql, but MySQL will place it in /tmp. This easiest fix is to tell PHP to look in /tmp:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'>sudo sed -i <span class="s2">&quot;&quot;</span> <span class="s1">&#39;s/\/var\/mysql\/mysql\.sock/\/tmp\/mysql\.sock/g&#39;</span> /etc/php.ini
 </span></code></pre></td></tr></table></div></figure>
 
+
 <p>Toggle <strong>Web Sharing</strong> in <strong>System Preferences &gt; Sharing</strong> for the new PHP options to take effect.</p>
 
-<h2 id="toc_4">Hooray!</h2>
+<h2>Hooray!</h2>
 
 <p>You should now be all set to keep adding more VirtualHosts in httpd-vhosts.conf and begin development on your local machine. Stay tuned for instructions on how to use <a href="http://mariadb.org/">MariaDB</a> or MySQL with <a href="http://mxcl.github.com/homebrew/">Homebrew</a> instead of the Oracle MySQL installer, and <a href="http://www.macports.org/">MacPorts</a>!</p>
 </div>
@@ -386,7 +395,7 @@
     
       <div class="sharing">
   
-  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://alanthing.com/blog/2011/08/24/os-x-107-lion-development-native-mamp-mysql-installer/" data-via="alanthing" data-counturl="http://alanthing.com/blog/2011/08/24/os-x-107-lion-development-native-mamp-mysql-installer/" >Tweet</a>
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://alanthing.com/blog/2011/08/24/os-x-107-lion-development-native-mamp-mysql-installer/" data-via="alanthing" data-counturl="http://alanthing.com/blog/2011/08/24/os-x-107-lion-development-native-mamp-mysql-installer/" >Tweet</a>
   
   
   <div class="g-plusone" data-size="medium"></div>
@@ -423,7 +432,7 @@
   <ul id="recent_posts">
     
       <li class="post">
-        <a href="/blog/2013/05/09/speed-up-php-on-nfs-with-turbo-realpath/">Speed up PHP on NFS with turbo_realpath</a>
+        <a href="/blog/2013/05/09/speed-up-php-on-nfs-with-turbo-realpath/">Speed Up PHP on NFS With Turbo_realpath</a>
       </li>
     
       <li class="post">
@@ -439,34 +448,77 @@
       </li>
     
       <li class="post">
-        <a href="/blog/2012/09/04/apache-modules-on-os-x-with-homebrew/">Apache modules on OS X with Homebrew</a>
+        <a href="/blog/2012/09/04/apache-modules-on-os-x-with-homebrew/">Apache Modules on OS X With Homebrew</a>
       </li>
     
   </ul>
 </section>
 
 <section>
-  <h1>Coderwall Badges</h1>
-  <p>
-    <script type="text/javascript">
-      function display_coderwall(args) {
-        var badges = args["data"]["badges"];
-        var wall = '';
-        for ( var i = 0; i < badges.length; i++ ) {
-          var alt_txt = badges[i]["name"];
-          var title_txt = badges[i]["name"] + ' - ' + badges[i]["description"];
-          wall += '<a href="http://coderwall.com/alanthing/"><img src="'
-            + badges[i]["badge"]
-            + '" width="48" height="48" alt="' + alt_txt
-            + '" title="' + title_txt
-            + '"/></a>';
-        }
-        document.write(wall);
-      }
-    </script>
-    <script src="http://coderwall.com/alanthing.json?callback=display_coderwall"></script>
-  </p>
+  <h1>Coderwall</h1>
+  <ul id="cw_badges">
+    <li class="loading">Status updating...</li>
+  </ul>
   
+  <div>
+    <a href="http://coderwall.com/alanthing" target="_blank" class="cw_badge"><img
+       alt="Endorse alanthing on Coderwall"
+       src="http://api.coderwall.com/alanthing/endorsecount.png" /></a>
+  </div>
+  
+
+  <script type="text/javascript">
+    var coderwall = (function(){
+      function render(options, badges){
+        var fragment = '',
+            t = $(options.target)[0],
+            height = 65,
+            width = 65,
+            index;
+
+        for (index in badges) {
+          fragment += '<a class="cw_badge"title="' + badges[index].description + '" target="_blank" href="http://coderwall.com/' + options.user + '">';
+          fragment +=   '<img alt="' + badges[index].description + '" height="' + width + '" width="' + height + '" src="' + badges[index].badge + '"/>';
+          fragment += '</a>';
+        }
+
+        t.innerHTML = fragment;
+      }
+      return {
+        showBadges: function(options){
+          $.ajax({
+              url: 'http://coderwall.com/' + options.user + '.json?callback=?'
+            , type: 'jsonp'
+            , error: function (err) { $(options.target + ' li.loading').addClass('error').text("Error loading feed"); }
+            , success: function(res) {
+                render(options, res.data.badges);
+            }
+          });
+        }
+      };
+    })();
+
+    $.domReady(function(){
+      if (!window.jXHR){
+        var jxhr = document.createElement('script');
+        jxhr.type = 'text/javascript';
+        jxhr.src = '/javascripts/libs/jXHR.js';
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(jxhr, s);
+      }
+      if (!window.$){
+        var b = document.createElement('script');
+        b.type = 'text/javascript';
+        b.src = '/javascripts/ender.js';
+        var sc = document.getElementsByTagName('script')[0];
+        sc.parentNode.insertBefore(jxhr, s);
+      }
+      coderwall.showBadges({
+        user: 'alanthing',
+        target: '#cw_badges'
+      });
+    });
+  </script>
 </section>
 
 
@@ -561,7 +613,7 @@
       var twitterWidgets = document.createElement('script');
       twitterWidgets.type = 'text/javascript';
       twitterWidgets.async = true;
-      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
       document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
     })();
   </script>

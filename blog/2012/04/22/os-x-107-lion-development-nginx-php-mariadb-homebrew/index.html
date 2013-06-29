@@ -9,7 +9,7 @@
   <meta name="author" content="Alan Ivey">
 
   
-  <meta name="description" content="Nginx is quickly becoming a popular, low resource alternative to Apache for many websites. This doesn&#39;t come without challenges, such as using &hellip;">
+  <meta name="description" content="Nginx is quickly becoming a popular, low resource alternative to Apache for many websites. This doesn&rsquo;t come without challenges, such as using &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -103,11 +103,11 @@
   </header>
 
 
-<div class="entry-content"><p><a href="http://wiki.nginx.org">Nginx</a> is quickly becoming a popular, low resource alternative to Apache for many websites. This doesn&#39;t come without challenges, such as using PHP as CGI due to not having mod_php available. Nginx also does not use any Apache configuration rules, nor does it use .htaccess or anything like it, so it requires additional configuration regardless of the web application being deployed. A big help in getting Nginx started with Drupal is <a href="https://github.com/perusio">António P. P. Almeida&#39;s</a> <a href="https://github.com/perusio/drupal-with-nginx/">drupal-with-nginx configuration</a>, which makes it fairly simple to deploy in Linux. But what about local development on OS X? Read on to learn get all of the required components set up for your system, as well as the modifications necessary to get drupal-with-nginx set up on OS X.</p>
+<div class="entry-content"><p><a href="http://wiki.nginx.org">Nginx</a> is quickly becoming a popular, low resource alternative to Apache for many websites. This doesn&rsquo;t come without challenges, such as using PHP as CGI due to not having mod_php available. Nginx also does not use any Apache configuration rules, nor does it use .htaccess or anything like it, so it requires additional configuration regardless of the web application being deployed. A big help in getting Nginx started with Drupal is <a href="https://github.com/perusio">António P. P. Almeida&rsquo;s</a> <a href="https://github.com/perusio/drupal-with-nginx/">drupal-with-nginx configuration</a>, which makes it fairly simple to deploy in Linux. But what about local development on OS X? Read on to learn get all of the required components set up for your system, as well as the modifications necessary to get drupal-with-nginx set up on OS X.</p>
 
-<h2 id="toc_0">Prerequisites</h2>
+<h2>Prerequisites</h2>
 
-<p>We&#39;ll be building all of our packages with <a href="http://mxcl.github.com/homebrew/">Homebrew</a>, which is, in my opinion, one of the best ways to easily add lot&#39;s of great open-source software on OS X. Homebrew requires that you have a compiler, so you can either install the huge <a href="http://itunes.apple.com/us/app/xcode/id448457090">Xcode package</a>, or I would recommend Apple&#39;s <a href="http://kennethreitz.com/xcode-gcc-and-homebrew.html">Xcode Command Line Tools</a> which is a much smaller download and officially supported by Homebrew.</p>
+<p>We&rsquo;ll be building all of our packages with <a href="http://mxcl.github.com/homebrew/">Homebrew</a>, which is, in my opinion, one of the best ways to easily add lot&rsquo;s of great open-source software on OS X. Homebrew requires that you have a compiler, so you can either install the huge <a href="http://itunes.apple.com/us/app/xcode/id448457090">Xcode package</a>, or I would recommend Apple&rsquo;s <a href="http://kennethreitz.com/xcode-gcc-and-homebrew.html">Xcode Command Line Tools</a> which is a much smaller download and officially supported by Homebrew.</p>
 
 <p>Once you have either Xcode or Xcode Command Line Tools installed, <a href="https://github.com/mxcl/homebrew/wiki/installation">install Homebrew</a>.</p>
 
@@ -115,9 +115,9 @@
 
 <p>Also note that many times in this post you will see <strong>/n</strong>; make sure you type those or include them with your copy and paste, they are not CMS errors :)</p>
 
-<h2 id="toc_1">Database: MariaDB</h2>
+<h2>Database: MariaDB</h2>
 
-<p>I&#39;ve <a href="http://echodittolabs.org/blog/2011/09/os-x-107-lion-development-native-apache-php-homebrew-mysql-or-mariadb">covered before why I like MariaDB</a>, but you could easily swap this out with MySQL if you would rather. We&#39;ll start by installing MariaDB with Homebrew.</p>
+<p>I&rsquo;ve <a href="http://echodittolabs.org/blog/2011/09/os-x-107-lion-development-native-apache-php-homebrew-mysql-or-mariadb">covered before why I like MariaDB</a>, but you could easily swap this out with MySQL if you would rather. We&rsquo;ll start by installing MariaDB with Homebrew.</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -138,11 +138,13 @@
 </span><span class='line'><span class="o">[</span> -f ~/Library/LaunchAgents/homebrew.mxcl.mariadb.plist <span class="o">]</span> <span class="o">&amp;&amp;</span> launchctl load -w ~/Library/LaunchAgents/homebrew.mxcl.mariadb.plist
 </span><span class='line'><span class="k">$(</span>brew --prefix mariadb<span class="k">)</span>/bin/mysql_secure_installation
 </span></code></pre></td></tr></table></div></figure>
-Note: you could alternatively run: `$(brew &#8211;prefix mariadb)/bin/mysqladmin -u root password &#8216;new-password&#8217;` instead of `mysql_secure_installation`
 
-## PHP
 
-OS X comes with PHP installed, but it doesn&#8217;t come with PHP-FPM. While it&#8217;s likely possible to run PHP as FastCGI with the built-in OS X, I prefer to install PHP with Homebrew since we&#8217;re using Homebrew for everything else, and it keeps everything self-contained in Homebrew&#8217;s root (defaults to /usr/local). Note that the `brew tap` command requires [Homebrew 0.9 or greater](https://github.com/mxcl/homebrew/wiki/Homebrew-0.9).
+<p>Note: you could alternatively run: <code>$(brew --prefix mariadb)/bin/mysqladmin -u root password 'new-password'</code> instead of <code>mysql_secure_installation</code></p>
+
+<h2>PHP</h2>
+
+<p>OS X comes with PHP installed, but it doesn&rsquo;t come with PHP-FPM. While it&rsquo;s likely possible to run PHP as FastCGI with the built-in OS X, I prefer to install PHP with Homebrew since we&rsquo;re using Homebrew for everything else, and it keeps everything self-contained in Homebrew&rsquo;s root (defaults to /usr/local). Note that the <code>brew tap</code> command requires <a href="https://github.com/mxcl/homebrew/wiki/Homebrew-0.9">Homebrew 0.9 or greater</a>.</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -162,6 +164,7 @@ OS X comes with PHP installed, but it doesn&#8217;t come with PHP-FPM. While it&
 </span><span class='line'><span class="o">[</span> -f ~/Library/LaunchAgents/org.php-fpm.plist <span class="o">]</span> <span class="o">&amp;&amp;</span> launchctl load -w ~/Library/LaunchAgents/org.php-fpm.plist
 </span></code></pre></td></tr></table></div></figure>
 
+
 <p>I would recommend the following settings for full compatibility with drupal-with-nginx, and to set the time zone to silence a lot of PHP warnings:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
@@ -174,15 +177,17 @@ OS X comes with PHP installed, but it doesn&#8217;t come with PHP-FPM. While it&
 </span><span class='line'>sed -i <span class="s1">&#39;&#39;</span> <span class="s2">&quot;s|;\(date\.timezone[[:space:]]*=\).*|\1 $(php -d &#39;error_reporting=&#39; -r &#39;echo date(&quot;</span>e<span class="s2">&quot;, time());&#39;)|g&quot;</span> <span class="k">$(</span>brew --prefix<span class="k">)</span>/etc/php.ini
 </span></code></pre></td></tr></table></div></figure>
 
+
 <p>By default, PHP-FPM runs on a socket, which means that connections to PHP-FPM will require using TCP. You also have the option to use Unix sockets, which means slightly less overhead in PHP-FPM connections. Note that the drupal-with-nginx repository is set up for TCP by default, though if you choose to run the following command I will tell you how to use Unix sockets with Nginx.</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'>sed -i <span class="s1">&#39;&#39;</span> <span class="s1">&#39;s|\(listen[[:space:]]*=[[:space:]]*\)127.0.0.1:9000|\1var/www.sock|g&#39;</span> <span class="k">$(</span>brew --prefix<span class="k">)</span>/etc/php-fpm.conf
 </span></code></pre></td></tr></table></div></figure>
 
-<h3 id="toc_2">Optional: PHP Extensions</h3>
 
-<p>The <a href="https://github.com/josegonzalez/homebrew-php">third-party Homebrew keg that we &quot;tapped&quot; into</a> also provides easy formulas for PHP extensions. None of these are required to run Nginx and Drupal locally. You may also note that <em>uploadprogress</em> does not work with anything but mod_php, but by installing it now you could theoretically use the same PHP installation with Apache if you wanted and already have it ready to go. Feel free to omit it, or any of these below, though I would at least recommend APC for performance reasons.</p>
+<h3>Optional: PHP Extensions</h3>
+
+<p>The <a href="https://github.com/josegonzalez/homebrew-php">third-party Homebrew keg that we &ldquo;tapped&rdquo; into</a> also provides easy formulas for PHP extensions. None of these are required to run Nginx and Drupal locally. You may also note that <em>uploadprogress</em> does not work with anything but mod_php, but by installing it now you could theoretically use the same PHP installation with Apache if you wanted and already have it ready to go. Feel free to omit it, or any of these below, though I would at least recommend APC for performance reasons.</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -208,15 +213,17 @@ OS X comes with PHP installed, but it doesn&#8217;t come with PHP-FPM. While it&
 </span><span class='line'><span class="nb">echo</span> -e <span class="s2">&quot;\n[xhprof]\nextension=\&quot;$(brew --prefix xhprof-php)/xhprof.so\&quot;&quot;</span> &gt;&gt; <span class="k">$(</span>brew --prefix<span class="k">)</span>/etc/php.ini
 </span></code></pre></td></tr></table></div></figure>
 
-<p>Once you&#39;ve finished configuring PHP, you can reload the settings for PHP-FPM (or, you could find the pid of the first php-fpm process and send it the SIGUSR2 signal; this is easier):</p>
+
+<p>Once you&rsquo;ve finished configuring PHP, you can reload the settings for PHP-FPM (or, you could find the pid of the first php-fpm process and send it the SIGUSR2 signal; this is easier):</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span> -f ~/Library/LaunchAgents/org.php-fpm.plist <span class="o">]</span> <span class="o">&amp;&amp;</span> launchctl unload -w ~/Library/LaunchAgents/org.php-fpm.plist <span class="o">&amp;&amp;</span> launchctl load -w ~/Library/LaunchAgents/org.php-fpm.plist
 </span></code></pre></td></tr></table></div></figure>
 
-<h2 id="toc_3">Nginx</h2>
 
-<p>After compiling MariaDB and PHP, you&#39;re probably not too excited about compiling another application. Luckily, Nginx is a faily quick build, at least compared to MariaDB and PHP. We&#39;ll include some build options not on by default since they add features references in drupal-with-nginx, and we&#39;ll also add some 3rd party extensions as well. We&#39;ll start by grabbing those extensions:</p>
+<h2>Nginx</h2>
+
+<p>After compiling MariaDB and PHP, you&rsquo;re probably not too excited about compiling another application. Luckily, Nginx is a faily quick build, at least compared to MariaDB and PHP. We&rsquo;ll include some build options not on by default since they add features references in drupal-with-nginx, and we&rsquo;ll also add some 3rd party extensions as well. We&rsquo;ll start by grabbing those extensions:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -224,13 +231,15 @@ OS X comes with PHP installed, but it doesn&#8217;t come with PHP-FPM. While it&
 </span><span class='line'>curl -s -L -o /tmp/nginx-fair.tar.gz http://github.com/gnosek/nginx-upstream-fair/tarball/master <span class="o">&amp;&amp;</span> mkdir /tmp/nginx-fair <span class="o">&amp;&amp;</span> tar zxpf /tmp/nginx-fair.tar.gz --strip-components 1 -C /tmp/nginx-fair <span class="o">&amp;&amp;</span> rm /tmp/nginx-fair.tar.gz
 </span></code></pre></td></tr></table></div></figure>
 
+
 <p>The next section is one giant line of sed regex that will edit the Homebrew formula for nginx to add the additional compile options that we need. Make sure it all gets entered as one line (yes, you should use copy and paste here)!</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'>sed -i <span class="s1">&#39;-default&#39;</span> <span class="s1">&#39;s/\([[:space:]]*\[&#39;</span><span class="se">\&#39;</span><span class="s1">&#39;--\)\(with-webdav\)\(&#39;</span><span class="se">\&#39;</span><span class="s1">&#39;,[[:space:]]*&quot;\)\(Compile with support for WebDAV module\)\(&quot;\]\)/\1\2\3\4\5,%\1with-realip\3Compile with support for RealIP module\5,%\1with-gzip_static\3Compile with support for Gzip Static module\5,%\1with-uploadprogress\3Compile with support for Upload Progress module\5,%\1with-fair\3Compile with support for Fair module\5,%\1with-mp4\3Compile with support for MP4 module\5,%\1with-flv\3Compile with support for FLV module\5,%\1with-stub_status\3Compile with support for Stub Status module\5/; s/\([[:space:]]* args &lt;&lt; &quot;--\)\(with-http_dav_module\)\(&quot; if ARGV.include? &#39;</span><span class="se">\&#39;</span><span class="s1">&#39;--with-\)\(webdav\)\(&#39;</span><span class="se">\&#39;</span><span class="s1">&#39;.*\)/\1\2\3\4\5%\1with-http_realip_module\3realip\5%\1with-http_gzip_static_module\3gzip_static\5%\1add-module=\/tmp\/nginx-upload-progress\3uploadprogress\5%\1add-module=\/tmp\/nginx-fair\3fair\5%\1with-http_mp4_module\3mp4\5%\1with-http_flv_module\3flv\5%\1with-http_stub_status_module\3stub_status\5/; y/%/\n/&#39;</span> <span class="k">$(</span>brew --prefix<span class="k">)</span>/Library/Formula/nginx.rb
 </span></code></pre></td></tr></table></div></figure>
 
-<p>Now we&#39;ll install Nginx with our new build options and extensions and start it.</p>
+
+<p>Now we&rsquo;ll install Nginx with our new build options and extensions and start it.</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -246,9 +255,10 @@ OS X comes with PHP installed, but it doesn&#8217;t come with PHP-FPM. While it&
 </span><span class='line'><span class="o">[</span> -f ~/Library/LaunchAgents/homebrew.mxcl.nginx.plist <span class="o">]</span> <span class="o">&amp;&amp;</span> launchctl load -w ~/Library/LaunchAgents/homebrew.mxcl.nginx.plist
 </span></code></pre></td></tr></table></div></figure>
 
-<h2 id="toc_4">Nginx-With-Drupal</h2>
 
-<p>We&#39;re now ready to set up Nginx to work with Drupal. <a href="https://github.com/alanthing/drupal-with-nginx/tree/osx-1.0.x">I&#39;ve created a fork of the original repository</a> to make some necessary changes for OS X. I also make several changes for the stable 1.0.x branch of Nginx, which we&#39;ve just installed, rather than the unstable 1.1.x branch that is in the original configuration.</p>
+<h2>Nginx-With-Drupal</h2>
+
+<p>We&rsquo;re now ready to set up Nginx to work with Drupal. <a href="https://github.com/alanthing/drupal-with-nginx/tree/osx-1.0.x">I&rsquo;ve created a fork of the original repository</a> to make some necessary changes for OS X. I also make several changes for the stable 1.0.x branch of Nginx, which we&rsquo;ve just installed, rather than the unstable 1.1.x branch that is in the original configuration.</p>
 
 <p>If you want to stick with the original project, <a href="https://github.com/alanthing/drupal-with-nginx/commit/f13f7d8ce9af0853a5601dcbb90c5e0c2ed8dadd">check out the changes I made for OS X and 1.0.x</a> and you can apply them yourself and skip the git steps below.</p>
 
@@ -270,27 +280,30 @@ OS X comes with PHP installed, but it doesn&#8217;t come with PHP-FPM. While it&
 </span><span class='line'>cp -a ../sites-available/example.com.conf yournewsite.conf
 </span></code></pre></td></tr></table></div></figure>
 
-<p>That&#39;s about as much as I can automate for you with copy+paste-able commands! You&#39;ll want to do the following to <em>yournewsite</em>.conf, which you can rename to be anything, to configure Nginx for your website:</p>
+
+<p>That&rsquo;s about as much as I can automate for you with copy+paste-able commands! You&rsquo;ll want to do the following to <em>yournewsite</em>.conf, which you can rename to be anything, to configure Nginx for your website:</p>
 
 <ul>
-<li>  Change <code>server_name</code>, <code>access_log</code>, and <code>error_log</code> to use your local domain name for your virtual host</li>
-<li>  Change root to the path of your Drupal installation. On my system, this may be <em>/Users/alan/Sites/drupal-7.14</em>. Note that you cannot use <em>~</em> in place of <em>/Users/name</em></li>
-<li>  Unless you have a valid SSL certificate, you&#39;ll probably want to completely delete the second half of the file. So find the line containing <code>} HTTP server</code> and remove all following lines</li>
-<li>  If you&#39;re using Boost with Drupal 7, or Drupal 6 with/without Boost, note that you&#39;ll want to comment out the <code>include sites-available/drupal.conf</code> line and uncomment the other relevant one for your site</li>
-<li>  If you want to get additional status messages from PHP-FPM, uncomment <code>include php_fpm_status_vhost.conf</code> in this file, and also <code>include php_fpm_status_allowed_hosts.conf</code> in <code>$(brew --prefix)/etc/nginx/nginx.conf</code></li>
-<li>  If you configured PHP-FPM earlier to use Unix sockets instead of TCP, open nginx.conf and comment out <code>include upstream_phpcgi_tcp.conf</code> and uncomment <code>include upstream_phpcgi_unix.conf</code></li>
-<li>  Depending on the location of your files directory, you may need to edit the <code>sites-available/drupal.conf</code> (or other drupal*.conf) file and change the relevant sites/default/files paths appropriately</li>
+<li>Change <code>server_name</code>, <code>access_log</code>, and <code>error_log</code> to use your local domain name for your virtual host</li>
+<li>Change root to the path of your Drupal installation. On my system, this may be <em>/Users/alan/Sites/drupal-7.14</em>. Note that you cannot use <em>~</em> in place of <em>/Users/name</em></li>
+<li>Unless you have a valid SSL certificate, you&rsquo;ll probably want to completely delete the second half of the file. So find the line containing <code>} HTTP server</code> and remove all following lines</li>
+<li>If you&rsquo;re using Boost with Drupal 7, or Drupal 6 with/without Boost, note that you&rsquo;ll want to comment out the <code>include sites-available/drupal.conf</code> line and uncomment the other relevant one for your site</li>
+<li>If you want to get additional status messages from PHP-FPM, uncomment <code>include php_fpm_status_vhost.conf</code> in this file, and also <code>include php_fpm_status_allowed_hosts.conf</code> in <code>$(brew --prefix)/etc/nginx/nginx.conf</code></li>
+<li>If you configured PHP-FPM earlier to use Unix sockets instead of TCP, open nginx.conf and comment out <code>include upstream_phpcgi_tcp.conf</code> and uncomment <code>include upstream_phpcgi_unix.conf</code></li>
+<li>Depending on the location of your files directory, you may need to edit the <code>sites-available/drupal.conf</code> (or other drupal*.conf) file and change the relevant sites/default/files paths appropriately</li>
 </ul>
 
-<p>Once you&#39;re finished editing your virtual host conf file (and possibly nginx.conf), you can reload nginx easily:</p>
+
+<p>Once you&rsquo;re finished editing your virtual host conf file (and possibly nginx.conf), you can reload nginx easily:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="k">$(</span>brew --prefix<span class="k">)</span>/sbin/nginx -s reload
 </span></code></pre></td></tr></table></div></figure>
 
-<h2 id="toc_5">Bonus: Drush</h2>
 
-<p>You&#39;ll need Drush to install a new Drupal site, as install.php is blocked for security reasons by default. Also, you&#39;ll find cron.php is inaccessible as well. There&#39;s a weird little hack required to get Drush installed with Homebrew without requiring sudo, so below is an example of how to both get around the sudo requirement and set up a blank Drupal 7 website (note that using the root MySQL user is bad form, but this is meant more as a quick demo of using drush with this setup than a recommended setup).</p>
+<h2>Bonus: Drush</h2>
+
+<p>You&rsquo;ll need Drush to install a new Drupal site, as install.php is blocked for security reasons by default. Also, you&rsquo;ll find cron.php is inaccessible as well. There&rsquo;s a weird little hack required to get Drush installed with Homebrew without requiring sudo, so below is an example of how to both get around the sudo requirement and set up a blank Drupal 7 website (note that using the root MySQL user is bad form, but this is meant more as a quick demo of using drush with this setup than a recommended setup).</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -313,6 +326,7 @@ OS X comes with PHP installed, but it doesn&#8217;t come with PHP-FPM. While it&
 </span><span class='line'><span class="nb">cd </span>drupal-7.14
 </span><span class='line'>drush si --db-url<span class="o">=</span>mysql://root:yourpassword@localhost/drupal
 </span></code></pre></td></tr></table></div></figure>
+
 </div>
 
 
@@ -343,7 +357,7 @@ OS X comes with PHP installed, but it doesn&#8217;t come with PHP-FPM. While it&
     
       <div class="sharing">
   
-  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://alanthing.com/blog/2012/04/22/os-x-107-lion-development-nginx-php-mariadb-homebrew/" data-via="alanthing" data-counturl="http://alanthing.com/blog/2012/04/22/os-x-107-lion-development-nginx-php-mariadb-homebrew/" >Tweet</a>
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://alanthing.com/blog/2012/04/22/os-x-107-lion-development-nginx-php-mariadb-homebrew/" data-via="alanthing" data-counturl="http://alanthing.com/blog/2012/04/22/os-x-107-lion-development-nginx-php-mariadb-homebrew/" >Tweet</a>
   
   
   <div class="g-plusone" data-size="medium"></div>
@@ -380,7 +394,7 @@ OS X comes with PHP installed, but it doesn&#8217;t come with PHP-FPM. While it&
   <ul id="recent_posts">
     
       <li class="post">
-        <a href="/blog/2013/05/09/speed-up-php-on-nfs-with-turbo-realpath/">Speed up PHP on NFS with turbo_realpath</a>
+        <a href="/blog/2013/05/09/speed-up-php-on-nfs-with-turbo-realpath/">Speed Up PHP on NFS With Turbo_realpath</a>
       </li>
     
       <li class="post">
@@ -396,34 +410,77 @@ OS X comes with PHP installed, but it doesn&#8217;t come with PHP-FPM. While it&
       </li>
     
       <li class="post">
-        <a href="/blog/2012/09/04/apache-modules-on-os-x-with-homebrew/">Apache modules on OS X with Homebrew</a>
+        <a href="/blog/2012/09/04/apache-modules-on-os-x-with-homebrew/">Apache Modules on OS X With Homebrew</a>
       </li>
     
   </ul>
 </section>
 
 <section>
-  <h1>Coderwall Badges</h1>
-  <p>
-    <script type="text/javascript">
-      function display_coderwall(args) {
-        var badges = args["data"]["badges"];
-        var wall = '';
-        for ( var i = 0; i < badges.length; i++ ) {
-          var alt_txt = badges[i]["name"];
-          var title_txt = badges[i]["name"] + ' - ' + badges[i]["description"];
-          wall += '<a href="http://coderwall.com/alanthing/"><img src="'
-            + badges[i]["badge"]
-            + '" width="48" height="48" alt="' + alt_txt
-            + '" title="' + title_txt
-            + '"/></a>';
-        }
-        document.write(wall);
-      }
-    </script>
-    <script src="http://coderwall.com/alanthing.json?callback=display_coderwall"></script>
-  </p>
+  <h1>Coderwall</h1>
+  <ul id="cw_badges">
+    <li class="loading">Status updating...</li>
+  </ul>
   
+  <div>
+    <a href="http://coderwall.com/alanthing" target="_blank" class="cw_badge"><img
+       alt="Endorse alanthing on Coderwall"
+       src="http://api.coderwall.com/alanthing/endorsecount.png" /></a>
+  </div>
+  
+
+  <script type="text/javascript">
+    var coderwall = (function(){
+      function render(options, badges){
+        var fragment = '',
+            t = $(options.target)[0],
+            height = 65,
+            width = 65,
+            index;
+
+        for (index in badges) {
+          fragment += '<a class="cw_badge"title="' + badges[index].description + '" target="_blank" href="http://coderwall.com/' + options.user + '">';
+          fragment +=   '<img alt="' + badges[index].description + '" height="' + width + '" width="' + height + '" src="' + badges[index].badge + '"/>';
+          fragment += '</a>';
+        }
+
+        t.innerHTML = fragment;
+      }
+      return {
+        showBadges: function(options){
+          $.ajax({
+              url: 'http://coderwall.com/' + options.user + '.json?callback=?'
+            , type: 'jsonp'
+            , error: function (err) { $(options.target + ' li.loading').addClass('error').text("Error loading feed"); }
+            , success: function(res) {
+                render(options, res.data.badges);
+            }
+          });
+        }
+      };
+    })();
+
+    $.domReady(function(){
+      if (!window.jXHR){
+        var jxhr = document.createElement('script');
+        jxhr.type = 'text/javascript';
+        jxhr.src = '/javascripts/libs/jXHR.js';
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(jxhr, s);
+      }
+      if (!window.$){
+        var b = document.createElement('script');
+        b.type = 'text/javascript';
+        b.src = '/javascripts/ender.js';
+        var sc = document.getElementsByTagName('script')[0];
+        sc.parentNode.insertBefore(jxhr, s);
+      }
+      coderwall.showBadges({
+        user: 'alanthing',
+        target: '#cw_badges'
+      });
+    });
+  </script>
 </section>
 
 
@@ -518,7 +575,7 @@ OS X comes with PHP installed, but it doesn&#8217;t come with PHP-FPM. While it&
       var twitterWidgets = document.createElement('script');
       twitterWidgets.type = 'text/javascript';
       twitterWidgets.async = true;
-      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
       document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
     })();
   </script>

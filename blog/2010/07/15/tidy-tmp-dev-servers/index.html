@@ -105,7 +105,7 @@
 
 <div class="entry-content"><p>Today I was made aware of some strange MySQL errors on our development server that ended up being related to a lack of sufficient disk space. Upon inspection, the /tmp partition had completely filled up. A majority of the files were temporary files created by the <a href="http://drupal.org/project/devel">Drupal module devel</a> with devel_themer enabled. Turns out <a href="http://drupal.org/node/327512">these temporary files are not deleted at the end of a session</a>. There were also CURLCOOKIE files related to cron jobs to hit cron.php on various dev and production sites, and some other temporary files that if left unattended could result in the same errors.</p>
 
-<p>My solution is to have these files deleted every night, but only if they&#39;re three days old, which should be adequate time for the developer to need access to these temporary files. I added this to root&#39;s cron.</p>
+<p>My solution is to have these files deleted every night, but only if they&rsquo;re three days old, which should be adequate time for the developer to need access to these temporary files. I added this to root&rsquo;s cron.</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -118,14 +118,16 @@
 </span><span class='line'>7 4 * * * find /tmp -type f -name "devel_themer_*" -mtime +3 -exec rm -f {} \;
 </span><span class='line'>8 4 * * * find /tmp -type f -name "CURLCOOKIE_*" -mtime +3 -exec rm -f {} \;</span></code></pre></td></tr></table></div></figure>
 
-<p>Similarly, I have a cron job to remove old Apache logs, which is helpful since an old project will never have it&#39;s logs deleted unless they&#39;re removed manually.</p>
+
+<p>Similarly, I have a cron job to remove old Apache logs, which is helpful since an old project will never have it&rsquo;s logs deleted unless they&rsquo;re removed manually.</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 </pre></td><td class='code'><pre><code class=''><span class='line'># Delete Apache logs older than 30 days
 </span><span class='line'>30 3 * * * find /var/log/httpd -type f -mtime +30 -exec rm -f {} \;</span></code></pre></td></tr></table></div></figure>
 
-<p>Do you have other ideas for managing temporary files that don&#39;t clean up after themselves? Let me know in the comments.</p>
+
+<p>Do you have other ideas for managing temporary files that don&rsquo;t clean up after themselves? Let me know in the comments.</p>
 </div>
 
 
@@ -156,7 +158,7 @@
     
       <div class="sharing">
   
-  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://alanthing.com/blog/2010/07/15/tidy-tmp-dev-servers/" data-via="alanthing" data-counturl="http://alanthing.com/blog/2010/07/15/tidy-tmp-dev-servers/" >Tweet</a>
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://alanthing.com/blog/2010/07/15/tidy-tmp-dev-servers/" data-via="alanthing" data-counturl="http://alanthing.com/blog/2010/07/15/tidy-tmp-dev-servers/" >Tweet</a>
   
   
   <div class="g-plusone" data-size="medium"></div>
@@ -193,7 +195,7 @@
   <ul id="recent_posts">
     
       <li class="post">
-        <a href="/blog/2013/05/09/speed-up-php-on-nfs-with-turbo-realpath/">Speed up PHP on NFS with turbo_realpath</a>
+        <a href="/blog/2013/05/09/speed-up-php-on-nfs-with-turbo-realpath/">Speed Up PHP on NFS With Turbo_realpath</a>
       </li>
     
       <li class="post">
@@ -209,34 +211,77 @@
       </li>
     
       <li class="post">
-        <a href="/blog/2012/09/04/apache-modules-on-os-x-with-homebrew/">Apache modules on OS X with Homebrew</a>
+        <a href="/blog/2012/09/04/apache-modules-on-os-x-with-homebrew/">Apache Modules on OS X With Homebrew</a>
       </li>
     
   </ul>
 </section>
 
 <section>
-  <h1>Coderwall Badges</h1>
-  <p>
-    <script type="text/javascript">
-      function display_coderwall(args) {
-        var badges = args["data"]["badges"];
-        var wall = '';
-        for ( var i = 0; i < badges.length; i++ ) {
-          var alt_txt = badges[i]["name"];
-          var title_txt = badges[i]["name"] + ' - ' + badges[i]["description"];
-          wall += '<a href="http://coderwall.com/alanthing/"><img src="'
-            + badges[i]["badge"]
-            + '" width="48" height="48" alt="' + alt_txt
-            + '" title="' + title_txt
-            + '"/></a>';
-        }
-        document.write(wall);
-      }
-    </script>
-    <script src="http://coderwall.com/alanthing.json?callback=display_coderwall"></script>
-  </p>
+  <h1>Coderwall</h1>
+  <ul id="cw_badges">
+    <li class="loading">Status updating...</li>
+  </ul>
   
+  <div>
+    <a href="http://coderwall.com/alanthing" target="_blank" class="cw_badge"><img
+       alt="Endorse alanthing on Coderwall"
+       src="http://api.coderwall.com/alanthing/endorsecount.png" /></a>
+  </div>
+  
+
+  <script type="text/javascript">
+    var coderwall = (function(){
+      function render(options, badges){
+        var fragment = '',
+            t = $(options.target)[0],
+            height = 65,
+            width = 65,
+            index;
+
+        for (index in badges) {
+          fragment += '<a class="cw_badge"title="' + badges[index].description + '" target="_blank" href="http://coderwall.com/' + options.user + '">';
+          fragment +=   '<img alt="' + badges[index].description + '" height="' + width + '" width="' + height + '" src="' + badges[index].badge + '"/>';
+          fragment += '</a>';
+        }
+
+        t.innerHTML = fragment;
+      }
+      return {
+        showBadges: function(options){
+          $.ajax({
+              url: 'http://coderwall.com/' + options.user + '.json?callback=?'
+            , type: 'jsonp'
+            , error: function (err) { $(options.target + ' li.loading').addClass('error').text("Error loading feed"); }
+            , success: function(res) {
+                render(options, res.data.badges);
+            }
+          });
+        }
+      };
+    })();
+
+    $.domReady(function(){
+      if (!window.jXHR){
+        var jxhr = document.createElement('script');
+        jxhr.type = 'text/javascript';
+        jxhr.src = '/javascripts/libs/jXHR.js';
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(jxhr, s);
+      }
+      if (!window.$){
+        var b = document.createElement('script');
+        b.type = 'text/javascript';
+        b.src = '/javascripts/ender.js';
+        var sc = document.getElementsByTagName('script')[0];
+        sc.parentNode.insertBefore(jxhr, s);
+      }
+      coderwall.showBadges({
+        user: 'alanthing',
+        target: '#cw_badges'
+      });
+    });
+  </script>
 </section>
 
 
@@ -331,7 +376,7 @@
       var twitterWidgets = document.createElement('script');
       twitterWidgets.type = 'text/javascript';
       twitterWidgets.async = true;
-      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
       document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
     })();
   </script>

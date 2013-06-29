@@ -103,22 +103,28 @@
   </header>
 
 
-<div class="entry-content"><p><strong><em>Update:</em> This no longer appears to be necessary as of nodejs 0.8.0.</strong> It may have been fixed earlier but I noticed neither of these changes are necessary anymore. Something new though, I had problems with node-gyp, and the solution was to install python26 with yum and then re-run the npm command with <code>PYTHON=&quot;/usr/bin/python26&quot; npm install -deps</code> or similar.</p>
+<div class="entry-content"><p><strong><em>Update:</em> This no longer appears to be necessary as of nodejs 0.8.0.</strong> It may have been fixed earlier but I noticed neither of these changes are necessary anymore. Something new though, I had problems with node-gyp, and the solution was to install python26 with yum and then re-run the npm command with <code>PYTHON="/usr/bin/python26" npm install -deps</code> or similar.</p>
 
-<p>The preferred way to install node and NPM seems to be installing from source, but I&#39;m a perennial fan of using packages to keep things tidy, especially if I need to uninstall something. I started by going to the <a href="http://nodejs.org/#download">Node.js download page</a>, and through to <a href="https://github.com/joyent/node/wiki/Installing-Node.js-via-package-manager">Installing with a package manager</a>. I installed the yum release RPM for the <a href="http://nodejs.tchol.org/">tchol.org</a> repository as directed and installed <strong>nodejs</strong> and <strong>npm</strong> with yum. From there, I ran into two problems but thankfully they were fairly easy to resolve.</p>
+<p>The preferred way to install node and NPM seems to be installing from source, but I&rsquo;m a perennial fan of using packages to keep things tidy, especially if I need to uninstall something. I started by going to the <a href="http://nodejs.org/#download">Node.js download page</a>, and through to <a href="https://github.com/joyent/node/wiki/Installing-Node.js-via-package-manager">Installing with a package manager</a>. I installed the yum release RPM for the <a href="http://nodejs.tchol.org/">tchol.org</a> repository as directed and installed <strong>nodejs</strong> and <strong>npm</strong> with yum. From there, I ran into two problems but thankfully they were fairly easy to resolve.</p>
 
-<p>The first thing I wanted to do was install <a href="https://github.com/nodejitsu/forever">forever</a> globally so I could use it to keep applications running persistently. But running <code>npm install forever -g</code> kept stalling. The npm RPM installed from the tchol.org repository creates the symlink /usr/lib/node_modules to /usr/lib/nodejs. That&#39;s fine, but /usr/lib/nodejs is owned by root:root. Running a npm install command with sudo attempted to set the ownership of the NPM modules as nobody:user, and NPM wasn&#39;t exiting due to permissions for some reason.</p>
+<p>The first thing I wanted to do was install <a href="https://github.com/nodejitsu/forever">forever</a> globally so I could use it to keep applications running persistently. But running <code>npm install forever -g</code> kept stalling. The npm RPM installed from the tchol.org repository creates the symlink /usr/lib/node_modules to /usr/lib/nodejs. That&rsquo;s fine, but /usr/lib/nodejs is owned by root:root. Running a npm install command with sudo attempted to set the ownership of the NPM modules as nobody:user, and NPM wasn&rsquo;t exiting due to permissions for some reason.</p>
 
 <p>I have ACLs enabled on my file system, so I fixed this by allowing nobody write access to /usr/lib/nodejs:</p>
-<div class="highlight"><pre><code class="text">sudo setfacl -m u:nobody:rwx /usr/lib/nodejs
-</code></pre></div>
-<p>If you don&#39;t have ACLs enabled on your filesystem, you could allow nobody to be the folder owner:</p>
-<div class="highlight"><pre><code class="text">sudo chown nobody:nobody /usr/lib/nodejs
-</code></pre></div>
-<p>The second problem I ran into was, after installing forever, it wouldn&#39;t run. The nodejs package installed the binary as /usr/bin/nodejs but /usr/bin/forever begins with <strong>#!/usr/bin/env node</strong>, which will not return a valid interpreter. I wanted to install a symlink into /usr/local/bin, but some users don&#39;t always have that in their path, so I created a link via:</p>
-<div class="highlight"><pre><code class="text">sudo ln -s /usr/bin/nodejs /usr/bin/node
-</code></pre></div>
-<p>Now I&#39;m able to install anything I need to with NPM and run my Node.js applications with Forever. I&#39;m still very new to Node, so if you think I should be doing things a better way, let me know in the comments!</p>
+
+<pre><code>sudo setfacl -m u:nobody:rwx /usr/lib/nodejs
+</code></pre>
+
+<p>If you don&rsquo;t have ACLs enabled on your filesystem, you could allow nobody to be the folder owner:</p>
+
+<pre><code>sudo chown nobody:nobody /usr/lib/nodejs
+</code></pre>
+
+<p>The second problem I ran into was, after installing forever, it wouldn&rsquo;t run. The nodejs package installed the binary as /usr/bin/nodejs but /usr/bin/forever begins with <strong>#!/usr/bin/env node</strong>, which will not return a valid interpreter. I wanted to install a symlink into /usr/local/bin, but some users don&rsquo;t always have that in their path, so I created a link via:</p>
+
+<pre><code>sudo ln -s /usr/bin/nodejs /usr/bin/node
+</code></pre>
+
+<p>Now I&rsquo;m able to install anything I need to with NPM and run my Node.js applications with Forever. I&rsquo;m still very new to Node, so if you think I should be doing things a better way, let me know in the comments!</p>
 </div>
 
 
@@ -149,7 +155,7 @@
     
       <div class="sharing">
   
-  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://alanthing.com/blog/2012/02/10/nodejs-and-npm-centos/" data-via="alanthing" data-counturl="http://alanthing.com/blog/2012/02/10/nodejs-and-npm-centos/" >Tweet</a>
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://alanthing.com/blog/2012/02/10/nodejs-and-npm-centos/" data-via="alanthing" data-counturl="http://alanthing.com/blog/2012/02/10/nodejs-and-npm-centos/" >Tweet</a>
   
   
   <div class="g-plusone" data-size="medium"></div>
@@ -186,7 +192,7 @@
   <ul id="recent_posts">
     
       <li class="post">
-        <a href="/blog/2013/05/09/speed-up-php-on-nfs-with-turbo-realpath/">Speed up PHP on NFS with turbo_realpath</a>
+        <a href="/blog/2013/05/09/speed-up-php-on-nfs-with-turbo-realpath/">Speed Up PHP on NFS With Turbo_realpath</a>
       </li>
     
       <li class="post">
@@ -202,34 +208,77 @@
       </li>
     
       <li class="post">
-        <a href="/blog/2012/09/04/apache-modules-on-os-x-with-homebrew/">Apache modules on OS X with Homebrew</a>
+        <a href="/blog/2012/09/04/apache-modules-on-os-x-with-homebrew/">Apache Modules on OS X With Homebrew</a>
       </li>
     
   </ul>
 </section>
 
 <section>
-  <h1>Coderwall Badges</h1>
-  <p>
-    <script type="text/javascript">
-      function display_coderwall(args) {
-        var badges = args["data"]["badges"];
-        var wall = '';
-        for ( var i = 0; i < badges.length; i++ ) {
-          var alt_txt = badges[i]["name"];
-          var title_txt = badges[i]["name"] + ' - ' + badges[i]["description"];
-          wall += '<a href="http://coderwall.com/alanthing/"><img src="'
-            + badges[i]["badge"]
-            + '" width="48" height="48" alt="' + alt_txt
-            + '" title="' + title_txt
-            + '"/></a>';
-        }
-        document.write(wall);
-      }
-    </script>
-    <script src="http://coderwall.com/alanthing.json?callback=display_coderwall"></script>
-  </p>
+  <h1>Coderwall</h1>
+  <ul id="cw_badges">
+    <li class="loading">Status updating...</li>
+  </ul>
   
+  <div>
+    <a href="http://coderwall.com/alanthing" target="_blank" class="cw_badge"><img
+       alt="Endorse alanthing on Coderwall"
+       src="http://api.coderwall.com/alanthing/endorsecount.png" /></a>
+  </div>
+  
+
+  <script type="text/javascript">
+    var coderwall = (function(){
+      function render(options, badges){
+        var fragment = '',
+            t = $(options.target)[0],
+            height = 65,
+            width = 65,
+            index;
+
+        for (index in badges) {
+          fragment += '<a class="cw_badge"title="' + badges[index].description + '" target="_blank" href="http://coderwall.com/' + options.user + '">';
+          fragment +=   '<img alt="' + badges[index].description + '" height="' + width + '" width="' + height + '" src="' + badges[index].badge + '"/>';
+          fragment += '</a>';
+        }
+
+        t.innerHTML = fragment;
+      }
+      return {
+        showBadges: function(options){
+          $.ajax({
+              url: 'http://coderwall.com/' + options.user + '.json?callback=?'
+            , type: 'jsonp'
+            , error: function (err) { $(options.target + ' li.loading').addClass('error').text("Error loading feed"); }
+            , success: function(res) {
+                render(options, res.data.badges);
+            }
+          });
+        }
+      };
+    })();
+
+    $.domReady(function(){
+      if (!window.jXHR){
+        var jxhr = document.createElement('script');
+        jxhr.type = 'text/javascript';
+        jxhr.src = '/javascripts/libs/jXHR.js';
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(jxhr, s);
+      }
+      if (!window.$){
+        var b = document.createElement('script');
+        b.type = 'text/javascript';
+        b.src = '/javascripts/ender.js';
+        var sc = document.getElementsByTagName('script')[0];
+        sc.parentNode.insertBefore(jxhr, s);
+      }
+      coderwall.showBadges({
+        user: 'alanthing',
+        target: '#cw_badges'
+      });
+    });
+  </script>
 </section>
 
 
@@ -324,7 +373,7 @@
       var twitterWidgets = document.createElement('script');
       twitterWidgets.type = 'text/javascript';
       twitterWidgets.async = true;
-      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
       document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
     })();
   </script>

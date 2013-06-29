@@ -9,7 +9,7 @@
   <meta name="author" content="Alan Ivey">
 
   
-  <meta name="description" content="OS X Lion comes with most of the tools you would need to do &quot;MAMP&quot; (Mac OS X, Apache, MySQL/MariaDB, PHP) development, as outlined in my &hellip;">
+  <meta name="description" content="OS X Lion comes with most of the tools you would need to do &ldquo;MAMP&rdquo; (Mac OS X, Apache, MySQL/MariaDB, PHP) development, as outlined in my &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -103,17 +103,17 @@
   </header>
 
 
-<div class="entry-content"><p>OS X Lion comes with most of the tools you would need to do &quot;MAMP&quot; (Mac OS X, Apache, MySQL/MariaDB, PHP) development, as outlined in my <a href="http://echodittolabs.org/blog/2011/08/os-x-107-lion-development-native-mamp-mysql-installer">previous</a> <a href="http://echodittolabs.org/blog/2011/09/os-x-107-lion-development-native-apache-php-homebrew-mysql-or-mariadb">posts</a> once you add a database. So then why would you want to use MacPorts? Setting your development environment up in MacPorts isolates the binaries, libraries, and configuration files, completely separate from the existing OS X install (with the exception of startup scripts). You can also tweak the configuration files on your own, apply your own patches, and apply updates that MacPorts may get before Apple pushes them. It will take more time because you&#39;ll be compiling everything, but you have all of the control. Read on for how to get things set up. </p>
+<div class="entry-content"><p>OS X Lion comes with most of the tools you would need to do &ldquo;MAMP&rdquo; (Mac OS X, Apache, MySQL/MariaDB, PHP) development, as outlined in my <a href="http://echodittolabs.org/blog/2011/08/os-x-107-lion-development-native-mamp-mysql-installer">previous</a> <a href="http://echodittolabs.org/blog/2011/09/os-x-107-lion-development-native-apache-php-homebrew-mysql-or-mariadb">posts</a> once you add a database. So then why would you want to use MacPorts? Setting your development environment up in MacPorts isolates the binaries, libraries, and configuration files, completely separate from the existing OS X install (with the exception of startup scripts). You can also tweak the configuration files on your own, apply your own patches, and apply updates that MacPorts may get before Apple pushes them. It will take more time because you&rsquo;ll be compiling everything, but you have all of the control. Read on for how to get things set up.</p>
 
-<h2 id="toc_0">Prerequisites</h2>
+<h2>Prerequisites</h2>
 
-<p>We&#39;ll going to be compiling a lot of source code so you&#39;ll need to have <a href="http://itunes.apple.com/us/app/xcode/id448457090">Xcode 4</a> installed. I initially tried with the <a href="https://github.com/kennethreitz/osx-gcc-installer">OS X GCC Installer</a> but eventually ran into a problem where a portfile was expecting an Xcode binary to check to a prerequisite. I&#39;m sure some hacking could&#39;ve resolved it to avoid having to install the very large Xcode package, but at the end of the day it&#39;s better to just know that it&#39;ll work as expected. </p>
+<p>We&rsquo;ll going to be compiling a lot of source code so you&rsquo;ll need to have <a href="http://itunes.apple.com/us/app/xcode/id448457090">Xcode 4</a> installed. I initially tried with the <a href="https://github.com/kennethreitz/osx-gcc-installer">OS X GCC Installer</a> but eventually ran into a problem where a portfile was expecting an Xcode binary to check to a prerequisite. I&rsquo;m sure some hacking could&rsquo;ve resolved it to avoid having to install the very large Xcode package, but at the end of the day it&rsquo;s better to just know that it&rsquo;ll work as expected.</p>
 
-<p>Once you have Xcode 4 installed, you&#39;ll need to <a href="http://www.macports.org/install.php">install MacPorts</a>. It&#39;s a simple click-through installer. Come back to this guide once MacPorts is ready. </p>
+<p>Once you have Xcode 4 installed, you&rsquo;ll need to <a href="http://www.macports.org/install.php">install MacPorts</a>. It&rsquo;s a simple click-through installer. Come back to this guide once MacPorts is ready.</p>
 
-<p>Note that for all commands before that are starting with a $, the dollar sign is showing a command-line prompt in <a href="http://www.apple.com/macosx/apps/all.html#terminal">Terminal</a>, and you should not actually type it as part of the commands. </p>
+<p>Note that for all commands before that are starting with a $, the dollar sign is showing a command-line prompt in <a href="http://www.apple.com/macosx/apps/all.html#terminal">Terminal</a>, and you should not actually type it as part of the commands.</p>
 
-<h2 id="toc_1">Install packages</h2>
+<h2>Install packages</h2>
 
 <p>Update the ports tree to get the latest from the MacPorts server in case the installer had an older tree:</p>
 
@@ -121,17 +121,19 @@
 </pre></td><td class='code'><pre><code class='bash'><span class='line'>sudo /opt/local/bin/port selfupdate
 </span></code></pre></td></tr></table></div></figure>
 
+
 <p>All of the packages that we need can be installed with a single command:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'>sudo /opt/local/bin/port install apache2 php5 php5-mysql mysql5-server php5-gd php5-mbstring php5-apc lynx phpmyadmin
 </span></code></pre></td></tr></table></div></figure>
 
-<p>Compiling all of these tools will take a while, so grab a book and come back when the command is completed. </p>
 
-<h2 id="toc_2">Configure PHP</h2>
+<p>Compiling all of these tools will take a while, so grab a book and come back when the command is completed.</p>
 
-<p>The following will set up PHP with some development-friendly settings. </p>
+<h2>Configure PHP</h2>
+
+<p>The following will set up PHP with some development-friendly settings.</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -183,6 +185,7 @@
 </span><span class='line'><span class="s2">EOF&quot;</span>
 </span></code></pre></td></tr></table></div></figure>
 
+
 <p>Now configure the APC extension (installed above with php5-apc) which will increase PHP performance dramatically.</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
@@ -207,7 +210,8 @@
 </span><span class='line'><span class="s2">EOF&quot;</span>
 </span></code></pre></td></tr></table></div></figure>
 
-<h2 id="toc_3">Configure Apache</h2>
+
+<h2>Configure Apache</h2>
 
 <p>Start by setting up PHP to work with Apache properly:</p>
 
@@ -235,7 +239,8 @@
 </span><span class='line'><span class="s2">EOF&quot;</span>
 </span></code></pre></td></tr></table></div></figure>
 
-<p>Now we&#39;ll move httpd-vhosts.conf to ~/Sites for easy editing of new virtual hosts, as well as create a ~/Sites/logs folder:</p>
+
+<p>Now we&rsquo;ll move httpd-vhosts.conf to ~/Sites for easy editing of new virtual hosts, as well as create a ~/Sites/logs folder:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -273,11 +278,13 @@
 </span><span class='line'><span class="s2">EOF&quot;</span>
 </span></code></pre></td></tr></table></div></figure>
 
-<p>Allow userdirs so the MacPorts Apache &quot;feels&quot; more like the built-in Apache:</p>
+
+<p>Allow userdirs so the MacPorts Apache &ldquo;feels&rdquo; more like the built-in Apache:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'>sudo sed -i <span class="s2">&quot;&quot;</span> <span class="s1">&#39;s/\#\(.*httpd-userdir\.conf\)/\1/&#39;</span> /opt/local/apache2/conf/httpd.conf
 </span></code></pre></td></tr></table></div></figure>
+
 
 <p>Start Apache and set it to load on boot:</p>
 
@@ -285,7 +292,8 @@
 </pre></td><td class='code'><pre><code class='bash'><span class='line'>sudo /opt/local/bin/port load apache2
 </span></code></pre></td></tr></table></div></figure>
 
-<h2 id="toc_4">Configure MySQL</h2>
+
+<h2>Configure MySQL</h2>
 
 <p>Set up the configuration file:</p>
 
@@ -295,16 +303,19 @@
 </span><span class='line'>sudo sed -i <span class="s2">&quot;&quot;</span> <span class="s1">&#39;s/max_allowed_packet = 1.*M/max_allowed_packet = 1G/g&#39;</span> /opt/local/etc/mysql5/my.cnf
 </span></code></pre></td></tr></table></div></figure>
 
-<p>Initialize MySQL and run the secure installation script:<br>
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span><br>
-<span class='line-number'>2</span><br>
-<span class='line-number'>3</span><br>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>sudo -u _mysql /opt/local/bin/mysql_install_db5<br>
-</span><span class='line'>sudo /opt/local/bin/port load mysql5-server<br>
-</span><span class='line'>sudo /opt/local/lib/mysql5/bin/mysql_secure_installation<br>
-</span></code></pre></td></tr></table></div></figure></p>
 
-<h2 id="toc_5">Configure phpMyAdmin</h2>
+<p>Initialize MySQL and run the secure installation script:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>sudo -u _mysql /opt/local/bin/mysql_install_db5
+</span><span class='line'>sudo /opt/local/bin/port load mysql5-server
+</span><span class='line'>sudo /opt/local/lib/mysql5/bin/mysql_secure_installation
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Configure phpMyAdmin</h2>
 
 <p>Add a config file for Apache and reload Apache:</p>
 
@@ -352,6 +363,7 @@
 </span><span class='line'><span class="nv">$ </span>sudo /opt/local/bin/port load apache2
 </span></code></pre></td></tr></table></div></figure>
 
+
 <p>Basic set up of phpMyAdmin:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
@@ -362,9 +374,10 @@
 </span><span class='line'>sudo /opt/local/bin/mysql5 -uroot -proot -e<span class="s2">&quot;CREATE USER &#39;pma&#39;@&#39;localhost&#39; IDENTIFIED BY &#39;pmapass&#39;; GRANT SELECT, INSERT, DELETE, UPDATE ON phpmyadmin.* TO pma@localhost;&quot;</span>
 </span></code></pre></td></tr></table></div></figure>
 
-<h2 id="toc_6">Hooray!</h2>
 
-<p>Now you can edit ~/Sites/httpd-vhosts.conf and add a new virtual host. You&#39;d need to reload Apache after doing so by running <code>sudo port unload apache2 &amp;&amp; sudo port load apache2</code>. phpMyAdmin or the mysql5 binary should provide you a way to create new databases and database users and you can then set up a local site.</p>
+<h2>Hooray!</h2>
+
+<p>Now you can edit ~/Sites/httpd-vhosts.conf and add a new virtual host. You&rsquo;d need to reload Apache after doing so by running <code>sudo port unload apache2 &amp;&amp; sudo port load apache2</code>. phpMyAdmin or the mysql5 binary should provide you a way to create new databases and database users and you can then set up a local site.</p>
 
 <p>If you find MacPorts too heavy a separation from OSX, or too slow to compile, you should check out my previous blog posts on setting up a MAMP environment with as many built-in tools as possible only by adding a <a href="http://echodittolabs.org/blog/2011/08/os-x-107-lion-development-native-mamp-mysql-installer">MySQL installer</a> or <a href="http://echodittolabs.org/blog/2011/09/os-x-107-lion-development-native-apache-php-homebrew-mysql-or-mariadb">MySQL/MariaDB via Homebrew</a>.</p>
 </div>
@@ -397,7 +410,7 @@
     
       <div class="sharing">
   
-  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://alanthing.com/blog/2011/10/11/os-x-107-lion-development-macports/" data-via="alanthing" data-counturl="http://alanthing.com/blog/2011/10/11/os-x-107-lion-development-macports/" >Tweet</a>
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://alanthing.com/blog/2011/10/11/os-x-107-lion-development-macports/" data-via="alanthing" data-counturl="http://alanthing.com/blog/2011/10/11/os-x-107-lion-development-macports/" >Tweet</a>
   
   
   <div class="g-plusone" data-size="medium"></div>
@@ -434,7 +447,7 @@
   <ul id="recent_posts">
     
       <li class="post">
-        <a href="/blog/2013/05/09/speed-up-php-on-nfs-with-turbo-realpath/">Speed up PHP on NFS with turbo_realpath</a>
+        <a href="/blog/2013/05/09/speed-up-php-on-nfs-with-turbo-realpath/">Speed Up PHP on NFS With Turbo_realpath</a>
       </li>
     
       <li class="post">
@@ -450,34 +463,77 @@
       </li>
     
       <li class="post">
-        <a href="/blog/2012/09/04/apache-modules-on-os-x-with-homebrew/">Apache modules on OS X with Homebrew</a>
+        <a href="/blog/2012/09/04/apache-modules-on-os-x-with-homebrew/">Apache Modules on OS X With Homebrew</a>
       </li>
     
   </ul>
 </section>
 
 <section>
-  <h1>Coderwall Badges</h1>
-  <p>
-    <script type="text/javascript">
-      function display_coderwall(args) {
-        var badges = args["data"]["badges"];
-        var wall = '';
-        for ( var i = 0; i < badges.length; i++ ) {
-          var alt_txt = badges[i]["name"];
-          var title_txt = badges[i]["name"] + ' - ' + badges[i]["description"];
-          wall += '<a href="http://coderwall.com/alanthing/"><img src="'
-            + badges[i]["badge"]
-            + '" width="48" height="48" alt="' + alt_txt
-            + '" title="' + title_txt
-            + '"/></a>';
-        }
-        document.write(wall);
-      }
-    </script>
-    <script src="http://coderwall.com/alanthing.json?callback=display_coderwall"></script>
-  </p>
+  <h1>Coderwall</h1>
+  <ul id="cw_badges">
+    <li class="loading">Status updating...</li>
+  </ul>
   
+  <div>
+    <a href="http://coderwall.com/alanthing" target="_blank" class="cw_badge"><img
+       alt="Endorse alanthing on Coderwall"
+       src="http://api.coderwall.com/alanthing/endorsecount.png" /></a>
+  </div>
+  
+
+  <script type="text/javascript">
+    var coderwall = (function(){
+      function render(options, badges){
+        var fragment = '',
+            t = $(options.target)[0],
+            height = 65,
+            width = 65,
+            index;
+
+        for (index in badges) {
+          fragment += '<a class="cw_badge"title="' + badges[index].description + '" target="_blank" href="http://coderwall.com/' + options.user + '">';
+          fragment +=   '<img alt="' + badges[index].description + '" height="' + width + '" width="' + height + '" src="' + badges[index].badge + '"/>';
+          fragment += '</a>';
+        }
+
+        t.innerHTML = fragment;
+      }
+      return {
+        showBadges: function(options){
+          $.ajax({
+              url: 'http://coderwall.com/' + options.user + '.json?callback=?'
+            , type: 'jsonp'
+            , error: function (err) { $(options.target + ' li.loading').addClass('error').text("Error loading feed"); }
+            , success: function(res) {
+                render(options, res.data.badges);
+            }
+          });
+        }
+      };
+    })();
+
+    $.domReady(function(){
+      if (!window.jXHR){
+        var jxhr = document.createElement('script');
+        jxhr.type = 'text/javascript';
+        jxhr.src = '/javascripts/libs/jXHR.js';
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(jxhr, s);
+      }
+      if (!window.$){
+        var b = document.createElement('script');
+        b.type = 'text/javascript';
+        b.src = '/javascripts/ender.js';
+        var sc = document.getElementsByTagName('script')[0];
+        sc.parentNode.insertBefore(jxhr, s);
+      }
+      coderwall.showBadges({
+        user: 'alanthing',
+        target: '#cw_badges'
+      });
+    });
+  </script>
 </section>
 
 
@@ -572,7 +628,7 @@
       var twitterWidgets = document.createElement('script');
       twitterWidgets.type = 'text/javascript';
       twitterWidgets.async = true;
-      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
       document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
     })();
   </script>

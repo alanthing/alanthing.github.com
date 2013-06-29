@@ -103,7 +103,7 @@
   </header>
 
 
-<div class="entry-content"><p><a href="http://www.dropbox.com/">Dropbox</a> hardly needs any introduction; put files in your Dropbox and they show up everywhere else you have Dropbox installed and dropbox.com. A feature about Dropbox that is probably not as widely known is that free accounts come with 30 days of undo history and Pro accounts can get &quot;Pack Rat&quot; that keeps unlimited history of changes. The history of files, including reverting deleted files, was particularly interesting to me, since I could hook in my latest daily MySQL dumps from <a href="http://sourceforge.net/projects/automysqlbackup/">AutoMySQLBackup</a> to Dropbox and have 30 days of backups for free available from anywhere dropbox.com is accessible. </p>
+<div class="entry-content"><p><a href="http://www.dropbox.com/">Dropbox</a> hardly needs any introduction; put files in your Dropbox and they show up everywhere else you have Dropbox installed and dropbox.com. A feature about Dropbox that is probably not as widely known is that free accounts come with 30 days of undo history and Pro accounts can get &ldquo;Pack Rat&rdquo; that keeps unlimited history of changes. The history of files, including reverting deleted files, was particularly interesting to me, since I could hook in my latest daily MySQL dumps from <a href="http://sourceforge.net/projects/automysqlbackup/">AutoMySQLBackup</a> to Dropbox and have 30 days of backups for free available from anywhere dropbox.com is accessible.</p>
 
 <p>The problem is that we use <a href="http://centos.org/">CentOS</a> for our servers and the Dropbox Linux builds are geared for distributions like Ubuntu and Debian that have updated versions of required software like Python, libc, and others, that I did not want to upgrade by hand on my systems and risk the integrity of the system packages. But, I got it to work anyway, read on for how I got Dropbox CLI installed on CentOS without replacing any system files.</p>
 
@@ -113,6 +113,7 @@
 <li><p>Run <code>~/.dropbox-dist/dropboxd</code> to get Dropbox to provide a URL to go to in your browser to link this computer to your Dropbox account</p></li>
 </ul>
 
+
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
@@ -121,9 +122,11 @@
 </span><span class='line'>Please visit https: //www.dropbox.com/cli_link?host_id<span class="o">=</span>xxxxxxxxxxxxxxxxxxxxxxxxxxxx to link this machine.
 </span></code></pre></td></tr></table></div></figure>
 
+
 <ul>
-<li>  After visiting the URL in a browser to which you&#39;ve logged into dropbox.com, you&#39;ll see the following output:</li>
+<li>After visiting the URL in a browser to which you&rsquo;ve logged into dropbox.com, you&rsquo;ll see the following output:</li>
 </ul>
+
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -133,15 +136,17 @@
 </span><span class='line'>Run <span class="s1">&#39;nautilus --help&#39;</span> to see a full list of available <span class="nb">command </span>line options.
 </span></code></pre></td></tr></table></div></figure>
 
+
 <ul>
-<li><p>If you cannot quit the app, open another a shell, get the PID by running <code>ps -ef|grep dropbox</code>, and kill PID. The output on your other shell should say:<br>
+<li><p>If you cannot quit the app, open another a shell, get the PID by running <code>ps -ef|grep dropbox</code>, and kill PID. The output on your other shell should say:
 Terminated</p></li>
 <li><p>Download the official Dropbox CLI: <a href="http://www.dropbox.com/download?dl=packages/dropbox.py">http://www.dropbox.com/download?dl=packages/dropbox.py</a> <a href="http://wiki.dropbox.com/TipsAndTricks/TextBasedLinuxInstall">(ref)</a></p></li>
-<li><p><code>dropbox.py</code> won&#39;t work without Python 2.6, but let&#39;s not risk messing up our official RHEL packages. Download ActivePython 2.6 (AS Package) from <a href="https://www.activestate.com/activepython/downloads">https://www.activestate.com/activepython/downloads</a> <a href="http://stackoverflow.com/questions/1465036/install-python-2-6-in-centos">(ref)</a></p></li>
+<li><p><code>dropbox.py</code> won&rsquo;t work without Python 2.6, but let&rsquo;s not risk messing up our official RHEL packages. Download ActivePython 2.6 (AS Package) from <a href="https://www.activestate.com/activepython/downloads">https://www.activestate.com/activepython/downloads</a> <a href="http://stackoverflow.com/questions/1465036/install-python-2-6-in-centos">(ref)</a></p></li>
 <li><p>As mentioned in the AP documentation <a href="http://docs.activestate.com/activepython/2.6/installnotes.html#aspackage">(ref)</a>, run the installer with <code>./install.sh</code> and install where desired. It defaults to <em>/opt/ActivePython-2.6</em>, which is fine because it does not conflcit with the system default python 2.4 install. For my purposes, I had created a user called <em>dropbox</em> that did not have root privileges, so I installed to <em>/home/dropbox/ActivePython-2.6</em>.</p></li>
-<li><p>Edit <em>dropbox.py</em> and change <code>#!/usr/bin/python</code> to the path you just installed AP to. For my installation, it&#39;s set to <code>#!/home/dropbox/bin/ActivePython-2.6/bin/python</code></p></li>
+<li><p>Edit <em>dropbox.py</em> and change <code>#!/usr/bin/python</code> to the path you just installed AP to. For my installation, it&rsquo;s set to <code>#!/home/dropbox/bin/ActivePython-2.6/bin/python</code></p></li>
 <li><p>Run <code>dropbox.py</code> without commands to see your available options.</p></li>
 </ul>
+
 
 <p>Optional: To suppress LAN Sync broadcasts, download <a href="http://wiki.dropbox.com/TipsAndTricks/TextBasedLinuxInstall?action=AttachFile&amp;do=view&amp;target=dropboxp2p.py">dropboxp2p.py</a> <a href="http://wiki.dropbox.com/TipsAndTricks/TextBasedLinuxInstall">(ref)</a>, edit the first line to use the ActivePython binary as you did for dropbox.py, and run <code>./dropboxp2p -d</code> to disable LAN syncing (unless you have other machines in the LAN with Dropbox installed, and your firewalls are set up appropriately).</p>
 </div>
@@ -174,7 +179,7 @@ Terminated</p></li>
     
       <div class="sharing">
   
-  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://alanthing.com/blog/2010/08/12/dropbox-cli-centos-5-easy-way/" data-via="alanthing" data-counturl="http://alanthing.com/blog/2010/08/12/dropbox-cli-centos-5-easy-way/" >Tweet</a>
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://alanthing.com/blog/2010/08/12/dropbox-cli-centos-5-easy-way/" data-via="alanthing" data-counturl="http://alanthing.com/blog/2010/08/12/dropbox-cli-centos-5-easy-way/" >Tweet</a>
   
   
   <div class="g-plusone" data-size="medium"></div>
@@ -211,7 +216,7 @@ Terminated</p></li>
   <ul id="recent_posts">
     
       <li class="post">
-        <a href="/blog/2013/05/09/speed-up-php-on-nfs-with-turbo-realpath/">Speed up PHP on NFS with turbo_realpath</a>
+        <a href="/blog/2013/05/09/speed-up-php-on-nfs-with-turbo-realpath/">Speed Up PHP on NFS With Turbo_realpath</a>
       </li>
     
       <li class="post">
@@ -227,34 +232,77 @@ Terminated</p></li>
       </li>
     
       <li class="post">
-        <a href="/blog/2012/09/04/apache-modules-on-os-x-with-homebrew/">Apache modules on OS X with Homebrew</a>
+        <a href="/blog/2012/09/04/apache-modules-on-os-x-with-homebrew/">Apache Modules on OS X With Homebrew</a>
       </li>
     
   </ul>
 </section>
 
 <section>
-  <h1>Coderwall Badges</h1>
-  <p>
-    <script type="text/javascript">
-      function display_coderwall(args) {
-        var badges = args["data"]["badges"];
-        var wall = '';
-        for ( var i = 0; i < badges.length; i++ ) {
-          var alt_txt = badges[i]["name"];
-          var title_txt = badges[i]["name"] + ' - ' + badges[i]["description"];
-          wall += '<a href="http://coderwall.com/alanthing/"><img src="'
-            + badges[i]["badge"]
-            + '" width="48" height="48" alt="' + alt_txt
-            + '" title="' + title_txt
-            + '"/></a>';
-        }
-        document.write(wall);
-      }
-    </script>
-    <script src="http://coderwall.com/alanthing.json?callback=display_coderwall"></script>
-  </p>
+  <h1>Coderwall</h1>
+  <ul id="cw_badges">
+    <li class="loading">Status updating...</li>
+  </ul>
   
+  <div>
+    <a href="http://coderwall.com/alanthing" target="_blank" class="cw_badge"><img
+       alt="Endorse alanthing on Coderwall"
+       src="http://api.coderwall.com/alanthing/endorsecount.png" /></a>
+  </div>
+  
+
+  <script type="text/javascript">
+    var coderwall = (function(){
+      function render(options, badges){
+        var fragment = '',
+            t = $(options.target)[0],
+            height = 65,
+            width = 65,
+            index;
+
+        for (index in badges) {
+          fragment += '<a class="cw_badge"title="' + badges[index].description + '" target="_blank" href="http://coderwall.com/' + options.user + '">';
+          fragment +=   '<img alt="' + badges[index].description + '" height="' + width + '" width="' + height + '" src="' + badges[index].badge + '"/>';
+          fragment += '</a>';
+        }
+
+        t.innerHTML = fragment;
+      }
+      return {
+        showBadges: function(options){
+          $.ajax({
+              url: 'http://coderwall.com/' + options.user + '.json?callback=?'
+            , type: 'jsonp'
+            , error: function (err) { $(options.target + ' li.loading').addClass('error').text("Error loading feed"); }
+            , success: function(res) {
+                render(options, res.data.badges);
+            }
+          });
+        }
+      };
+    })();
+
+    $.domReady(function(){
+      if (!window.jXHR){
+        var jxhr = document.createElement('script');
+        jxhr.type = 'text/javascript';
+        jxhr.src = '/javascripts/libs/jXHR.js';
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(jxhr, s);
+      }
+      if (!window.$){
+        var b = document.createElement('script');
+        b.type = 'text/javascript';
+        b.src = '/javascripts/ender.js';
+        var sc = document.getElementsByTagName('script')[0];
+        sc.parentNode.insertBefore(jxhr, s);
+      }
+      coderwall.showBadges({
+        user: 'alanthing',
+        target: '#cw_badges'
+      });
+    });
+  </script>
 </section>
 
 
@@ -349,7 +397,7 @@ Terminated</p></li>
       var twitterWidgets = document.createElement('script');
       twitterWidgets.type = 'text/javascript';
       twitterWidgets.async = true;
-      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
       document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
     })();
   </script>

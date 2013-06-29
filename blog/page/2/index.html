@@ -9,7 +9,7 @@
   <meta name="author" content="Alan Ivey">
 
   
-  <meta name="description" content="OS X Lion comes with most of the tools you would need to do &quot;MAMP&quot; (Mac OS X, Apache, MySQL/MariaDB, PHP) development, as outlined in my &hellip;">
+  <meta name="description" content="OS X Lion comes with most of the tools you would need to do &ldquo;MAMP&rdquo; (Mac OS X, Apache, MySQL/MariaDB, PHP) development, as outlined in my &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -106,17 +106,17 @@
   </header>
 
 
-  <div class="entry-content"><p>OS X Lion comes with most of the tools you would need to do &quot;MAMP&quot; (Mac OS X, Apache, MySQL/MariaDB, PHP) development, as outlined in my <a href="http://echodittolabs.org/blog/2011/08/os-x-107-lion-development-native-mamp-mysql-installer">previous</a> <a href="http://echodittolabs.org/blog/2011/09/os-x-107-lion-development-native-apache-php-homebrew-mysql-or-mariadb">posts</a> once you add a database. So then why would you want to use MacPorts? Setting your development environment up in MacPorts isolates the binaries, libraries, and configuration files, completely separate from the existing OS X install (with the exception of startup scripts). You can also tweak the configuration files on your own, apply your own patches, and apply updates that MacPorts may get before Apple pushes them. It will take more time because you&#39;ll be compiling everything, but you have all of the control. Read on for how to get things set up. </p>
+  <div class="entry-content"><p>OS X Lion comes with most of the tools you would need to do &ldquo;MAMP&rdquo; (Mac OS X, Apache, MySQL/MariaDB, PHP) development, as outlined in my <a href="http://echodittolabs.org/blog/2011/08/os-x-107-lion-development-native-mamp-mysql-installer">previous</a> <a href="http://echodittolabs.org/blog/2011/09/os-x-107-lion-development-native-apache-php-homebrew-mysql-or-mariadb">posts</a> once you add a database. So then why would you want to use MacPorts? Setting your development environment up in MacPorts isolates the binaries, libraries, and configuration files, completely separate from the existing OS X install (with the exception of startup scripts). You can also tweak the configuration files on your own, apply your own patches, and apply updates that MacPorts may get before Apple pushes them. It will take more time because you&rsquo;ll be compiling everything, but you have all of the control. Read on for how to get things set up.</p>
 
-<h2 id="toc_0">Prerequisites</h2>
+<h2>Prerequisites</h2>
 
-<p>We&#39;ll going to be compiling a lot of source code so you&#39;ll need to have <a href="http://itunes.apple.com/us/app/xcode/id448457090">Xcode 4</a> installed. I initially tried with the <a href="https://github.com/kennethreitz/osx-gcc-installer">OS X GCC Installer</a> but eventually ran into a problem where a portfile was expecting an Xcode binary to check to a prerequisite. I&#39;m sure some hacking could&#39;ve resolved it to avoid having to install the very large Xcode package, but at the end of the day it&#39;s better to just know that it&#39;ll work as expected. </p>
+<p>We&rsquo;ll going to be compiling a lot of source code so you&rsquo;ll need to have <a href="http://itunes.apple.com/us/app/xcode/id448457090">Xcode 4</a> installed. I initially tried with the <a href="https://github.com/kennethreitz/osx-gcc-installer">OS X GCC Installer</a> but eventually ran into a problem where a portfile was expecting an Xcode binary to check to a prerequisite. I&rsquo;m sure some hacking could&rsquo;ve resolved it to avoid having to install the very large Xcode package, but at the end of the day it&rsquo;s better to just know that it&rsquo;ll work as expected.</p>
 
-<p>Once you have Xcode 4 installed, you&#39;ll need to <a href="http://www.macports.org/install.php">install MacPorts</a>. It&#39;s a simple click-through installer. Come back to this guide once MacPorts is ready. </p>
+<p>Once you have Xcode 4 installed, you&rsquo;ll need to <a href="http://www.macports.org/install.php">install MacPorts</a>. It&rsquo;s a simple click-through installer. Come back to this guide once MacPorts is ready.</p>
 
-<p>Note that for all commands before that are starting with a $, the dollar sign is showing a command-line prompt in <a href="http://www.apple.com/macosx/apps/all.html#terminal">Terminal</a>, and you should not actually type it as part of the commands. </p>
+<p>Note that for all commands before that are starting with a $, the dollar sign is showing a command-line prompt in <a href="http://www.apple.com/macosx/apps/all.html#terminal">Terminal</a>, and you should not actually type it as part of the commands.</p>
 
-<h2 id="toc_1">Install packages</h2>
+<h2>Install packages</h2>
 
 <p>Update the ports tree to get the latest from the MacPorts server in case the installer had an older tree:</p>
 
@@ -124,17 +124,19 @@
 </pre></td><td class='code'><pre><code class='bash'><span class='line'>sudo /opt/local/bin/port selfupdate
 </span></code></pre></td></tr></table></div></figure>
 
+
 <p>All of the packages that we need can be installed with a single command:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'>sudo /opt/local/bin/port install apache2 php5 php5-mysql mysql5-server php5-gd php5-mbstring php5-apc lynx phpmyadmin
 </span></code></pre></td></tr></table></div></figure>
 
-<p>Compiling all of these tools will take a while, so grab a book and come back when the command is completed. </p>
 
-<h2 id="toc_2">Configure PHP</h2>
+<p>Compiling all of these tools will take a while, so grab a book and come back when the command is completed.</p>
 
-<p>The following will set up PHP with some development-friendly settings. </p>
+<h2>Configure PHP</h2>
+
+<p>The following will set up PHP with some development-friendly settings.</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -186,6 +188,7 @@
 </span><span class='line'><span class="s2">EOF&quot;</span>
 </span></code></pre></td></tr></table></div></figure>
 
+
 <p>Now configure the APC extension (installed above with php5-apc) which will increase PHP performance dramatically.</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
@@ -210,7 +213,8 @@
 </span><span class='line'><span class="s2">EOF&quot;</span>
 </span></code></pre></td></tr></table></div></figure>
 
-<h2 id="toc_3">Configure Apache</h2>
+
+<h2>Configure Apache</h2>
 
 <p>Start by setting up PHP to work with Apache properly:</p>
 
@@ -238,7 +242,8 @@
 </span><span class='line'><span class="s2">EOF&quot;</span>
 </span></code></pre></td></tr></table></div></figure>
 
-<p>Now we&#39;ll move httpd-vhosts.conf to ~/Sites for easy editing of new virtual hosts, as well as create a ~/Sites/logs folder:</p>
+
+<p>Now we&rsquo;ll move httpd-vhosts.conf to ~/Sites for easy editing of new virtual hosts, as well as create a ~/Sites/logs folder:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -276,11 +281,13 @@
 </span><span class='line'><span class="s2">EOF&quot;</span>
 </span></code></pre></td></tr></table></div></figure>
 
-<p>Allow userdirs so the MacPorts Apache &quot;feels&quot; more like the built-in Apache:</p>
+
+<p>Allow userdirs so the MacPorts Apache &ldquo;feels&rdquo; more like the built-in Apache:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'>sudo sed -i <span class="s2">&quot;&quot;</span> <span class="s1">&#39;s/\#\(.*httpd-userdir\.conf\)/\1/&#39;</span> /opt/local/apache2/conf/httpd.conf
 </span></code></pre></td></tr></table></div></figure>
+
 
 <p>Start Apache and set it to load on boot:</p>
 
@@ -288,7 +295,8 @@
 </pre></td><td class='code'><pre><code class='bash'><span class='line'>sudo /opt/local/bin/port load apache2
 </span></code></pre></td></tr></table></div></figure>
 
-<h2 id="toc_4">Configure MySQL</h2>
+
+<h2>Configure MySQL</h2>
 
 <p>Set up the configuration file:</p>
 
@@ -298,16 +306,19 @@
 </span><span class='line'>sudo sed -i <span class="s2">&quot;&quot;</span> <span class="s1">&#39;s/max_allowed_packet = 1.*M/max_allowed_packet = 1G/g&#39;</span> /opt/local/etc/mysql5/my.cnf
 </span></code></pre></td></tr></table></div></figure>
 
-<p>Initialize MySQL and run the secure installation script:<br>
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span><br>
-<span class='line-number'>2</span><br>
-<span class='line-number'>3</span><br>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>sudo -u _mysql /opt/local/bin/mysql_install_db5<br>
-</span><span class='line'>sudo /opt/local/bin/port load mysql5-server<br>
-</span><span class='line'>sudo /opt/local/lib/mysql5/bin/mysql_secure_installation<br>
-</span></code></pre></td></tr></table></div></figure></p>
 
-<h2 id="toc_5">Configure phpMyAdmin</h2>
+<p>Initialize MySQL and run the secure installation script:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>sudo -u _mysql /opt/local/bin/mysql_install_db5
+</span><span class='line'>sudo /opt/local/bin/port load mysql5-server
+</span><span class='line'>sudo /opt/local/lib/mysql5/bin/mysql_secure_installation
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Configure phpMyAdmin</h2>
 
 <p>Add a config file for Apache and reload Apache:</p>
 
@@ -355,6 +366,7 @@
 </span><span class='line'><span class="nv">$ </span>sudo /opt/local/bin/port load apache2
 </span></code></pre></td></tr></table></div></figure>
 
+
 <p>Basic set up of phpMyAdmin:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
@@ -365,9 +377,10 @@
 </span><span class='line'>sudo /opt/local/bin/mysql5 -uroot -proot -e<span class="s2">&quot;CREATE USER &#39;pma&#39;@&#39;localhost&#39; IDENTIFIED BY &#39;pmapass&#39;; GRANT SELECT, INSERT, DELETE, UPDATE ON phpmyadmin.* TO pma@localhost;&quot;</span>
 </span></code></pre></td></tr></table></div></figure>
 
-<h2 id="toc_6">Hooray!</h2>
 
-<p>Now you can edit ~/Sites/httpd-vhosts.conf and add a new virtual host. You&#39;d need to reload Apache after doing so by running <code>sudo port unload apache2 &amp;&amp; sudo port load apache2</code>. phpMyAdmin or the mysql5 binary should provide you a way to create new databases and database users and you can then set up a local site.</p>
+<h2>Hooray!</h2>
+
+<p>Now you can edit ~/Sites/httpd-vhosts.conf and add a new virtual host. You&rsquo;d need to reload Apache after doing so by running <code>sudo port unload apache2 &amp;&amp; sudo port load apache2</code>. phpMyAdmin or the mysql5 binary should provide you a way to create new databases and database users and you can then set up a local site.</p>
 
 <p>If you find MacPorts too heavy a separation from OSX, or too slow to compile, you should check out my previous blog posts on setting up a MAMP environment with as many built-in tools as possible only by adding a <a href="http://echodittolabs.org/blog/2011/08/os-x-107-lion-development-native-mamp-mysql-installer">MySQL installer</a> or <a href="http://echodittolabs.org/blog/2011/09/os-x-107-lion-development-native-apache-php-homebrew-mysql-or-mariadb">MySQL/MariaDB via Homebrew</a>.</p>
 </div>
@@ -405,13 +418,13 @@
   </header>
 
 
-  <div class="entry-content"><p>OS X Lion ships with Apache and PHP, which both require a little bit of tweaking to get fully-functional for &quot;MAMP&quot; local development. The one thing Lion does not ship with is a database. This will be very similar to my <a href="http://echodittolabs.org/blog/2011/08/os-x-107-lion-development-native-mamp-mysql-installer">previous post on local development</a> but this time we&#39;ll be using Homebrew to install either MySQL or MariaDB for the database. Since we&#39;ll be using a compiler for Homebrew, I&#39;ll also cover how to add APC and other PECL modules that you can add to OS X. </p>
+  <div class="entry-content"><p>OS X Lion ships with Apache and PHP, which both require a little bit of tweaking to get fully-functional for &ldquo;MAMP&rdquo; local development. The one thing Lion does not ship with is a database. This will be very similar to my <a href="http://echodittolabs.org/blog/2011/08/os-x-107-lion-development-native-mamp-mysql-installer">previous post on local development</a> but this time we&rsquo;ll be using Homebrew to install either MySQL or MariaDB for the database. Since we&rsquo;ll be using a compiler for Homebrew, I&rsquo;ll also cover how to add APC and other PECL modules that you can add to OS X.</p>
 
 <p>Note that for all commands before that are starting with a $, the dollar sign is showing a command-line prompt in <a href="http://www.apple.com/macosx/apps/all.html#terminal">Terminal</a>, and you should not actually type it as part of the commands.</p>
 
-<h2 id="toc_0">Apache</h2>
+<h2>Apache</h2>
 
-<p>We&#39;ll set things up so we won&#39;t need sudo often in the future, and so we can manage multiple VirtualHosts. We&#39;ll keep the Apache information and our website roots in ~/Sites, and Apache logs in ~/Sites/logs</p>
+<p>We&rsquo;ll set things up so we won&rsquo;t need sudo often in the future, and so we can manage multiple VirtualHosts. We&rsquo;ll keep the Apache information and our website roots in ~/Sites, and Apache logs in ~/Sites/logs</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -425,7 +438,8 @@
 </span><span class='line'>chmod 0777 ~/Sites/logs
 </span></code></pre></td></tr></table></div></figure>
 
-<p>Edit the new <strong>~/Sites/httpd-vhosts.conf</strong> file and add the following. Note that you&#39;ll need to change all instances of &quot;/Users/name&quot; to your actual home folder path.</p>
+
+<p>Edit the new <strong>~/Sites/httpd-vhosts.conf</strong> file and add the following. Note that you&rsquo;ll need to change all instances of &ldquo;/Users/name&rdquo; to your actual home folder path.</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -493,13 +507,14 @@
 </span><span class='line'><span class="c">#&lt;/VirtualHost&gt;</span>
 </span></code></pre></td></tr></table></div></figure>
 
-<p>Launch <strong>System Preferences</strong> and go to <strong>Sharing</strong> and toggle <strong>Web Sharing</strong> off and on so it&#39;s started and reloaded with the new settings. Then click on the blue underlined link under <em>&quot;Your computer&#39;s website is available at this address:&quot;</em> to ensure Apache is working correctly, and you should see text saying &quot;It works!&quot;</p>
 
-<p>To add a site, duplicate the &lt;VirtualHost&gt; section under the Template, remove the comments, and edit appropriately. Edit /etc/hosts (or use <a href="http://code.google.com/p/gmask/">Gas Mask</a>) and add an entry for 127.0.0.1 for your project.local, and make the appropriate change in the conf file, along with the correct DocumentRoot and Log file locations. See <a href="http://httpd.apache.org/docs/2.2/vhosts/name-based.html">Apache&#39;s documentation</a> for more information.</p>
+<p>Launch <strong>System Preferences</strong> and go to <strong>Sharing</strong> and toggle <strong>Web Sharing</strong> off and on so it&rsquo;s started and reloaded with the new settings. Then click on the blue underlined link under <em>&ldquo;Your computer&rsquo;s website is available at this address:&rdquo;</em> to ensure Apache is working correctly, and you should see text saying &ldquo;It works!&rdquo;</p>
 
-<h2 id="toc_1">PHP</h2>
+<p>To add a site, duplicate the &lt;VirtualHost&gt; section under the Template, remove the comments, and edit appropriately. Edit /etc/hosts (or use <a href="http://code.google.com/p/gmask/">Gas Mask</a>) and add an entry for 127.0.0.1 for your project.local, and make the appropriate change in the conf file, along with the correct DocumentRoot and Log file locations. See <a href="http://httpd.apache.org/docs/2.2/vhosts/name-based.html">Apache&rsquo;s documentation</a> for more information.</p>
 
-<p>OS X has shipped with PHP for quite some time, but not had it enabled by default. We&#39;ll enable mod_php for Apache, and also set up an /etc/php.ini file based on the default one shipped with Lion with some development-friendly changes. Change your timezone as needed.</p>
+<h2>PHP</h2>
+
+<p>OS X has shipped with PHP for quite some time, but not had it enabled by default. We&rsquo;ll enable mod_php for Apache, and also set up an /etc/php.ini file based on the default one shipped with Lion with some development-friendly changes. Change your timezone as needed.</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -559,7 +574,8 @@
 </span><span class='line'><span class="s2">EOF&quot;</span>
 </span></code></pre></td></tr></table></div></figure>
 
-<p><strong>Optional:</strong> Lion ships with PEAR but not installed, whereas Snow Leopard it was installed. This will install PEAR from the phar archive, upgrade it, and add &#39;pear&#39; and &#39;pecl&#39; aliases to your shell.</p>
+
+<p><strong>Optional:</strong> Lion ships with PEAR but not installed, whereas Snow Leopard it was installed. This will install PEAR from the phar archive, upgrade it, and add &lsquo;pear&rsquo; and &lsquo;pecl&rsquo; aliases to your shell.</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -595,13 +611,14 @@
 </span><span class='line'><span class="s2">EOF&quot;</span>
 </span></code></pre></td></tr></table></div></figure>
 
-<p>We&#39;ll cover APC and other PECL modules after we have Homebrew up and running.</p>
+
+<p>We&rsquo;ll cover APC and other PECL modules after we have Homebrew up and running.</p>
 
 <p>Toggle <strong>Web Sharing</strong> in <strong>System Preferences &gt; Sharing</strong> for the new PHP options to take effect.</p>
 
-<h2 id="toc_2">Homebrew</h2>
+<h2>Homebrew</h2>
 
-<p>Hop onto the Mac App Store and download Xcode 4. It&#39;s free! When it&#39;s finished downloading, you&#39;ll have an Application called <strong>Install Xcode</strong> in the Applications folder, so run that and click through and you&#39;ll be all set. If it seems like overkill since we&#39;re not covering iOS or Mac app development, Xcode ships with the compiler we need for Homebrew and installing PECL modules.</p>
+<p>Hop onto the Mac App Store and download Xcode 4. It&rsquo;s free! When it&rsquo;s finished downloading, you&rsquo;ll have an Application called <strong>Install Xcode</strong> in the Applications folder, so run that and click through and you&rsquo;ll be all set. If it seems like overkill since we&rsquo;re not covering iOS or Mac app development, Xcode ships with the compiler we need for Homebrew and installing PECL modules.</p>
 
 <p>To install Homebrew, go to <a href="https://github.com/mxcl/homebrew/wiki/installation">https://github.com/mxcl/homebrew/wiki/installation</a> and run the ruby script in Terminal. If you get the error message: <em>Error: Cannot write to /usr/local</em>, run:</p>
 
@@ -611,17 +628,19 @@
 </span><span class='line'>sudo chgrp staff /usr/local
 </span></code></pre></td></tr></table></div></figure>
 
-<h2 id="toc_3">MariaDB / MySQL</h2>
 
-<p><a href="http://mariadb.org/">MariaDB</a> is a fork of MySQL that has <a href="http://kb.askmonty.org/en/mariadb-versus-mysql">additional features</a> and is a drop-in replacement for MySQL. MariaDB is <a href="http://drupal.org/node/861192">supported by Drupal 7</a>, and works with Drupal 6 as well. Make the choice to go with either MariaDB or MySQL and continue; I&#39;ll cover how to setup and use both.</p>
+<h2>MariaDB / MySQL</h2>
 
-<h3 id="toc_4">MySQL</h3>
+<p><a href="http://mariadb.org/">MariaDB</a> is a fork of MySQL that has <a href="http://kb.askmonty.org/en/mariadb-versus-mysql">additional features</a> and is a drop-in replacement for MySQL. MariaDB is <a href="http://drupal.org/node/861192">supported by Drupal 7</a>, and works with Drupal 6 as well. Make the choice to go with either MariaDB or MySQL and continue; I&rsquo;ll cover how to setup and use both.</p>
+
+<h3>MySQL</h3>
 
 <p>To install MySQL, simply run:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'>brew install mysql
 </span></code></pre></td></tr></table></div></figure>
+
 
 <p>cmake is a dependency of MySQL, and cmake needs java, so if you get a pop-up asking you to install a Java runtime, be sure to click Install and proceed. Grab a book because compiling MySQL and its dependencies will take several minutes. Now, to configure MySQL (includes raising packet limits for easier use in a non-production scenario) and start:</p>
 
@@ -637,7 +656,8 @@
 </span><span class='line'><span class="o">[</span> ! -d ~/Library/LaunchAgents <span class="o">]</span> <span class="o">&amp;&amp;</span> mkdir ~/Library/LaunchAgents
 </span></code></pre></td></tr></table></div></figure>
 
-<h3 id="toc_5">MariaDB</h3>
+
+<h3>MariaDB</h3>
 
 <p>To install MariaDB, run:</p>
 
@@ -645,7 +665,8 @@
 </pre></td><td class='code'><pre><code class='bash'><span class='line'>brew install mariadb pidof
 </span></code></pre></td></tr></table></div></figure>
 
-<p><em>pidof</em> is referenced in some of the MariaDB scripts but is not listed as a prerequisite in MariaDB&#39;s Homebrew formula, so we need to install it. To configure and start:</p>
+
+<p><em>pidof</em> is referenced in some of the MariaDB scripts but is not listed as a prerequisite in MariaDB&rsquo;s Homebrew formula, so we need to install it. To configure and start:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -659,7 +680,8 @@
 </span><span class='line'><span class="o">[</span> ! -d ~/Library/LaunchAgents <span class="o">]</span> <span class="o">&amp;&amp;</span> mkdir ~/Library/LaunchAgents
 </span></code></pre></td></tr></table></div></figure>
 
-<h2 id="toc_6">APC and other PECL modules</h2>
+
+<h2>APC and other PECL modules</h2>
 
 <p>PECL modules require compiling, which is why I excluded it from my previous blog post because I did not require Xcode to be installed. An easy one is <strong>uploadprogress</strong> which is often recommended for Drupal development:</p>
 
@@ -677,7 +699,8 @@
 </span><span class='line'><span class="s2">EOF&quot;</span>
 </span></code></pre></td></tr></table></div></figure>
 
-<p>APC is easy too, but requires you to install pcre libraries. With Homebrew, this is easy, and we&#39;ll add some basic APC parameters:</p>
+
+<p>APC is easy too, but requires you to install pcre libraries. With Homebrew, this is easy, and we&rsquo;ll add some basic APC parameters:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -707,23 +730,25 @@
 </span><span class='line'><span class="s2">EOF&quot;</span>
 </span></code></pre></td></tr></table></div></figure>
 
+
 <p>Non-PECL extensions, like mcrypt, require some additional work. Check out <a href="http://blog.rogeriopvl.com/archives/php-mcrypt-in-snow-leopard-with-homebrew/">this guide for building mcrypt</a>.</p>
 
-<h2 id="toc_7">Make PHP and MariaDB / MySQL Play Nice</h2>
+<h2>Make PHP and MariaDB / MySQL Play Nice</h2>
 
-<p>If you were to run <code>php -i|egrep &#39;mysql.*default_socket&#39;</code> you would see that PHP was compiled to expect the MySQL socket file in /var/mysql, but MariaDB / MySQL will place it in /tmp. This easiest fix is to tell PHP to look in /tmp:</p>
+<p>If you were to run <code>php -i|egrep 'mysql.*default_socket'</code> you would see that PHP was compiled to expect the MySQL socket file in /var/mysql, but MariaDB / MySQL will place it in /tmp. This easiest fix is to tell PHP to look in /tmp:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'>sudo sed -i <span class="s2">&quot;&quot;</span> <span class="s1">&#39;s|/var/mysql/mysql\.sock|/tmp/mysql.sock|g&#39;</span> /etc/php.ini
 </span></code></pre></td></tr></table></div></figure>
 
+
 <p>Toggle <strong>Web Sharing</strong> in <strong>System Preferences &gt; Sharing</strong> for the new PHP options to take effect.</p>
 
-<h2 id="toc_8">Hooray!</h2>
+<h2>Hooray!</h2>
 
 <p>You should now be all set to keep adding more VirtualHosts in httpd-vhosts.conf and begin development on your local machine. Stay tuned for instructions on how to use <a href="http://www.macports.org/">MacPorts</a>!</p>
 
-<p><strong>Update:</strong> If you&#39;re interested in leveraging more from Homebrew, like replacing Apache and PHP all from Homebrew, check out the <a href="https://github.com/adamv/homebrew-alt">homebrew-alt repository</a> on GitHub. Newer versions of Homebrew allow you to install formulae from URLs or alternate folders, and homebrew-alt provides formulae that replace built-in OS X applications (something official formulae will not do). For example, you could install PHP with PHP-FPM, something the OS X-provided PHP does not offer. Have fun exploring!</p>
+<p><strong>Update:</strong> If you&rsquo;re interested in leveraging more from Homebrew, like replacing Apache and PHP all from Homebrew, check out the <a href="https://github.com/adamv/homebrew-alt">homebrew-alt repository</a> on GitHub. Newer versions of Homebrew allow you to install formulae from URLs or alternate folders, and homebrew-alt provides formulae that replace built-in OS X applications (something official formulae will not do). For example, you could install PHP with PHP-FPM, something the OS X-provided PHP does not offer. Have fun exploring!</p>
 </div>
   
   
@@ -759,13 +784,13 @@
   </header>
 
 
-  <div class="entry-content"><p>With the release of Lion, there are some subtle differences to setting up a local MAMP (Mac OS X, Apache, MySQL, PHP) environment compared to Snow Leopard. In an effort to keep this from being overly wordy and just get to the good stuff, we&#39;ll dive right in, so read on to get started.</p>
+  <div class="entry-content"><p>With the release of Lion, there are some subtle differences to setting up a local MAMP (Mac OS X, Apache, MySQL, PHP) environment compared to Snow Leopard. In an effort to keep this from being overly wordy and just get to the good stuff, we&rsquo;ll dive right in, so read on to get started.</p>
 
 <p>Note that for all commands before that are starting with a $, the dollar sign is showing a command-line prompt in <a href="http://www.apple.com/macosx/apps/all.html#terminal">Terminal</a>, and you should not actually type it as part of the commands.</p>
 
-<h2 id="toc_0">Apache</h2>
+<h2>Apache</h2>
 
-<p>We&#39;ll set things up so we won&#39;t need sudo often in the future, and so we can manage multiple VirtualHosts. We&#39;ll keep the Apache information and our website roots in ~/Sites, and Apache logs in ~/Sites/logs</p>
+<p>We&rsquo;ll set things up so we won&rsquo;t need sudo often in the future, and so we can manage multiple VirtualHosts. We&rsquo;ll keep the Apache information and our website roots in ~/Sites, and Apache logs in ~/Sites/logs</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -779,7 +804,8 @@
 </span><span class='line'><span class="nv">$ </span>chmod 0777 ~/Sites/logs
 </span></code></pre></td></tr></table></div></figure>
 
-<p>Edit the new <strong>~/Sites/httpd-vhosts.conf</strong> file and add the following. Note that you&#39;ll need to change all instances of &quot;/Users/name&quot; to your actual home folder path.</p>
+
+<p>Edit the new <strong>~/Sites/httpd-vhosts.conf</strong> file and add the following. Note that you&rsquo;ll need to change all instances of &ldquo;/Users/name&rdquo; to your actual home folder path.</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -847,13 +873,14 @@
 </span><span class='line'><span class="c">#&lt;/VirtualHost&gt;</span>
 </span></code></pre></td></tr></table></div></figure>
 
-<p>Launch <strong>System Preferences</strong> and go to <strong>Sharing</strong> and toggle <strong>Web Sharing</strong> off and on so it&#39;s started and reloaded with the new settings. Then click on the blue underlined link under <em>&quot;Your computer&#39;s website is available at this address:&quot;</em> to ensure Apache is working correctly, and you should see text saying &quot;It works!&quot;</p>
 
-<p>To add a site, duplicate the &lt;VirtualHost&gt; section under the Template, remove the comments, and edit appropriately. Edit /etc/hosts (or use <a href="http://code.google.com/p/gmask/">Gas Mask</a>) and add an entry for 127.0.0.1 for your project.local, and make the appropriate change in the conf file, along with the correct DocumentRoot and Log file locations. See <a href="http://httpd.apache.org/docs/2.2/vhosts/name-based.html">Apache&#39;s documentation</a> for more information.</p>
+<p>Launch <strong>System Preferences</strong> and go to <strong>Sharing</strong> and toggle <strong>Web Sharing</strong> off and on so it&rsquo;s started and reloaded with the new settings. Then click on the blue underlined link under <em>&ldquo;Your computer&rsquo;s website is available at this address:&rdquo;</em> to ensure Apache is working correctly, and you should see text saying &ldquo;It works!&rdquo;</p>
 
-<h2 id="toc_1">PHP</h2>
+<p>To add a site, duplicate the &lt;VirtualHost&gt; section under the Template, remove the comments, and edit appropriately. Edit /etc/hosts (or use <a href="http://code.google.com/p/gmask/">Gas Mask</a>) and add an entry for 127.0.0.1 for your project.local, and make the appropriate change in the conf file, along with the correct DocumentRoot and Log file locations. See <a href="http://httpd.apache.org/docs/2.2/vhosts/name-based.html">Apache&rsquo;s documentation</a> for more information.</p>
 
-<p>OS X has shipped with PHP for quite some time, but not had it enabled by default. We&#39;ll enable mod_php for Apache, and also set up an /etc/php.ini file based on the default one shipped with Lion with some development-friendly changes. Change your timezone as needed.</p>
+<h2>PHP</h2>
+
+<p>OS X has shipped with PHP for quite some time, but not had it enabled by default. We&rsquo;ll enable mod_php for Apache, and also set up an /etc/php.ini file based on the default one shipped with Lion with some development-friendly changes. Change your timezone as needed.</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -913,6 +940,7 @@
 </span><span class='line'><span class="s2">EOF&quot;</span>
 </span></code></pre></td></tr></table></div></figure>
 
+
 <p><strong>Optional:</strong> Lion ships with PEAR but not installed, whereas Snow Leopard it was installed. This will install PEAR from the phar archive, upgrade it, and add <code>pear</code> and <code>pecl</code> aliases to your shell.</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
@@ -949,21 +977,23 @@
 </span><span class='line'><span class="s2">EOF&quot;</span>
 </span></code></pre></td></tr></table></div></figure>
 
-<p>Note that installing most pecl modules will require having a compiler installed via Xcode. I&#39;ll be addressing installing <a href="http://pecl.php.net/package/uploadprogress">uploadprogress</a> and <a href="http://pecl.php.net/package/apc">APC</a> in a later post, since this walkthrough requires no compiling.</p>
+
+<p>Note that installing most pecl modules will require having a compiler installed via Xcode. I&rsquo;ll be addressing installing <a href="http://pecl.php.net/package/uploadprogress">uploadprogress</a> and <a href="http://pecl.php.net/package/apc">APC</a> in a later post, since this walkthrough requires no compiling.</p>
 
 <p>Toggle <strong>Web Sharing</strong> in <strong>System Preferences &gt; Sharing</strong> for the new PHP options to take effect.</p>
 
-<h2 id="toc_2">MySQL</h2>
+<h2>MySQL</h2>
 
 <p>MySQL is the only thing not shipped with OS X that we need for our development environment. Go to the download site for OS X pre-built binaries at <a href="http://dev.mysql.com/downloads/mysql/index.html#macosx-dmg">http://dev.mysql.com/downloads/mysql/index.html#macosx-dmg</a> and choose the <strong>DMG Archive</strong> most appropriate for your system. As of this writing, the most recent version says <em>OS X 10.6</em>, but it will work on 10.7 as well.</p>
 
-<p>Open the downloaded disk image and begin by installing the <em>mysql-5.x.x-osx10.6-x86_64.pkg</em> file. Once the Installer script is completed, install the Preference Pane by double-clicking on MySQL.prefPane. If you are not sure where to install the preference pane, choose &quot;Install for this user only.&quot;</p>
+<p>Open the downloaded disk image and begin by installing the <em>mysql-5.x.x-osx10.6-x86_64.pkg</em> file. Once the Installer script is completed, install the Preference Pane by double-clicking on MySQL.prefPane. If you are not sure where to install the preference pane, choose &ldquo;Install for this user only.&rdquo;</p>
 
 <p><strong>Optional:</strong> If you wish to have MySQL start on boot, you do need to additionally install the MySQLStartupItem.pkg file. The preference pane has a toggle for starting on boot, but it will not work until you install the pkg and you run the following in Terminal:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'>sudo chown -R root:wheel /Library/StartupItems/MySQLCOM
 </span></code></pre></td></tr></table></div></figure>
+
 
 <p>Open <strong>System Preferences</strong> and <strong>MySQL</strong> and start the database by clicking the <strong>Start MySQL Server</strong> button.</p>
 
@@ -983,13 +1013,15 @@
 </span><span class='line'>ln -s /usr/local/mysql/support-files/mysql.server
 </span></code></pre></td></tr></table></div></figure>
 
-<p>This script ships with MySQL and only needs to be run once, and it should be run with sudo. As you run it, you can accept all other defaults after you set the root user&#39;s password:</p>
+
+<p>This script ships with MySQL and only needs to be run once, and it should be run with sudo. As you run it, you can accept all other defaults after you set the root user&rsquo;s password:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'>sudo /usr/local/mysql/bin/mysql_secure_installation
 </span></code></pre></td></tr></table></div></figure>
 
-<p>After installing MySQL, several sample my.cnf files are created but none is placed where MySQL can find it. Start with a &quot;small&quot; configuration file and make a few changes to increase the max_allowed_packet variable:</p>
+
+<p>After installing MySQL, several sample my.cnf files are created but none is placed where MySQL can find it. Start with a &ldquo;small&rdquo; configuration file and make a few changes to increase the max_allowed_packet variable:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -997,19 +1029,21 @@
 </span><span class='line'>sudo sed -i <span class="s2">&quot;&quot;</span> <span class="s1">&#39;s/max_allowed_packet = 1.*M/max_allowed_packet = 2G/g&#39;</span> /usr/local/mysql/data/my.cnf
 </span></code></pre></td></tr></table></div></figure>
 
-<p>To load in these changes, go back to the MySQL System Preferences pane, and restart the server by pressing &quot;Stop MySQL Server&quot; followed by &quot;Start MySQL Server.&quot;</p>
 
-<h2 id="toc_3">Make PHP and MySQL Play Nice</h2>
+<p>To load in these changes, go back to the MySQL System Preferences pane, and restart the server by pressing &ldquo;Stop MySQL Server&rdquo; followed by &ldquo;Start MySQL Server.&rdquo;</p>
 
-<p>If you were to run <code>php -i|egrep &#39;mysql.*default_socket&#39;</code> you would see that PHP was compiled to expect the MySQL socket file in /var/mysql, but MySQL will place it in /tmp. This easiest fix is to tell PHP to look in /tmp:</p>
+<h2>Make PHP and MySQL Play Nice</h2>
+
+<p>If you were to run <code>php -i|egrep 'mysql.*default_socket'</code> you would see that PHP was compiled to expect the MySQL socket file in /var/mysql, but MySQL will place it in /tmp. This easiest fix is to tell PHP to look in /tmp:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'>sudo sed -i <span class="s2">&quot;&quot;</span> <span class="s1">&#39;s/\/var\/mysql\/mysql\.sock/\/tmp\/mysql\.sock/g&#39;</span> /etc/php.ini
 </span></code></pre></td></tr></table></div></figure>
 
+
 <p>Toggle <strong>Web Sharing</strong> in <strong>System Preferences &gt; Sharing</strong> for the new PHP options to take effect.</p>
 
-<h2 id="toc_4">Hooray!</h2>
+<h2>Hooray!</h2>
 
 <p>You should now be all set to keep adding more VirtualHosts in httpd-vhosts.conf and begin development on your local machine. Stay tuned for instructions on how to use <a href="http://mariadb.org/">MariaDB</a> or MySQL with <a href="http://mxcl.github.com/homebrew/">Homebrew</a> instead of the Oracle MySQL installer, and <a href="http://www.macports.org/">MacPorts</a>!</p>
 </div>
@@ -1047,15 +1081,16 @@
   </header>
 
 
-  <div class="entry-content"><p>In this example, we choose one of our servers to receive the Syslog traffic and the others will send traffic to it. In a large environment, you should use a non-public-facing server to act as a syslog server for your sites, ideally using a database to store data, but we&#39;ll just output everything to a file to keep things simple for this guide. If you decide to use a database like MySQL to store your data, this can still provide you with a starting point, but just know that using your same production database server defeats my intended purpose since I was ultimately trying to alleviate the amount of writes on the database. </p>
+  <div class="entry-content"><p>In this example, we choose one of our servers to receive the Syslog traffic and the others will send traffic to it. In a large environment, you should use a non-public-facing server to act as a syslog server for your sites, ideally using a database to store data, but we&rsquo;ll just output everything to a file to keep things simple for this guide. If you decide to use a database like MySQL to store your data, this can still provide you with a starting point, but just know that using your same production database server defeats my intended purpose since I was ultimately trying to alleviate the amount of writes on the database.</p>
 
-<p>Start by using yum to install <strong>rsyslog</strong>. If you&#39;re using another distro, rsyslog is likely included in the base repositories. Also, note that CentOS 6 uses rsyslog by default so you may skip this step if it&#39;s already installed on your system. You&#39;ll need this on all servers running Drupal or your rsyslog server:</p>
+<p>Start by using yum to install <strong>rsyslog</strong>. If you&rsquo;re using another distro, rsyslog is likely included in the base repositories. Also, note that CentOS 6 uses rsyslog by default so you may skip this step if it&rsquo;s already installed on your system. You&rsquo;ll need this on all servers running Drupal or your rsyslog server:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'>yum install rsyslog
 </span></code></pre></td></tr></table></div></figure>
 
-<p>For CentOS 5, you&#39;ll need to unload the default syslog and switch to rsyslog. The following will ensure it starts on boot as well. Until otherwise noted, run the following commands on all servers:</p>
+
+<p>For CentOS 5, you&rsquo;ll need to unload the default syslog and switch to rsyslog. The following will ensure it starts on boot as well. Until otherwise noted, run the following commands on all servers:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -1065,6 +1100,7 @@
 </span><span class='line'>/sbin/chkconfig syslog off
 </span></code></pre></td></tr></table></div></figure>
 
+
 <p>Rather than hacking the config file to bits, I find it easier to create an include folder and keep things organized by files. I also like to back up default files created by RPMs so if an update leaves behind rsyslog.rpmnew, you can compare it to the default to see the changes:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
@@ -1073,7 +1109,8 @@
 </span><span class='line'>cp -av /etc/rsyslog.conf<span class="o">{</span>,-default<span class="o">}</span>
 </span></code></pre></td></tr></table></div></figure>
 
-<p>Add the following to <strong>/etc/rsyslog.conf</strong> below the last line containing &quot;$ModLoad&quot;:</p>
+
+<p>Add the following to <strong>/etc/rsyslog.conf</strong> below the last line containing &ldquo;$ModLoad&rdquo;:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -1081,25 +1118,29 @@
 </span><span class='line'><span class="nv">$IncludeConfig</span> /etc/rsyslog.d/*.conf
 </span></code></pre></td></tr></table></div></figure>
 
+
 <p>Reload the current rsyslog configuration:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'>/sbin/service rsyslog reload
 </span></code></pre></td></tr></table></div></figure>
 
-<p>The next several steps will only need to be run on the syslog server. Back up and edit <strong>/etc/sysconfig/rsyslog</strong> to accept UDP connections from other servers. If you&#39;re using iptables, open up port 514 on UDP.</p>
+
+<p>The next several steps will only need to be run on the syslog server. Back up and edit <strong>/etc/sysconfig/rsyslog</strong> to accept UDP connections from other servers. If you&rsquo;re using iptables, open up port 514 on UDP.</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'>cp -a /etc/sysconfig/rsyslog /etc/sysconfig/rsyslog-default
 </span></code></pre></td></tr></table></div></figure>
 
-<p>Edit /etc/sysconfig.rsyslog and change <strong>SYSLOGD_OPTIONS=&quot;-m 0&quot;</strong> to <strong>SYSLOGD_OPTIONS=&quot;-m 0 -r514&quot;</strong></p>
+
+<p>Edit /etc/sysconfig.rsyslog and change <strong>SYSLOGD_OPTIONS=&ldquo;-m 0&rdquo;</strong> to <strong>SYSLOGD_OPTIONS=&ldquo;-m 0 -r514&rdquo;</strong></p>
 
 <p>Create a root folder for website logs to go:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'>mkdir /var/log/websites
 </span></code></pre></td></tr></table></div></figure>
+
 
 <p>Create the following file to work with example.com (this format will allow you to create other files for anotherexample.org, etc.): <strong>/etc/rsyslog.d/example.conf</strong>. Add the following:</p>
 
@@ -1113,7 +1154,8 @@
 </span><span class='line'>&amp; ~
 </span></code></pre></td></tr></table></div></figure>
 
-<p>This will create <strong>/var/log/websites/example/example.2011-08-17.log</strong> and new files for each day. To add other websites, duplicate the file and replace example with another string. We&#39;ll later use &quot;example&quot; in the Drupal configuration for Syslog later that will correlate to the correct file.</p>
+
+<p>This will create <strong>/var/log/websites/example/example.2011-08-17.log</strong> and new files for each day. To add other websites, duplicate the file and replace example with another string. We&rsquo;ll later use &ldquo;example&rdquo; in the Drupal configuration for Syslog later that will correlate to the correct file.</p>
 
 <p>For those curious about this configuration: a template is needed for dynamic file paths with year-month-day. The syslogtag variable will use the string sent by Drupal in the Syslog module settings. Drupal will send it as <strong>example:</strong>, so <em>:F,58:1</em> will use the colon as the field separator and grab the first field. Even though it would appear as though this single template could be used on multiple sites, I found I still had to have a unique template for each website or all websites would dump into the same file (perhaps this is remedied in newer versions of rsyslog). The last line means that the syslog input will not be sent to any other syslog files.</p>
 
@@ -1123,13 +1165,15 @@
 </pre></td><td class='code'><pre><code class='bash'><span class='line'>/sbin/service rsyslog reload
 </span></code></pre></td></tr></table></div></figure>
 
-<p>On the clients, we&#39;ll create simple .conf files for each website. Create <strong>/etc/rsyslog.d/example.conf</strong> on each additional web server containing:</p>
+
+<p>On the clients, we&rsquo;ll create simple .conf files for each website. Create <strong>/etc/rsyslog.d/example.conf</strong> on each additional web server containing:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># example.com</span>
 </span><span class='line'>:syslogtag, contains, <span class="s2">&quot;example&quot;</span>     @192.168.1.20
 </span></code></pre></td></tr></table></div></figure>
+
 
 <p>Note that the IP address can also be a domain name, though I would not recommend it to keep another process from being needed for the lookup.</p>
 
@@ -1139,11 +1183,12 @@
 </pre></td><td class='code'><pre><code class='bash'><span class='line'>/sbin/service rsyslog reload
 </span></code></pre></td></tr></table></div></figure>
 
-<p>Enable the syslog module and go to <strong><a href="http://example.com/admin/settings/logging/syslog">http://example.com/admin/settings/logging/syslog</a></strong>. Set the Syslog Identity to match the value used in /etc/rsyslog.d/example.conf; in this case, <strong>example</strong>. Using the rsyslog filter we&#39;re using, it does not matter which facility we send to. Save the configuration.</p>
 
-<p><img src="http://echoditto.com/sites/default/files/rsyslog-screenshot.png" alt="rsyslog-screenshot"></p>
+<p>Enable the syslog module and go to <strong><a href="http://example.com/admin/settings/logging/syslog**.">http://example.com/admin/settings/logging/syslog**.</a> Set the Syslog Identity to match the value used in /etc/rsyslog.d/example.conf; in this case, </strong>example**. Using the rsyslog filter we&rsquo;re using, it does not matter which facility we send to. Save the configuration.</p>
 
-<p>Go to your rsyslog server and watch the <strong>/var/log/websites/example/example.2011-08-16.log</strong> file. After verifying that the server is receiving all messages, disable the Watchdog module in <strong><a href="http://example.org/admin/build/modules/list">http://example.org/admin/build/modules/list</a></strong>.</p></p>
+<p><img src="http://echoditto.com/sites/default/files/rsyslog-screenshot.png" alt="rsyslog-screenshot" /></p>
+
+<p>Go to your rsyslog server and watch the <strong>/var/log/websites/example/example.2011-08-16.log</strong> file. After verifying that the server is receiving all messages, disable the Watchdog module in **<a href="http://example.org/admin/build/modules/list**.">http://example.org/admin/build/modules/list**.</a></p></p>
 
 <p>There are improvements that can be had here, like using TCP instead of UDP, using <a href="http://loganalyzer.adiscon.com">LogAnalyzer</a> to filter through the files, and more. This was meant to be an introduction into getting combined text files of your watchdog output while reducing the strain on your database by not writing to it as often.</p>
 </div>
@@ -1181,12 +1226,13 @@
   </header>
 
 
-  <div class="entry-content"><p>Here&#39;s a one-liner to dump each table in a database to it&#39;s own .sql file. Crack open your shell of choice and follow along.</p>
+  <div class="entry-content"><p>Here&rsquo;s a one-liner to dump each table in a database to it&rsquo;s own .sql file. Crack open your shell of choice and follow along.</p>
 
-<p>Replace the USER, PASSWORD, and DBNAME values with your own. If you&#39;re not running this to connect to a local database, add &#8211;host=domain.tld after each password to connect to your remote server.</p>
+<p>Replace the USER, PASSWORD, and DBNAME values with your own. If you&rsquo;re not running this to connect to a local database, add &mdash;host=domain.tld after each password to connect to your remote server.</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class=''><span class='line'>for i in $(mysql -uUSER -p'PASSWORD' --batch --skip-column-names DBNAME -e'show tables;'); do mysqldump -uUSER -p'PASSWORD' DBNAME $i &gt; DBNAME-$i.sql; done</span></code></pre></td></tr></table></div></figure>
+
 
 <p>Users, passwords, and database names are case sensitive, I made them uppercase here to call them out. Leave a comment if you have a question or notice a problem or typo.</p>
 </div>
@@ -1224,7 +1270,7 @@
   </header>
 
 
-  <div class="entry-content"><p>On Snow Leopard, you can install drush without using sudo. A dependency for installing drush is downloading a Pear library. The following example should allow you to be able to use the following commands to install drush to /usr/local/drush with a symlink in /usr/local/bin/drush, but it fails on the &#39;pear download&#39; step, even though it&#39;s writing to a user-writeable directory. Read on the figure out how to fix this annoying problem.</p>
+  <div class="entry-content"><p>On Snow Leopard, you can install drush without using sudo. A dependency for installing drush is downloading a Pear library. The following example should allow you to be able to use the following commands to install drush to /usr/local/drush with a symlink in /usr/local/bin/drush, but it fails on the &lsquo;pear download&rsquo; step, even though it&rsquo;s writing to a user-writeable directory. Read on the figure out how to fix this annoying problem.</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -1241,7 +1287,8 @@
 </span><span class='line'>/usr/local/drush/includes/table.inc $ rm -fr Console_Table-* 
 </span><span class='line'>ln -s /usr/local/drush/drush /usr/local/bin/drush</span></code></pre></td></tr></table></div></figure>
 
-<p>This assumes 1) /usr/local exists and you can write to it, and 2) you&#39;ve added the following to your ~/.profile (or ~/.bashrc or ~/.bash_profile):</p>
+
+<p>This assumes 1) /usr/local exists and you can write to it, and 2) you&rsquo;ve added the following to your ~/.profile (or ~/.bashrc or ~/.bash_profile):</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -1250,7 +1297,8 @@
 </span><span class='line'>alias pear="/usr/bin/php /usr/lib/php/pearcmd.php"
 </span><span class='line'>alias pecl="/usr/bin/php /usr/lib/php/peclcmd.php"</span></code></pre></td></tr></table></div></figure>
 
-<p>But, OS X has a strange permissions problem when using pear for the first time. Running &#39;pear download&#39; should not require sudo, but if you&#39;ve never used pear before you&#39;ll get this error:</p>
+
+<p>But, OS X has a strange permissions problem when using pear for the first time. Running &lsquo;pear download&rsquo; should not require sudo, but if you&rsquo;ve never used pear before you&rsquo;ll get this error:</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -1268,6 +1316,7 @@
 </span><span class='line'>could not create lock file: fopen(/usr/lib/php/.lock): failed to open stream: No such file or directory 
 </span><span class='line'>invalid package name/package file "Console_Table" 
 </span><span class='line'>download failed</span></code></pre></td></tr></table></div></figure>
+
 
 <p>Strange, right? Administrators in OS X are in the wheel group, but /usr/lib/php is not writable by the group. Before you go changing permissions (which might not be retained after an OS X update), all you have to do is run something as root with pear:</p>
 
@@ -1290,6 +1339,7 @@
 </span><span class='line'>Structures_Graph 1.0.2   stable
 </span><span class='line'>XML_Util         1.2.1   stable</span></code></pre></td></tr></table></div></figure>
 
+
 <p>The permissions and ownership of /usr/lib/php are still the same, but there is now the file /usr/lib/php/.lock</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
@@ -1297,7 +1347,8 @@
 </pre></td><td class='code'><pre><code class=''><span class='line'>$ ls -Al /usr/lib/php/.lock
 </span><span class='line'>-rw-r--r--  1 root  wheel  0 Feb 15 16:08 /usr/lib/php/.lock</span></code></pre></td></tr></table></div></figure>
 
-<p>You&#39;d think that when pear has completed running the list command it would delete the .lock file, but it doesn&#39;t. But since it&#39;s there, the original pear download command will now run without sudo:</p>
+
+<p>You&rsquo;d think that when pear has completed running the list command it would delete the .lock file, but it doesn&rsquo;t. But since it&rsquo;s there, the original pear download command will now run without sudo:</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -1310,14 +1361,16 @@
 </span><span class='line'>.....done: 9,369 bytes
 </span><span class='line'>File /private/tmp/Console_Table-1.1.4.tgz downloaded</span></code></pre></td></tr></table></div></figure>
 
-<p>Of course, running &#39;pear install&#39; or many other commands will require sudo, but it&#39;s silly that commands that do not write any files to /usr/lib/php or its children would require sudo.</p>
 
-<p>Unrelated to the pear permissions issue, but related to my drush install script; this assumes that /usr/local and /usr/local/bin exist. By default, /usr/local/bin is in the $PATH regardless of whether or not the folder exists, but on a vanilla OS X install /usr/local does not exist. I have both Xcode and homebrew installed. I know homebrew will create /usr/local for you, but I&#39;m not sure about Xcode. If you don&#39;t want to have either installed but want drush installed to /usr/local, run this:</p>
+<p>Of course, running &lsquo;pear install&rsquo; or many other commands will require sudo, but it&rsquo;s silly that commands that do not write any files to /usr/lib/php or its children would require sudo.</p>
+
+<p>Unrelated to the pear permissions issue, but related to my drush install script; this assumes that /usr/local and /usr/local/bin exist. By default, /usr/local/bin is in the $PATH regardless of whether or not the folder exists, but on a vanilla OS X install /usr/local does not exist. I have both Xcode and homebrew installed. I know homebrew will create /usr/local for you, but I&rsquo;m not sure about Xcode. If you don&rsquo;t want to have either installed but want drush installed to /usr/local, run this:</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 </pre></td><td class='code'><pre><code class=''><span class='line'>sudo mkdir -p /usr/local/bin
 </span><span class='line'>sudo chown -R root:wheel /usr/local</span></code></pre></td></tr></table></div></figure>
+
 </div>
   
   
@@ -1353,23 +1406,25 @@
   </header>
 
 
-  <div class="entry-content"><p>I had previously <a href="http://echodittolabs.org/blog/2009/05/all-i-want-php-52-centosrhel">written a post</a> on one method of upgrading PHP from 5.1 to 5.2 on CentOS and Red Hat servers by creating new RPMs. Since then, I have found a much better way to create PHP 5.2.17 (or newer) RPMs to easily upgrade (and later remove, if you want) the older version available by default. I&#39;ll presume you have no prior experience building PHP RPMs.</p>
+  <div class="entry-content"><p>I had previously <a href="http://echodittolabs.org/blog/2009/05/all-i-want-php-52-centosrhel">written a post</a> on one method of upgrading PHP from 5.1 to 5.2 on CentOS and Red Hat servers by creating new RPMs. Since then, I have found a much better way to create PHP 5.2.17 (or newer) RPMs to easily upgrade (and later remove, if you want) the older version available by default. I&rsquo;ll presume you have no prior experience building PHP RPMs.</p>
 
-<p>We start by adding the <a href="http://fedoraproject.org/wiki/EPEL">Extra Packages for Enterprise Linux (EPEL) repository</a> to our server. EPEL is safe to add as an additional repository and leave enabled because it <a href="http://fedoraproject.org/wiki/EPEL/FAQ#How_is_EPEL_different_from_other_third_party_repositories_for_RHEL_and_derivatives.3F">provides complementary packages only</a> and will not conflict with the CentOS or Red Hat repositories. Since their installation method may change, I won&#39;t reproduce it here; instead head over to the <a href="http://fedoraproject.org/wiki/EPEL/FAQ#howtouse">installation portion of the FAQ</a> and it&#39;s just one line to get started with EPEL.</p>
+<p>We start by adding the <a href="http://fedoraproject.org/wiki/EPEL">Extra Packages for Enterprise Linux (EPEL) repository</a> to our server. EPEL is safe to add as an additional repository and leave enabled because it <a href="http://fedoraproject.org/wiki/EPEL/FAQ#How_is_EPEL_different_from_other_third_party_repositories_for_RHEL_and_derivatives.3F">provides complementary packages only</a> and will not conflict with the CentOS or Red Hat repositories. Since their installation method may change, I won&rsquo;t reproduce it here; instead head over to the <a href="http://fedoraproject.org/wiki/EPEL/FAQ#howtouse">installation portion of the FAQ</a> and it&rsquo;s just one line to get started with EPEL.</p>
 
-<p>With EPEL enabled, we will need just one new package to build RPMs: <a href="http://fedoraproject.org/wiki/Projects/Mock">Mock</a>. Mock will create a chroot, download what&#39;s necessary to build your RPM, build, and cleanup afterwards. Mock only requires a couple of python packages as dependencies; it will not require a compiler or anything like that since mock will grab them as needed during operation. I will presume you are not running as root so I will use sudo as necessary. To install mock:</p>
+<p>With EPEL enabled, we will need just one new package to build RPMs: <a href="http://fedoraproject.org/wiki/Projects/Mock">Mock</a>. Mock will create a chroot, download what&rsquo;s necessary to build your RPM, build, and cleanup afterwards. Mock only requires a couple of python packages as dependencies; it will not require a compiler or anything like that since mock will grab them as needed during operation. I will presume you are not running as root so I will use sudo as necessary. To install mock:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'>sudo yum install mock
 </span></code></pre></td></tr></table></div></figure>
 
-<p>That&#39;s it. You can run all mock operations with the &#39;sudo&#39; command to run as root, but your packages will be built inside the chroot as a non-root user. Or, if you prefer to not use sudo when running mock, add your user to the mock group (where username is your user):</p>
+
+<p>That&rsquo;s it. You can run all mock operations with the &lsquo;sudo&rsquo; command to run as root, but your packages will be built inside the chroot as a non-root user. Or, if you prefer to not use sudo when running mock, add your user to the mock group (where username is your user):</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'>sudo /usr/sbin/usermod -G mock username
 </span></code></pre></td></tr></table></div></figure>
 
-<p>Using the source code from php.net and creating a RPM spec file from scratch would be a lot of work, so we&#39;ll grab a source RPM for PHP 5.2. I&#39;ve found that <a href="http://blog.famillecollet.com/">Remi</a> has the most up-to-date RPM spec with the latest patches and robust install scripts. <a href="http://rpms.famillecollet.com/SRPMS/">Browse Remi&#39;s SRPMS</a> and download the latest PHP 5.2 file. As of this writing, it&#39;s php-5.2.17-1.remi.src.rpm. On your system, download it with wget in your home directory:</p>
+
+<p>Using the source code from php.net and creating a RPM spec file from scratch would be a lot of work, so we&rsquo;ll grab a source RPM for PHP 5.2. I&rsquo;ve found that <a href="http://blog.famillecollet.com/">Remi</a> has the most up-to-date RPM spec with the latest patches and robust install scripts. <a href="http://rpms.famillecollet.com/SRPMS/">Browse Remi&rsquo;s SRPMS</a> and download the latest PHP 5.2 file. As of this writing, it&rsquo;s php-5.2.17-1.remi.src.rpm. On your system, download it with wget in your home directory:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -1377,9 +1432,10 @@
 </span><span class='line'>wget http://rpms.famillecollet.com/SRPMS/php-5.2.17-1.remi.src.rpm
 </span></code></pre></td></tr></table></div></figure>
 
-<p>Now, we could just run mock and rebuild this source RPM and hopefully install the results, but it would fail due to not having sqlite2-devel installed. Remi provides sqlite2 and sqlite2-devel, so you could add Remi&#39;s yum repository to your mock settings, but then it would grab Remi&#39;s other updated packages like MySQL 5.5 and others during the PHP build. My goal here is to only build PHP against Base CentOS and EPEL packages. So, we have to edit the spec file and rebuild the source RPM before passing it off to mock. Don&#39;t worry; while there are a few steps, it&#39;s not very difficult if you follow closely.</p>
 
-<p>To unpack the source RPM we just downloaded into our home directory, we&#39;ll need to set up the .rpmmacros file in our home directory. Why? Without it, it will attempt to extract to /usr/src/redhat, and only root can use that directory, and you should <a href="http://wiki.centos.org/HowTos/SetupRpmBuildEnvironment">never build any packages as a privileged user</a>. We&#39;ll create the macros file and the directories it needs from your home directory:</p>
+<p>Now, we could just run mock and rebuild this source RPM and hopefully install the results, but it would fail due to not having sqlite2-devel installed. Remi provides sqlite2 and sqlite2-devel, so you could add Remi&rsquo;s yum repository to your mock settings, but then it would grab Remi&rsquo;s other updated packages like MySQL 5.5 and others during the PHP build. My goal here is to only build PHP against Base CentOS and EPEL packages. So, we have to edit the spec file and rebuild the source RPM before passing it off to mock. Don&rsquo;t worry; while there are a few steps, it&rsquo;s not very difficult if you follow closely.</p>
+
+<p>To unpack the source RPM we just downloaded into our home directory, we&rsquo;ll need to set up the .rpmmacros file in our home directory. Why? Without it, it will attempt to extract to /usr/src/redhat, and only root can use that directory, and you should <a href="http://wiki.centos.org/HowTos/SetupRpmBuildEnvironment">never build any packages as a privileged user</a>. We&rsquo;ll create the macros file and the directories it needs from your home directory:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -1389,13 +1445,15 @@
 </span><span class='line'>mkdir -p ~/rpmbuild/<span class="o">{</span>SOURCES,SPECS,SRPMS<span class="o">}</span>
 </span></code></pre></td></tr></table></div></figure>
 
+
 <p>Unpack the source RPM. This will extract the PHP 5.2.17 source and any patches and configuration files into ~/rpmbuild/SOURCES, and the spec file will be in ~/rpmbuild/SPECS:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'>rpm -ivh php-5.2.17-1.remi.src.rpm
 </span></code></pre></td></tr></table></div></figure>
 
-<p>Now we need to make a couple of changes to the spec file. We&#39;ll change to the SPECS directory and make a copy of Remi&#39;s spec file so we can keep it for reference:</p>
+
+<p>Now we need to make a couple of changes to the spec file. We&rsquo;ll change to the SPECS directory and make a copy of Remi&rsquo;s spec file so we can keep it for reference:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -1403,24 +1461,27 @@
 </span><span class='line'>cp -a php52.spec php.spec
 </span></code></pre></td></tr></table></div></figure>
 
-<p>Open up php.spec in your favorite text editor and let&#39;s have the PHP configure script use the bundled SQLite2 libraries instead of searching for ones on your system:</p>
+
+<p>Open up php.spec in your favorite text editor and let&rsquo;s have the PHP configure script use the bundled SQLite2 libraries instead of searching for ones on your system:</p>
 
 <ol>
-<li>Find the line &quot;BuildRequires: sqlite2-devel &gt;= 2.8.0&quot; and delete it</li>
-<li>Find &quot;&#8211;with-sqlite=shared,%{_prefix} \&quot; and replace it with &quot;&#8211;with-sqlite=shared \&quot;</li>
+<li>Find the line &ldquo;BuildRequires: sqlite2-devel >= 2.8.0&rdquo; and delete it</li>
+<li>Find &ldquo;&mdash;with-sqlite=shared,%{_prefix} \&rdquo; and replace it with &ldquo;&mdash;with-sqlite=shared \&rdquo;</li>
 <li>Optionally: Add your own lines to the %changelog describing that you removed the sqlite2-devel build requirement</li>
-<li>Optionally: Remove the first 4 lines after &quot;%pre common&quot; to remove Remi&#39;s note about their forums</li>
+<li>Optionally: Remove the first 4 lines after &ldquo;%pre common&rdquo; to remove Remi&rsquo;s note about their forums</li>
 </ol>
+
 
 <p>It took 2 small tweaks to remove the sqlite2-devel RPM requirement not found in our standard repositories. See <a href="http://paste.ly/4Yrx">php.spec.diff</a> to see only the changes we made; or <a href="http://paste.ly/4Ys5">php.spec</a> for the complete file if you do not want to edit it yourself.</p>
 
-<p>The hard part is now over! It&#39;s easy from here on out. First step is to build the newly-edited spec into your own source RPM. But first, if you don&#39;t have &quot;rpmbuild&quot; available, it&#39;s a quick install via yum:</p>
+<p>The hard part is now over! It&rsquo;s easy from here on out. First step is to build the newly-edited spec into your own source RPM. But first, if you don&rsquo;t have &ldquo;rpmbuild&rdquo; available, it&rsquo;s a quick install via yum:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'>sudo yum install rpm-build
 </span></code></pre></td></tr></table></div></figure>
 
-<p>It&#39;s possible your system may have already had the yum package rpm-build installed. We&#39;ll build our source RPM with &quot;-bs&quot; to <strong>b</strong>uild the <strong>s</strong>ource, and &quot;&#8211;nodeps&quot; to prevent our system from checking all of the &quot;Requires&quot; in the spec since we&#39;re just building the source:</p>
+
+<p>It&rsquo;s possible your system may have already had the yum package rpm-build installed. We&rsquo;ll build our source RPM with &ldquo;-bs&rdquo; to <strong>b</strong>uild the <strong>s</strong>ource, and &ldquo;&mdash;nodeps&rdquo; to prevent our system from checking all of the &ldquo;Requires&rdquo; in the spec since we&rsquo;re just building the source:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -1428,7 +1489,8 @@
 </span><span class='line'>Wrote: /home/username/rpmbuild/SRPMS/php-5.2.17-1.src.rpm
 </span></code></pre></td></tr></table></div></figure>
 
-<p>rpmbuild will show you where it wrote your source RPM. All we have to do is provide it to mock; &quot;-v&quot; will give us verbose output and &quot;-r epel-5-x86_64&quot; will use the mock profile at &quot;/etc/mock/epel-5-x86_64.cfg&quot;. If you&#39;re on a 32-bit system, change &quot;epel-5-x86_64&quot; to &quot;epel-5-i386&quot;:</p>
+
+<p>rpmbuild will show you where it wrote your source RPM. All we have to do is provide it to mock; &ldquo;-v&rdquo; will give us verbose output and &ldquo;-r epel-5-x86_64&rdquo; will use the mock profile at &ldquo;/etc/mock/epel-5-x86_64.cfg&rdquo;. If you&rsquo;re on a 32-bit system, change &ldquo;epel-5-x86_64&rdquo; to &ldquo;epel-5-i386&rdquo;:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -1436,7 +1498,8 @@
 </span><span class='line'>mock -v -r epel-5-x86_64 php-5.2.17-1.src.rpm
 </span></code></pre></td></tr></table></div></figure>
 
-<p>The output shows you that mock is creating a chroot, downloading the bare essentials needed for a chroot and compiling tools, ccache to speed up compilation, and the packages in all &quot;Requires&quot; lines in the spec file. When mock is finished with the build after several minutes, you&#39;ll see output similar to:</p>
+
+<p>The output shows you that mock is creating a chroot, downloading the bare essentials needed for a chroot and compiling tools, ccache to speed up compilation, and the packages in all &ldquo;Requires&rdquo; lines in the spec file. When mock is finished with the build after several minutes, you&rsquo;ll see output similar to:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -1444,9 +1507,10 @@
 </span><span class='line'>INFO: Results and/or logs in: /var/lib/mock/epel-5-x86_64/result
 </span></code></pre></td></tr></table></div></figure>
 
+
 <p>The /var/lib/mock/epel-5-x86_64/results/ folder will contain all of your PHP RPMs, including another source RPM. You can now either install these PHP packages by hand, or you can dump them into <a href="http://www.techrepublic.com/blog/opensource/create-your-own-yum-repository/609">your own Yum repository</a> and install with yum.</p>
 
-<h3 id="toc_0">TL;DR</h3>
+<h3>TL;DR</h3>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -1479,6 +1543,7 @@
 </span><span class='line'><span class="nb">cd</span> ~/rpmbuild/SRPMS
 </span><span class='line'>mock -v -r epel-5-x86_64 php-5.2.17-1.src.rpm
 </span></code></pre></td></tr></table></div></figure>
+
 
 <p>Resulting RPMs will be in /var/lib/epel-5-x86_64/results. If on a 32-bit system, replace epel-5-x86_64 with epel-5-i386.</p>
 </div>
@@ -1518,7 +1583,7 @@
 
   <div class="entry-content"><p>In addition to hosting Drupal sites, we also host a number of WordPress sites. Similar to (checking all of our Drupal core versions)[<a href="http://echodittolabs.org/blog/2011/01/are-your-drupal-sites-running-latest-core">http://echodittolabs.org/blog/2011/01/are-your-drupal-sites-running-latest-core</a>], we needed an easy way to quickly see what versions we are running on all of our WordPress sites. Kudos to <a href="http://echodittolabs.org/users/ethan">Ethan</a> for getting this one kicked off; here is a bash script to check your definable <code>$WEBHOME</code> (where you deposit all of your WordPress webroots) and scan for WordPress versions.</p>
 
-<p>Note: this requires bash, grep, wc, sed, awk, and tree. If your system doesn&#39;t have tree, it&#39;s usually pretty easy to get from EPEL/Homebrew/apt-get/[mac]ports/etc.</p>
+<p>Note: this requires bash, grep, wc, sed, awk, and tree. If your system doesn&rsquo;t have tree, it&rsquo;s usually pretty easy to get from EPEL/Homebrew/apt-get/[mac]ports/etc.</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -1554,7 +1619,8 @@
 </span><span class='line'><span class="k">done</span>
 </span></code></pre></td></tr></table></div></figure>
 
-<p>As a result, you&#39;ll see output like this:</p>
+
+<p>As a result, you&rsquo;ll see output like this:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -1568,7 +1634,8 @@
 </span><span class='line'>kickinitoldschool.org/web/wordpress - 2.0.2
 </span></code></pre></td></tr></table></div></figure>
 
-<p>If you think there&#39;s a better way, or have any questions, let me know in the comments.</p>
+
+<p>If you think there&rsquo;s a better way, or have any questions, let me know in the comments.</p>
 </div>
   
   
@@ -1604,9 +1671,9 @@
   </header>
 
 
-  <div class="entry-content"><p>At <a href="http://www.echoditto.com">EchoDitto</a>, we host a lot of Drupal sites. Just about all of our web servers contain more than one completely separate Drupal cores since we develop most of our websites independently. We also keep an eye out on <a href="http://drupal.org/security">Drupal Security</a> and when to apply core updates. Since we&#39;re not using Aegir, nor do we run every site off of a single multi-site core install, we need a quick and easy way to see what versions we&#39;re running.</p>
+  <div class="entry-content"><p>At <a href="http://www.echoditto.com">EchoDitto</a>, we host a lot of Drupal sites. Just about all of our web servers contain more than one completely separate Drupal cores since we develop most of our websites independently. We also keep an eye out on <a href="http://drupal.org/security">Drupal Security</a> and when to apply core updates. Since we&rsquo;re not using Aegir, nor do we run every site off of a single multi-site core install, we need a quick and easy way to see what versions we&rsquo;re running.</p>
 
-<p>Here&#39;s a shell script we recently developed to report the Drupal Core versions for all of our sites under a single parent folder. It works on Drupal 4 through 7. It&#39;s not been tested outside of our platform, or non-RHEL systems, but it should be universal as long as you have bash, find, awk, and grep. I decided not to use <a href="http://drupal.org/project/drush">Drush</a> because it would involve bootstrapping every site and invoking PHP; this is just more lightweight. Drush also would not work for Drupal 4 sites, which we surprisingly still have a couple kicking around still.</p>
+<p>Here&rsquo;s a shell script we recently developed to report the Drupal Core versions for all of our sites under a single parent folder. It works on Drupal 4 through 7. It&rsquo;s not been tested outside of our platform, or non-RHEL systems, but it should be universal as long as you have bash, find, awk, and grep. I decided not to use <a href="http://drupal.org/project/drush">Drush</a> because it would involve bootstrapping every site and invoking PHP; this is just more lightweight. Drush also would not work for Drupal 4 sites, which we surprisingly still have a couple kicking around still.</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -1678,7 +1745,8 @@
 </span><span class='line'><span class="k">done</span>
 </span></code></pre></td></tr></table></div></figure>
 
-<p>As a result, you&#39;ll see the directory tree after <code>$WEBHOME</code> where the root of the site is and the version number. Below is an example:</p>
+
+<p>As a result, you&rsquo;ll see the directory tree after <code>$WEBHOME</code> where the root of the site is and the version number. Below is an example:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -1692,7 +1760,8 @@
 </span><span class='line'>blah.org/trunk - 7.0
 </span></code></pre></td></tr></table></div></figure>
 
-<p>If you have suggestions, please send them over. This script is still young and I&#39;d love to see if anyone has any better ideas.</p>
+
+<p>If you have suggestions, please send them over. This script is still young and I&rsquo;d love to see if anyone has any better ideas.</p>
 </div>
   
   
@@ -1733,26 +1802,38 @@
 <p>Luckily, if you have shared storage, it’s pretty simple to write to a single log file. Apache allows for log file locations to go to a pipe, which means you can redirect the output anywhere else. This was initially done to allow Apache to release open file descriptors since it can begin to create problems with more than 300 domains. But you don’t need to have 300 websites to see the benefits of using a pipe for logging.</p>
 
 <p>In your VirtualHost declaration, change your logging options from:</p>
-<div class="highlight"><pre><code class="text">CustomLog logs/domain.com-access_log combined
-</code></pre></div>
+
+<pre><code>CustomLog logs/domain.com-access_log combined
+</code></pre>
+
 <p>to:</p>
-<div class="highlight"><pre><code class="text">CustomLog &quot;|/bin/cat » /var/www/vhosts/_logs/domain.com-access_log&quot; combined
-</code></pre></div>
+
+<pre><code>CustomLog "|/bin/cat » /var/www/vhosts/_logs/domain.com-access_log" combined
+</code></pre>
+
 <p>In this example, /var/www/vhosts is the shared SAN storage device, and by using “cat »” we append Apache output in real-time to the log file. As multiple machines do this simultaneously, you begin to have a single log file from multiple machines. You can do the same thing with your ErrorLog:</p>
-<div class="highlight"><pre><code class="text">ErrorLog  &quot;|/bin/cat » /var/www/vhosts/_logs/domain.com-error_log&quot;
-</code></pre></div>
-<p>There is a slight problem with this approach: it doesn’t give us enough information. If one of the 4 servers behind the load balancer was the source of a problem, it would be helpful to determine which server each log entry is coming from. </p>
+
+<pre><code>ErrorLog  "|/bin/cat » /var/www/vhosts/_logs/domain.com-error_log"
+</code></pre>
+
+<p>There is a slight problem with this approach: it doesn’t give us enough information. If one of the 4 servers behind the load balancer was the source of a problem, it would be helpful to determine which server each log entry is coming from.</p>
 
 <p>For CustomLog, we can create a new LogType that adds the server’s IP address at the end of the line, and the LogType name will be “combinedIP”:</p>
-<div class="highlight"><pre><code class="text">LogFormat &quot;%h %l %u %t &quot;%r&quot; %&gt;s %b &quot;%{Referer}i&quot; &quot;%{User-Agent}i&quot; %A&quot; combinedIP
-</code></pre></div>
+
+<pre><code>LogFormat "%h %l %u %t "%r" %&gt;s %b "%{Referer}i" "%{User-Agent}i" %A" combinedIP
+</code></pre>
+
 <p>This format is identical to “combined” and just adds %A at the end. Then, simply change the end of the CustomLog line:</p>
-<div class="highlight"><pre><code class="text">CustomLog &quot;|/bin/cat » /var/www/vhosts/_logs/domain.com-access_log&quot; combinedIP
-</code></pre></div>
+
+<pre><code>CustomLog "|/bin/cat » /var/www/vhosts/_logs/domain.com-access_log" combinedIP
+</code></pre>
+
 <p>Here’s an example of what your log file will look like, showing entries from two servers:</p>
-<div class="highlight"><pre><code class="text">1.2.3.4 - - [07/Dec/2010:11:22:08 -0500] &quot;GET /blog/feed HTTP/1.1&quot; 304 - &quot;-&quot; &quot;-&quot; 192.168.1.6
-5.6.7.8 - - [07/Dec/2010:11:22:08 -0500] &quot;GET /blog/feed HTTP/1.1&quot; 304 - &quot;-&quot; &quot;-&quot; 192.168.1.8
-</code></pre></div>
+
+<pre><code>1.2.3.4 - - [07/Dec/2010:11:22:08 -0500] "GET /blog/feed HTTP/1.1" 304 - "-" "-" 192.168.1.6
+5.6.7.8 - - [07/Dec/2010:11:22:08 -0500] "GET /blog/feed HTTP/1.1" 304 - "-" "-" 192.168.1.8
+</code></pre>
+
 <p>These log entries are the same as the typical “combined” LogType but with the addition of the IP address at the end.</p>
 
 <p>But what about the ErrorLog? There is no way to define a LogType for the ErrorLog, and it would be helpful to know which server originated error, say, if MaxClients was reached, or there is a misconfiguration in a configuration file. Since we’re piping the ErrorLog output to /bin/cat, we can instead pipe it to a script that simply adds the server hostname on the end (I chose not to use an IP address because 1) some servers have multiple IP addresses, and 2) I cannot insert the VirtualHost’s IP address automatically. Better to know the server and then determine the IP address is necessary). We’ll start by creating a simple script at /usr/local/bin/httpd_errors (I’m not using bash since I was not able to get it to write to the log file in real time, it would only write once Apache was reloaded. I did not spend much time to determine why, and I knew it would work in PHP):</p>
@@ -1777,13 +1858,18 @@
 </span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
 </span></code></pre></td></tr></table></div></figure>
 
+
 <p>Make the script executable with “chmod +x /usr/local/bin/httpd_errors”, and then change your ErrorLog in your Apache configuration:</p>
-<div class="highlight"><pre><code class="text">ErrorLog  ”|/usr/local/bin/httpd_errors » /var/www/vhosts/_logs/domain.com-error_log”
-</code></pre></div>
+
+<pre><code>ErrorLog  ”|/usr/local/bin/httpd_errors » /var/www/vhosts/_logs/domain.com-error_log”
+</code></pre>
+
 <p>And your error logs will now reveal which server the error originated from:</p>
-<div class="highlight"><pre><code class="text">[Tue Dec 07 11:20:51 2010] [error] [client 1.2.3.4] File does not exist: /var/www/vhosts/domain.com/favicon.ico - wsrv1
+
+<pre><code>[Tue Dec 07 11:20:51 2010] [error] [client 1.2.3.4] File does not exist: /var/www/vhosts/domain.com/favicon.ico - wsrv1
 [Tue Dec 07 11:24:27 2010] [error] [client 5.6.7.8] File does not exist: /var/www/vhosts/domain.com/favicon.ico - wsrv2
-</code></pre></div>
+</code></pre>
+
 <p>There you have it, combined Apache logs for multiple web servers. If you have any suggestions, questions, tips, etc, leave a comment!</p>
 </div>
   
@@ -1809,7 +1895,7 @@
   <ul id="recent_posts">
     
       <li class="post">
-        <a href="/blog/2013/05/09/speed-up-php-on-nfs-with-turbo-realpath/">Speed up PHP on NFS with turbo_realpath</a>
+        <a href="/blog/2013/05/09/speed-up-php-on-nfs-with-turbo-realpath/">Speed Up PHP on NFS With Turbo_realpath</a>
       </li>
     
       <li class="post">
@@ -1825,34 +1911,77 @@
       </li>
     
       <li class="post">
-        <a href="/blog/2012/09/04/apache-modules-on-os-x-with-homebrew/">Apache modules on OS X with Homebrew</a>
+        <a href="/blog/2012/09/04/apache-modules-on-os-x-with-homebrew/">Apache Modules on OS X With Homebrew</a>
       </li>
     
   </ul>
 </section>
 
 <section>
-  <h1>Coderwall Badges</h1>
-  <p>
-    <script type="text/javascript">
-      function display_coderwall(args) {
-        var badges = args["data"]["badges"];
-        var wall = '';
-        for ( var i = 0; i < badges.length; i++ ) {
-          var alt_txt = badges[i]["name"];
-          var title_txt = badges[i]["name"] + ' - ' + badges[i]["description"];
-          wall += '<a href="http://coderwall.com/alanthing/"><img src="'
-            + badges[i]["badge"]
-            + '" width="48" height="48" alt="' + alt_txt
-            + '" title="' + title_txt
-            + '"/></a>';
-        }
-        document.write(wall);
-      }
-    </script>
-    <script src="http://coderwall.com/alanthing.json?callback=display_coderwall"></script>
-  </p>
+  <h1>Coderwall</h1>
+  <ul id="cw_badges">
+    <li class="loading">Status updating&#8230;</li>
+  </ul>
   
+  <div>
+    <a href="http://coderwall.com/alanthing" target="_blank" class="cw_badge"><img
+       alt="Endorse alanthing on Coderwall"
+       src="http://api.coderwall.com/alanthing/endorsecount.png" /></a>
+  </div>
+  
+
+  <script type="text/javascript">
+    var coderwall = (function(){
+      function render(options, badges){
+        var fragment = '',
+            t = $(options.target)[0],
+            height = 65,
+            width = 65,
+            index;
+
+        for (index in badges) {
+          fragment += '<a class="cw_badge"title="' + badges[index].description + '" target="_blank" href="http://coderwall.com/' + options.user + '">';
+          fragment +=   '<img alt="' + badges[index].description + '" height="' + width + '" width="' + height + '" src="' + badges[index].badge + '"/>';
+          fragment += '</a>';
+        }
+
+        t.innerHTML = fragment;
+      }
+      return {
+        showBadges: function(options){
+          $.ajax({
+              url: 'http://coderwall.com/' + options.user + '.json?callback=?'
+            , type: 'jsonp'
+            , error: function (err) { $(options.target + ' li.loading').addClass('error').text("Error loading feed"); }
+            , success: function(res) {
+                render(options, res.data.badges);
+            }
+          });
+        }
+      };
+    })();
+
+    $.domReady(function(){
+      if (!window.jXHR){
+        var jxhr = document.createElement('script');
+        jxhr.type = 'text/javascript';
+        jxhr.src = '/javascripts/libs/jXHR.js';
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(jxhr, s);
+      }
+      if (!window.$){
+        var b = document.createElement('script');
+        b.type = 'text/javascript';
+        b.src = '/javascripts/ender.js';
+        var sc = document.getElementsByTagName('script')[0];
+        sc.parentNode.insertBefore(jxhr, s);
+      }
+      coderwall.showBadges({
+        user: 'alanthing',
+        target: '#cw_badges'
+      });
+    });
+  </script>
 </section>
 
 
@@ -1943,7 +2072,7 @@
       var twitterWidgets = document.createElement('script');
       twitterWidgets.type = 'text/javascript';
       twitterWidgets.async = true;
-      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
       document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
     })();
   </script>

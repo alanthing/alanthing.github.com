@@ -106,7 +106,7 @@
   </header>
 
 
-  <div class="entry-content"><p><a href="http://www.dropbox.com/">Dropbox</a> hardly needs any introduction; put files in your Dropbox and they show up everywhere else you have Dropbox installed and dropbox.com. A feature about Dropbox that is probably not as widely known is that free accounts come with 30 days of undo history and Pro accounts can get &quot;Pack Rat&quot; that keeps unlimited history of changes. The history of files, including reverting deleted files, was particularly interesting to me, since I could hook in my latest daily MySQL dumps from <a href="http://sourceforge.net/projects/automysqlbackup/">AutoMySQLBackup</a> to Dropbox and have 30 days of backups for free available from anywhere dropbox.com is accessible. </p>
+  <div class="entry-content"><p><a href="http://www.dropbox.com/">Dropbox</a> hardly needs any introduction; put files in your Dropbox and they show up everywhere else you have Dropbox installed and dropbox.com. A feature about Dropbox that is probably not as widely known is that free accounts come with 30 days of undo history and Pro accounts can get &ldquo;Pack Rat&rdquo; that keeps unlimited history of changes. The history of files, including reverting deleted files, was particularly interesting to me, since I could hook in my latest daily MySQL dumps from <a href="http://sourceforge.net/projects/automysqlbackup/">AutoMySQLBackup</a> to Dropbox and have 30 days of backups for free available from anywhere dropbox.com is accessible.</p>
 
 <p>The problem is that we use <a href="http://centos.org/">CentOS</a> for our servers and the Dropbox Linux builds are geared for distributions like Ubuntu and Debian that have updated versions of required software like Python, libc, and others, that I did not want to upgrade by hand on my systems and risk the integrity of the system packages. But, I got it to work anyway, read on for how I got Dropbox CLI installed on CentOS without replacing any system files.</p>
 
@@ -116,6 +116,7 @@
 <li><p>Run <code>~/.dropbox-dist/dropboxd</code> to get Dropbox to provide a URL to go to in your browser to link this computer to your Dropbox account</p></li>
 </ul>
 
+
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
@@ -124,9 +125,11 @@
 </span><span class='line'>Please visit https: //www.dropbox.com/cli_link?host_id<span class="o">=</span>xxxxxxxxxxxxxxxxxxxxxxxxxxxx to link this machine.
 </span></code></pre></td></tr></table></div></figure>
 
+
 <ul>
-<li>  After visiting the URL in a browser to which you&#39;ve logged into dropbox.com, you&#39;ll see the following output:</li>
+<li>After visiting the URL in a browser to which you&rsquo;ve logged into dropbox.com, you&rsquo;ll see the following output:</li>
 </ul>
+
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -136,15 +139,17 @@
 </span><span class='line'>Run <span class="s1">&#39;nautilus --help&#39;</span> to see a full list of available <span class="nb">command </span>line options.
 </span></code></pre></td></tr></table></div></figure>
 
+
 <ul>
-<li><p>If you cannot quit the app, open another a shell, get the PID by running <code>ps -ef|grep dropbox</code>, and kill PID. The output on your other shell should say:<br>
+<li><p>If you cannot quit the app, open another a shell, get the PID by running <code>ps -ef|grep dropbox</code>, and kill PID. The output on your other shell should say:
 Terminated</p></li>
 <li><p>Download the official Dropbox CLI: <a href="http://www.dropbox.com/download?dl=packages/dropbox.py">http://www.dropbox.com/download?dl=packages/dropbox.py</a> <a href="http://wiki.dropbox.com/TipsAndTricks/TextBasedLinuxInstall">(ref)</a></p></li>
-<li><p><code>dropbox.py</code> won&#39;t work without Python 2.6, but let&#39;s not risk messing up our official RHEL packages. Download ActivePython 2.6 (AS Package) from <a href="https://www.activestate.com/activepython/downloads">https://www.activestate.com/activepython/downloads</a> <a href="http://stackoverflow.com/questions/1465036/install-python-2-6-in-centos">(ref)</a></p></li>
+<li><p><code>dropbox.py</code> won&rsquo;t work without Python 2.6, but let&rsquo;s not risk messing up our official RHEL packages. Download ActivePython 2.6 (AS Package) from <a href="https://www.activestate.com/activepython/downloads">https://www.activestate.com/activepython/downloads</a> <a href="http://stackoverflow.com/questions/1465036/install-python-2-6-in-centos">(ref)</a></p></li>
 <li><p>As mentioned in the AP documentation <a href="http://docs.activestate.com/activepython/2.6/installnotes.html#aspackage">(ref)</a>, run the installer with <code>./install.sh</code> and install where desired. It defaults to <em>/opt/ActivePython-2.6</em>, which is fine because it does not conflcit with the system default python 2.4 install. For my purposes, I had created a user called <em>dropbox</em> that did not have root privileges, so I installed to <em>/home/dropbox/ActivePython-2.6</em>.</p></li>
-<li><p>Edit <em>dropbox.py</em> and change <code>#!/usr/bin/python</code> to the path you just installed AP to. For my installation, it&#39;s set to <code>#!/home/dropbox/bin/ActivePython-2.6/bin/python</code></p></li>
+<li><p>Edit <em>dropbox.py</em> and change <code>#!/usr/bin/python</code> to the path you just installed AP to. For my installation, it&rsquo;s set to <code>#!/home/dropbox/bin/ActivePython-2.6/bin/python</code></p></li>
 <li><p>Run <code>dropbox.py</code> without commands to see your available options.</p></li>
 </ul>
+
 
 <p>Optional: To suppress LAN Sync broadcasts, download <a href="http://wiki.dropbox.com/TipsAndTricks/TextBasedLinuxInstall?action=AttachFile&amp;do=view&amp;target=dropboxp2p.py">dropboxp2p.py</a> <a href="http://wiki.dropbox.com/TipsAndTricks/TextBasedLinuxInstall">(ref)</a>, edit the first line to use the ActivePython binary as you did for dropbox.py, and run <code>./dropboxp2p -d</code> to disable LAN syncing (unless you have other machines in the LAN with Dropbox installed, and your firewalls are set up appropriately).</p>
 </div>
@@ -184,7 +189,7 @@ Terminated</p></li>
 
   <div class="entry-content"><p>Today I was made aware of some strange MySQL errors on our development server that ended up being related to a lack of sufficient disk space. Upon inspection, the /tmp partition had completely filled up. A majority of the files were temporary files created by the <a href="http://drupal.org/project/devel">Drupal module devel</a> with devel_themer enabled. Turns out <a href="http://drupal.org/node/327512">these temporary files are not deleted at the end of a session</a>. There were also CURLCOOKIE files related to cron jobs to hit cron.php on various dev and production sites, and some other temporary files that if left unattended could result in the same errors.</p>
 
-<p>My solution is to have these files deleted every night, but only if they&#39;re three days old, which should be adequate time for the developer to need access to these temporary files. I added this to root&#39;s cron.</p>
+<p>My solution is to have these files deleted every night, but only if they&rsquo;re three days old, which should be adequate time for the developer to need access to these temporary files. I added this to root&rsquo;s cron.</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -197,14 +202,16 @@ Terminated</p></li>
 </span><span class='line'>7 4 * * * find /tmp -type f -name "devel_themer_*" -mtime +3 -exec rm -f {} \;
 </span><span class='line'>8 4 * * * find /tmp -type f -name "CURLCOOKIE_*" -mtime +3 -exec rm -f {} \;</span></code></pre></td></tr></table></div></figure>
 
-<p>Similarly, I have a cron job to remove old Apache logs, which is helpful since an old project will never have it&#39;s logs deleted unless they&#39;re removed manually.</p>
+
+<p>Similarly, I have a cron job to remove old Apache logs, which is helpful since an old project will never have it&rsquo;s logs deleted unless they&rsquo;re removed manually.</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 </pre></td><td class='code'><pre><code class=''><span class='line'># Delete Apache logs older than 30 days
 </span><span class='line'>30 3 * * * find /var/log/httpd -type f -mtime +30 -exec rm -f {} \;</span></code></pre></td></tr></table></div></figure>
 
-<p>Do you have other ideas for managing temporary files that don&#39;t clean up after themselves? Let me know in the comments.</p>
+
+<p>Do you have other ideas for managing temporary files that don&rsquo;t clean up after themselves? Let me know in the comments.</p>
 </div>
   
   
@@ -240,13 +247,13 @@ Terminated</p></li>
   </header>
 
 
-  <div class="entry-content"><p>In March I woke up before the sun and left Dulles Airport to make my way to Austin, TX for <a href="http://www.sxsw.com/interactive">South by Southwest Interactive</a>. Having not been to the fabled SXSW before, I was pretty excited. I had heard a lot about what SXSW was supposed to be, what was supposed to be awesome, what would suck, events that would be good and others that would disappoint. </p>
+  <div class="entry-content"><p>In March I woke up before the sun and left Dulles Airport to make my way to Austin, TX for <a href="http://www.sxsw.com/interactive">South by Southwest Interactive</a>. Having not been to the fabled SXSW before, I was pretty excited. I had heard a lot about what SXSW was supposed to be, what was supposed to be awesome, what would suck, events that would be good and others that would disappoint.</p>
 
-<p>I found the panels to be less than what I was generally expecting. I know that recently coming from <a href="http://dc2009.drupalcon.org">DrupalCon</a>, where they were extremely informative, that it&#39;s likely not a fair comparison. Generally I found that once things were open for questions it was no longer interesting to anyone except those asking questions. Worse was sometimes when one audience member would outright dominate the questions and the moderators didn&#39;t do a good enough job giving others a fair turn. </p>
+<p>I found the panels to be less than what I was generally expecting. I know that recently coming from <a href="http://dc2009.drupalcon.org">DrupalCon</a>, where they were extremely informative, that it&rsquo;s likely not a fair comparison. Generally I found that once things were open for questions it was no longer interesting to anyone except those asking questions. Worse was sometimes when one audience member would outright dominate the questions and the moderators didn&rsquo;t do a good enough job giving others a fair turn.</p>
 
-<p>Not all fell flat though. <a href="http://www.sxsw.com/interactive/talks/schedule/?action=show&amp;id=IAP0901250">Security for the Social Set</a> was a discussion of all of the attendees facilitated by <a href="http://funkatron.com">Ed Finker</a>. It was refreshing to share and listen to ideas from others instead of 3-5 &quot;experts&quot; who doesn&#39;t always know it all like panel members can come across. <a href="http://www.cmsshowdown.com/">The Ultimate Showdown of CMS Destiny</a> was great, too. It wasn&#39;t a lot of new information but it was great to see the EchoDitto weapon of choice <a href="http://drupal.org">Drupal</a> win over Joomla! and WordPress. In fact, Idealware <a href="http://www.idealware.org/comparing_os_cms/">recently compared the major open-source content management systems</a> and Drupal came away very highly there as well. Back to SXSW, <a href="http://garyvaynerchuk.com/post/86998558/gary-vaynerchuks-sxsw-keynote">Gary Vaynerchuk&#39;s session</a> was great; it&#39;s refreshing to see someone so passionate about doing whatever it takes to succeed (as long as he doesn&#39;t annoy you). Oh, I was able to help figure out <a href="http://www.youtube.com/watch?v=ezuiJfvSxUA">how to make money on the Internet</a>.</p>
+<p>Not all fell flat though. <a href="http://www.sxsw.com/interactive/talks/schedule/?action=show&amp;id=IAP0901250">Security for the Social Set</a> was a discussion of all of the attendees facilitated by <a href="http://funkatron.com">Ed Finker</a>. It was refreshing to share and listen to ideas from others instead of 3-5 &ldquo;experts&rdquo; who doesn&rsquo;t always know it all like panel members can come across. <a href="http://www.cmsshowdown.com/">The Ultimate Showdown of CMS Destiny</a> was great, too. It wasn&rsquo;t a lot of new information but it was great to see the EchoDitto weapon of choice <a href="http://drupal.org">Drupal</a> win over Joomla! and WordPress. In fact, Idealware <a href="http://www.idealware.org/comparing_os_cms/">recently compared the major open-source content management systems</a> and Drupal came away very highly there as well. Back to SXSW, <a href="http://garyvaynerchuk.com/post/86998558/gary-vaynerchuks-sxsw-keynote">Gary Vaynerchuk&rsquo;s session</a> was great; it&rsquo;s refreshing to see someone so passionate about doing whatever it takes to succeed (as long as he doesn&rsquo;t annoy you). Oh, I was able to help figure out <a href="http://www.youtube.com/watch?v=ezuiJfvSxUA">how to make money on the Internet</a>.</p>
 
-<p>Despite the ups and <a href="http://news.cnet.com/8301-13772_3-10196573-52.html">downs</a> of the weekend, I had a blast and anyone should spring on the chance to go if they have the opportunity. You&#39;ll get to meet great people, <a href="http://www.stubbsaustin.com/">eat amazing food</a>, and use <a href="http://news.cnet.com/at-sxsw-attendees-confront-twitter-saturation">Twitter</a> until your brain hurts.</p>
+<p>Despite the ups and <a href="http://news.cnet.com/8301-13772_3-10196573-52.html">downs</a> of the weekend, I had a blast and anyone should spring on the chance to go if they have the opportunity. You&rsquo;ll get to meet great people, <a href="http://www.stubbsaustin.com/">eat amazing food</a>, and use <a href="http://news.cnet.com/at-sxsw-attendees-confront-twitter-saturation">Twitter</a> until your brain hurts.</p>
 </div>
   
   
@@ -269,7 +276,7 @@ Terminated</p></li>
   <ul id="recent_posts">
     
       <li class="post">
-        <a href="/blog/2013/05/09/speed-up-php-on-nfs-with-turbo-realpath/">Speed up PHP on NFS with turbo_realpath</a>
+        <a href="/blog/2013/05/09/speed-up-php-on-nfs-with-turbo-realpath/">Speed Up PHP on NFS With Turbo_realpath</a>
       </li>
     
       <li class="post">
@@ -285,34 +292,77 @@ Terminated</p></li>
       </li>
     
       <li class="post">
-        <a href="/blog/2012/09/04/apache-modules-on-os-x-with-homebrew/">Apache modules on OS X with Homebrew</a>
+        <a href="/blog/2012/09/04/apache-modules-on-os-x-with-homebrew/">Apache Modules on OS X With Homebrew</a>
       </li>
     
   </ul>
 </section>
 
 <section>
-  <h1>Coderwall Badges</h1>
-  <p>
-    <script type="text/javascript">
-      function display_coderwall(args) {
-        var badges = args["data"]["badges"];
-        var wall = '';
-        for ( var i = 0; i < badges.length; i++ ) {
-          var alt_txt = badges[i]["name"];
-          var title_txt = badges[i]["name"] + ' - ' + badges[i]["description"];
-          wall += '<a href="http://coderwall.com/alanthing/"><img src="'
-            + badges[i]["badge"]
-            + '" width="48" height="48" alt="' + alt_txt
-            + '" title="' + title_txt
-            + '"/></a>';
-        }
-        document.write(wall);
-      }
-    </script>
-    <script src="http://coderwall.com/alanthing.json?callback=display_coderwall"></script>
-  </p>
+  <h1>Coderwall</h1>
+  <ul id="cw_badges">
+    <li class="loading">Status updating&#8230;</li>
+  </ul>
   
+  <div>
+    <a href="http://coderwall.com/alanthing" target="_blank" class="cw_badge"><img
+       alt="Endorse alanthing on Coderwall"
+       src="http://api.coderwall.com/alanthing/endorsecount.png" /></a>
+  </div>
+  
+
+  <script type="text/javascript">
+    var coderwall = (function(){
+      function render(options, badges){
+        var fragment = '',
+            t = $(options.target)[0],
+            height = 65,
+            width = 65,
+            index;
+
+        for (index in badges) {
+          fragment += '<a class="cw_badge"title="' + badges[index].description + '" target="_blank" href="http://coderwall.com/' + options.user + '">';
+          fragment +=   '<img alt="' + badges[index].description + '" height="' + width + '" width="' + height + '" src="' + badges[index].badge + '"/>';
+          fragment += '</a>';
+        }
+
+        t.innerHTML = fragment;
+      }
+      return {
+        showBadges: function(options){
+          $.ajax({
+              url: 'http://coderwall.com/' + options.user + '.json?callback=?'
+            , type: 'jsonp'
+            , error: function (err) { $(options.target + ' li.loading').addClass('error').text("Error loading feed"); }
+            , success: function(res) {
+                render(options, res.data.badges);
+            }
+          });
+        }
+      };
+    })();
+
+    $.domReady(function(){
+      if (!window.jXHR){
+        var jxhr = document.createElement('script');
+        jxhr.type = 'text/javascript';
+        jxhr.src = '/javascripts/libs/jXHR.js';
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(jxhr, s);
+      }
+      if (!window.$){
+        var b = document.createElement('script');
+        b.type = 'text/javascript';
+        b.src = '/javascripts/ender.js';
+        var sc = document.getElementsByTagName('script')[0];
+        sc.parentNode.insertBefore(jxhr, s);
+      }
+      coderwall.showBadges({
+        user: 'alanthing',
+        target: '#cw_badges'
+      });
+    });
+  </script>
 </section>
 
 
@@ -403,7 +453,7 @@ Terminated</p></li>
       var twitterWidgets = document.createElement('script');
       twitterWidgets.type = 'text/javascript';
       twitterWidgets.async = true;
-      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
       document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
     })();
   </script>

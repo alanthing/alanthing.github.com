@@ -103,7 +103,7 @@
   </header>
 
 
-<div class="entry-content"><p>I have long been a big fan of <a href="http://mxcl.github.com/homebrew">Homebrew</a>, a way of adding open-source software to OS X without much of the overhead and systems link <a href="http://www.macports.org">MacPorts</a> and <a href="http://www.finkproject.org">Fink</a> introduce. It&#39;s quickly become my favorite way to do PHP-based development on a Mac, and I&#39;ve <a href="http://echodittolabs.org/blog/2012/04/os-x-107-lion-development-nginx-php-mariadb-homebrew">blogged</a> <a href="http://echodittolabs.org/blog/2011/09/os-x-107-lion-development-native-apache-php-homebrew-mysql-or-mariadb">before</a> about various ways to integrate Homebrew-based software into your workflow.</p>
+<div class="entry-content"><p>I have long been a big fan of <a href="http://mxcl.github.com/homebrew">Homebrew</a>, a way of adding open-source software to OS X without much of the overhead and systems link <a href="http://www.macports.org">MacPorts</a> and <a href="http://www.finkproject.org">Fink</a> introduce. It&rsquo;s quickly become my favorite way to do PHP-based development on a Mac, and I&rsquo;ve <a href="http://echodittolabs.org/blog/2012/04/os-x-107-lion-development-nginx-php-mariadb-homebrew">blogged</a> <a href="http://echodittolabs.org/blog/2011/09/os-x-107-lion-development-native-apache-php-homebrew-mysql-or-mariadb">before</a> about various ways to integrate Homebrew-based software into your workflow.</p>
 
 <p>In preparing new documentation for using Homebrew on 10.7 and 10.8 (coming soon to <a href="http://echodittolabs.org/blogs/alan-ivey">my EchoDitto blog</a>), I wanted to find a way to run either <a href="http://httpd.apache.org/docs/2.2/mod/mod_suexec.html">mod_suexec</a> or <a href="http://www.fastcgi.com/mod_fastcgi/docs/mod_fastcgi.html">mod_fastcgi</a> so I could use the built-in version of Apache without having to change folder ownership in random places where the web server needed to modify files. Homebrew did not have any formulas, but I found that <a href="http://github.com/lifepillar">Lifepillar</a> had written formulas <a href="https://github.com/mxcl/homebrew/pull/12093/files">(mod_fastcgi)</a> <a href="https://github.com/mxcl/homebrew/pull/12091">(mod_suexec)</a> for them both and was hoping to get them into Homebrew.</p>
 
@@ -112,12 +112,13 @@
 <p>As of today, here are the modules available in the tap:</p>
 
 <ul>
-<li><a href="https://github.com/Homebrew/homebrew-apache/blob/master/mod_fastcgi.rb">mod_fastcgi</a> - written by <a href="https://github.com/lifepillar">lifepillar</a></li>
-<li><a href="https://github.com/Homebrew/homebrew-apache/blob/master/mod_suexec.rb">mod_suexec</a> - written by <a href="https://github.com/lifepillar">lifepillar</a>, 10.8 work by <a href="https://github.com/alanthing">me</a></li>
-<li><a href="https://github.com/Homebrew/homebrew-apache/blob/master/mod_fcgid.rb">mod_fcgid</a> - written by <a href="https://github.com/rjocoleman">rjocoleman</a></li>
-<li><a href="https://github.com/Homebrew/homebrew-apache/blob/master/mod_bonjour.rb">mod_bonjour</a> - written by <a href="https://github.com/joemaller">joemaller</a></li>
-<li><a href="https://github.com/Homebrew/homebrew-apache/blob/master/mod_python.rb">mod_python</a> and <a href="https://github.com/Homebrew/homebrew-apache/blob/master/mod_wsgi.rb">mod_wsgi</a> - copied from main Homebrew formulas</li>
+<li><a href="https://github.com/Homebrew/homebrew-apache/blob/master/mod_fastcgi.rb">mod_fastcgi</a> &ndash; written by <a href="https://github.com/lifepillar">lifepillar</a></li>
+<li><a href="https://github.com/Homebrew/homebrew-apache/blob/master/mod_suexec.rb">mod_suexec</a> &ndash; written by <a href="https://github.com/lifepillar">lifepillar</a>, 10.8 work by <a href="https://github.com/alanthing">me</a></li>
+<li><a href="https://github.com/Homebrew/homebrew-apache/blob/master/mod_fcgid.rb">mod_fcgid</a> &ndash; written by <a href="https://github.com/rjocoleman">rjocoleman</a></li>
+<li><a href="https://github.com/Homebrew/homebrew-apache/blob/master/mod_bonjour.rb">mod_bonjour</a> &ndash; written by <a href="https://github.com/joemaller">joemaller</a></li>
+<li><a href="https://github.com/Homebrew/homebrew-apache/blob/master/mod_python.rb">mod_python</a> and <a href="https://github.com/Homebrew/homebrew-apache/blob/master/mod_wsgi.rb">mod_wsgi</a> &ndash; copied from main Homebrew formulas</li>
 </ul>
+
 
 <p>If you have any problems or questions, let me know in the issue queue! Or write a formula and submit a pull request!</p>
 </div>
@@ -150,7 +151,7 @@
     
       <div class="sharing">
   
-  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://alanthing.com/blog/2012/09/04/apache-modules-on-os-x-with-homebrew/" data-via="alanthing" data-counturl="http://alanthing.com/blog/2012/09/04/apache-modules-on-os-x-with-homebrew/" >Tweet</a>
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://alanthing.com/blog/2012/09/04/apache-modules-on-os-x-with-homebrew/" data-via="alanthing" data-counturl="http://alanthing.com/blog/2012/09/04/apache-modules-on-os-x-with-homebrew/" >Tweet</a>
   
   
   <div class="g-plusone" data-size="medium"></div>
@@ -187,7 +188,7 @@
   <ul id="recent_posts">
     
       <li class="post">
-        <a href="/blog/2013/05/09/speed-up-php-on-nfs-with-turbo-realpath/">Speed up PHP on NFS with turbo_realpath</a>
+        <a href="/blog/2013/05/09/speed-up-php-on-nfs-with-turbo-realpath/">Speed Up PHP on NFS With Turbo_realpath</a>
       </li>
     
       <li class="post">
@@ -203,34 +204,77 @@
       </li>
     
       <li class="post">
-        <a href="/blog/2012/09/04/apache-modules-on-os-x-with-homebrew/">Apache modules on OS X with Homebrew</a>
+        <a href="/blog/2012/09/04/apache-modules-on-os-x-with-homebrew/">Apache Modules on OS X With Homebrew</a>
       </li>
     
   </ul>
 </section>
 
 <section>
-  <h1>Coderwall Badges</h1>
-  <p>
-    <script type="text/javascript">
-      function display_coderwall(args) {
-        var badges = args["data"]["badges"];
-        var wall = '';
-        for ( var i = 0; i < badges.length; i++ ) {
-          var alt_txt = badges[i]["name"];
-          var title_txt = badges[i]["name"] + ' - ' + badges[i]["description"];
-          wall += '<a href="http://coderwall.com/alanthing/"><img src="'
-            + badges[i]["badge"]
-            + '" width="48" height="48" alt="' + alt_txt
-            + '" title="' + title_txt
-            + '"/></a>';
-        }
-        document.write(wall);
-      }
-    </script>
-    <script src="http://coderwall.com/alanthing.json?callback=display_coderwall"></script>
-  </p>
+  <h1>Coderwall</h1>
+  <ul id="cw_badges">
+    <li class="loading">Status updating...</li>
+  </ul>
   
+  <div>
+    <a href="http://coderwall.com/alanthing" target="_blank" class="cw_badge"><img
+       alt="Endorse alanthing on Coderwall"
+       src="http://api.coderwall.com/alanthing/endorsecount.png" /></a>
+  </div>
+  
+
+  <script type="text/javascript">
+    var coderwall = (function(){
+      function render(options, badges){
+        var fragment = '',
+            t = $(options.target)[0],
+            height = 65,
+            width = 65,
+            index;
+
+        for (index in badges) {
+          fragment += '<a class="cw_badge"title="' + badges[index].description + '" target="_blank" href="http://coderwall.com/' + options.user + '">';
+          fragment +=   '<img alt="' + badges[index].description + '" height="' + width + '" width="' + height + '" src="' + badges[index].badge + '"/>';
+          fragment += '</a>';
+        }
+
+        t.innerHTML = fragment;
+      }
+      return {
+        showBadges: function(options){
+          $.ajax({
+              url: 'http://coderwall.com/' + options.user + '.json?callback=?'
+            , type: 'jsonp'
+            , error: function (err) { $(options.target + ' li.loading').addClass('error').text("Error loading feed"); }
+            , success: function(res) {
+                render(options, res.data.badges);
+            }
+          });
+        }
+      };
+    })();
+
+    $.domReady(function(){
+      if (!window.jXHR){
+        var jxhr = document.createElement('script');
+        jxhr.type = 'text/javascript';
+        jxhr.src = '/javascripts/libs/jXHR.js';
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(jxhr, s);
+      }
+      if (!window.$){
+        var b = document.createElement('script');
+        b.type = 'text/javascript';
+        b.src = '/javascripts/ender.js';
+        var sc = document.getElementsByTagName('script')[0];
+        sc.parentNode.insertBefore(jxhr, s);
+      }
+      coderwall.showBadges({
+        user: 'alanthing',
+        target: '#cw_badges'
+      });
+    });
+  </script>
 </section>
 
 
@@ -325,7 +369,7 @@
       var twitterWidgets = document.createElement('script');
       twitterWidgets.type = 'text/javascript';
       twitterWidgets.async = true;
-      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
       document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
     })();
   </script>

@@ -103,17 +103,17 @@
   </header>
 
 
-<div class="entry-content"><h2 id="toc_0">Install MAMP</h2>
+<div class="entry-content"><h2>Install MAMP</h2>
 
 <p>Download the latest MAMP from <a href="http://mamp.info/en/downloads/index.html">http://mamp.info/en/downloads/index.html</a> and run the installer.</p>
 
-<h2 id="toc_1">Choose APC Cache</h2>
+<h2>Choose APC Cache</h2>
 
-<p>Open the MAMP app, open <strong>Preferences&#8230;</strong>, click the <strong>PHP</strong> tab, and change <strong>Cache</strong> to <strong>APC</strong>. Click <strong>OK</strong> to close Preferences and <strong>Quit</strong> MAMP.</p>
+<p>Open the MAMP app, open <strong>Preferences&hellip;</strong>, click the <strong>PHP</strong> tab, and change <strong>Cache</strong> to <strong>APC</strong>. Click <strong>OK</strong> to close Preferences and <strong>Quit</strong> MAMP.</p>
 
-<p><img src="http://i46.tinypic.com/2wltqpw.png" alt="MAMP Screenshot"></p>
+<p><img src="http://i46.tinypic.com/2wltqpw.png" alt="MAMP Screenshot" /></p>
 
-<h2 id="toc_2">PATH variable</h2>
+<h2>PATH variable</h2>
 
 <p>Put MAMP binaries, including PHP, in the front of your $PATH (this is a single command):</p>
 
@@ -121,7 +121,8 @@
 </pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">echo</span> <span class="s1">&#39;export PATH=&quot;/Applications/MAMP/bin:/Applications/MAMP/Library/bin:$(find /Applications/MAMP/bin/php -type d -name &quot;php5.4*&quot; | sort | tail -1)/bin:$PATH&quot;&#39;</span> &gt;&gt; ~/.bash_profile <span class="o">&amp;&amp;</span> <span class="nb">source</span> ~/.bash_profile
 </span></code></pre></td></tr></table></div></figure>
 
-<h2 id="toc_3">MySQL</h2>
+
+<h2>MySQL</h2>
 
 <p>Set up MySQL and stop it (default MySQL password is <strong>root</strong>, you do not have to change it when running <code>mysql_secure_installation</code>, though I recommend all of the other defaults):</p>
 
@@ -157,7 +158,8 @@
 </span><span class='line'>/Applications/MAMP/bin/stopMysql.sh
 </span></code></pre></td></tr></table></div></figure>
 
-<h2 id="toc_4">PHP</h2>
+
+<h2>PHP</h2>
 
 <p>Set timezone, and increase timeouts and memory values:</p>
 
@@ -169,11 +171,12 @@
 </span><span class='line'><span class="nb">echo</span> -e <span class="s2">&quot;\n[apc]\napc.shm_size = 192M\napc.rfc1867 = 1&quot;</span> &gt;&gt; <span class="k">$(</span>find /Applications/MAMP/bin/php -type d -name <span class="s2">&quot;php5.4*&quot;</span> | sort | tail -1<span class="k">)</span>/conf/php.ini
 </span></code></pre></td></tr></table></div></figure>
 
-<h3 id="toc_5">PECL Uploadprogress</h3>
 
-<p><strong>Feel free to skip:</strong> This is quite involved when <code>apc.rfc1867=1</code> does the job in most cases. This is mostly an exercise in building PHP modules for MAMP. </p>
+<h3>PECL Uploadprogress</h3>
 
-<p><strong>You&#39;ll need to install Xcode Command Line Tools from <a href="http://develop.apple.com/downloads">http://develop.apple.com/downloads</a> in order to complete all of the steps below.</strong></p>
+<p><strong>Feel free to skip:</strong> This is quite involved when <code>apc.rfc1867=1</code> does the job in most cases. This is mostly an exercise in building PHP modules for MAMP.</p>
+
+<p><strong>You&rsquo;ll need to install Xcode Command Line Tools from <a href="http://develop.apple.com/downloads">http://develop.apple.com/downloads</a> in order to complete all of the steps below.</strong></p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -277,12 +280,13 @@
 </span><span class='line'><span class="nb">echo</span> -e <span class="s2">&quot;\n[uploadprogress]\nextension=uploadprogress.so&quot;</span> &gt;&gt; <span class="k">$(</span>find /Applications/MAMP/bin/php -type d -name <span class="s2">&quot;php5.4*&quot;</span> | sort | tail -1<span class="k">)</span>/conf/php.ini
 </span></code></pre></td></tr></table></div></figure>
 
-<p>Reference 1: <a href="http://www.lullabot.com/articles/installing-php-pear-and-pecl-extensions-on-mamp-mac-os-x-107-lion">http://www.lullabot.com/articles/installing-php-pear-and-pecl-extensions-on-mamp-mac-os-x-107-lion</a><br>
+
+<p>Reference 1: <a href="http://www.lullabot.com/articles/installing-php-pear-and-pecl-extensions-on-mamp-mac-os-x-107-lion">http://www.lullabot.com/articles/installing-php-pear-and-pecl-extensions-on-mamp-mac-os-x-107-lion</a>
 Reference 2: <a href="http://jsdelfino.blogspot.com/2012/08/autoconf-and-automake-on-mac-os-x.html">http://jsdelfino.blogspot.com/2012/08/autoconf-and-automake-on-mac-os-x.html</a></p>
 
-<h2 id="toc_6">Apache</h2>
+<h2>Apache</h2>
 
-<p>Set up VirtualHosts in <strong>~/Sites/mamp-vhosts.conf</strong> so it&#39;s easy to edit later:</p>
+<p>Set up VirtualHosts in <strong>~/Sites/mamp-vhosts.conf</strong> so it&rsquo;s easy to edit later:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -295,6 +299,7 @@ Reference 2: <a href="http://jsdelfino.blogspot.com/2012/08/autoconf-and-automak
 </span><span class='line'>
 </span><span class='line'><span class="o">[</span> ! -d ~/Sites/logs <span class="o">]</span> <span class="o">&amp;&amp;</span> mkdir -pv ~/Sites/logs
 </span></code></pre></td></tr></table></div></figure>
+
 
 <p><strong><em>IMPORTANT!</em></strong> Be sure to copy and paste the lines containing <code>PORTNUM</code> through the last <code>EOF</code> as a <strong><em>single</em></strong> command (this entire block is a single copy+paste):</p>
 
@@ -402,15 +407,16 @@ Reference 2: <a href="http://jsdelfino.blogspot.com/2012/08/autoconf-and-automak
 </span><span class='line'><span class="nb">EOF</span>
 </span></code></pre></td></tr></table></div></figure>
 
-<p>If you read that closely, you&#39;ll see that it&#39;s set up to do <a href="http://httpd.apache.org/docs/2.2/vhosts/mass.html">MassVirtualHosts</a> using the <code>*.dev</code> tld. For example, set up a web root at <code>$HOME/Sites/project</code> and you will be able to view it at <a href="http://project.dev:8888">http://project.dev:8888</a> without needing to create a separate VirtualHost. A custom log format is used, putting the domain name at the beginning of the line, so you can easily see the output as it related to a project.</p>
 
-<h2 id="toc_7">Finishing Up</h2>
+<p>If you read that closely, you&rsquo;ll see that it&rsquo;s set up to do <a href="http://httpd.apache.org/docs/2.2/vhosts/mass.html">MassVirtualHosts</a> using the <code>*.dev</code> tld. For example, set up a web root at <code>$HOME/Sites/project</code> and you will be able to view it at <a href="http://project.dev:8888">http://project.dev:8888</a> without needing to create a separate VirtualHost. A custom log format is used, putting the domain name at the beginning of the line, so you can easily see the output as it related to a project.</p>
 
-<p>Open the MAMP application to <strong>Start Servers</strong>. Note that if you ever change the Apache port number, you&#39;ll need to edit <code>~/Sites/mamp-vhosts.conf</code> appropriately.</p>
+<h2>Finishing Up</h2>
+
+<p>Open the MAMP application to <strong>Start Servers</strong>. Note that if you ever change the Apache port number, you&rsquo;ll need to edit <code>~/Sites/mamp-vhosts.conf</code> appropriately.</p>
 
 <p>As always with MAMP, you can work out of <a href="http://localhost:8888/">http://localhost:8888/</a> by putting files in <code>/Applications/MAMP/htdocs</code>. For example, the folder <code>/Applications/MAMP/drupal</code> will be accessible at <a href="http://localhost:8888/drupal">http://localhost:8888/drupal</a>. You can find other MAMP tools at <a href="http://localhost:8888/MAMP">http://localhost:8888/MAMP</a>.</p>
 
-<p>If you&#39;re having trouble connecting to MySQL with Sequel Pro or another utility, use <code>/Applications/MAMP/tmp/mysql/mysql.sock</code> as the socket path. If MAMP&#39;s MySQL is the only service running mysqld, this should not be necessary but YMMV&#8230;</p>
+<p>If you&rsquo;re having trouble connecting to MySQL with Sequel Pro or another utility, use <code>/Applications/MAMP/tmp/mysql/mysql.sock</code> as the socket path. If MAMP&rsquo;s MySQL is the only service running mysqld, this should not be necessary but YMMV&hellip;</p>
 </div>
 
 
@@ -441,7 +447,7 @@ Reference 2: <a href="http://jsdelfino.blogspot.com/2012/08/autoconf-and-automak
     
       <div class="sharing">
   
-  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://alanthing.com/blog/2012/12/19/usable-mamp-os-x-108-mountain-lion/" data-via="alanthing" data-counturl="http://alanthing.com/blog/2012/12/19/usable-mamp-os-x-108-mountain-lion/" >Tweet</a>
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://alanthing.com/blog/2012/12/19/usable-mamp-os-x-108-mountain-lion/" data-via="alanthing" data-counturl="http://alanthing.com/blog/2012/12/19/usable-mamp-os-x-108-mountain-lion/" >Tweet</a>
   
   
   <div class="g-plusone" data-size="medium"></div>
@@ -478,7 +484,7 @@ Reference 2: <a href="http://jsdelfino.blogspot.com/2012/08/autoconf-and-automak
   <ul id="recent_posts">
     
       <li class="post">
-        <a href="/blog/2013/05/09/speed-up-php-on-nfs-with-turbo-realpath/">Speed up PHP on NFS with turbo_realpath</a>
+        <a href="/blog/2013/05/09/speed-up-php-on-nfs-with-turbo-realpath/">Speed Up PHP on NFS With Turbo_realpath</a>
       </li>
     
       <li class="post">
@@ -494,34 +500,77 @@ Reference 2: <a href="http://jsdelfino.blogspot.com/2012/08/autoconf-and-automak
       </li>
     
       <li class="post">
-        <a href="/blog/2012/09/04/apache-modules-on-os-x-with-homebrew/">Apache modules on OS X with Homebrew</a>
+        <a href="/blog/2012/09/04/apache-modules-on-os-x-with-homebrew/">Apache Modules on OS X With Homebrew</a>
       </li>
     
   </ul>
 </section>
 
 <section>
-  <h1>Coderwall Badges</h1>
-  <p>
-    <script type="text/javascript">
-      function display_coderwall(args) {
-        var badges = args["data"]["badges"];
-        var wall = '';
-        for ( var i = 0; i < badges.length; i++ ) {
-          var alt_txt = badges[i]["name"];
-          var title_txt = badges[i]["name"] + ' - ' + badges[i]["description"];
-          wall += '<a href="http://coderwall.com/alanthing/"><img src="'
-            + badges[i]["badge"]
-            + '" width="48" height="48" alt="' + alt_txt
-            + '" title="' + title_txt
-            + '"/></a>';
-        }
-        document.write(wall);
-      }
-    </script>
-    <script src="http://coderwall.com/alanthing.json?callback=display_coderwall"></script>
-  </p>
+  <h1>Coderwall</h1>
+  <ul id="cw_badges">
+    <li class="loading">Status updating...</li>
+  </ul>
   
+  <div>
+    <a href="http://coderwall.com/alanthing" target="_blank" class="cw_badge"><img
+       alt="Endorse alanthing on Coderwall"
+       src="http://api.coderwall.com/alanthing/endorsecount.png" /></a>
+  </div>
+  
+
+  <script type="text/javascript">
+    var coderwall = (function(){
+      function render(options, badges){
+        var fragment = '',
+            t = $(options.target)[0],
+            height = 65,
+            width = 65,
+            index;
+
+        for (index in badges) {
+          fragment += '<a class="cw_badge"title="' + badges[index].description + '" target="_blank" href="http://coderwall.com/' + options.user + '">';
+          fragment +=   '<img alt="' + badges[index].description + '" height="' + width + '" width="' + height + '" src="' + badges[index].badge + '"/>';
+          fragment += '</a>';
+        }
+
+        t.innerHTML = fragment;
+      }
+      return {
+        showBadges: function(options){
+          $.ajax({
+              url: 'http://coderwall.com/' + options.user + '.json?callback=?'
+            , type: 'jsonp'
+            , error: function (err) { $(options.target + ' li.loading').addClass('error').text("Error loading feed"); }
+            , success: function(res) {
+                render(options, res.data.badges);
+            }
+          });
+        }
+      };
+    })();
+
+    $.domReady(function(){
+      if (!window.jXHR){
+        var jxhr = document.createElement('script');
+        jxhr.type = 'text/javascript';
+        jxhr.src = '/javascripts/libs/jXHR.js';
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(jxhr, s);
+      }
+      if (!window.$){
+        var b = document.createElement('script');
+        b.type = 'text/javascript';
+        b.src = '/javascripts/ender.js';
+        var sc = document.getElementsByTagName('script')[0];
+        sc.parentNode.insertBefore(jxhr, s);
+      }
+      coderwall.showBadges({
+        user: 'alanthing',
+        target: '#cw_badges'
+      });
+    });
+  </script>
 </section>
 
 
@@ -616,7 +665,7 @@ Reference 2: <a href="http://jsdelfino.blogspot.com/2012/08/autoconf-and-automak
       var twitterWidgets = document.createElement('script');
       twitterWidgets.type = 'text/javascript';
       twitterWidgets.async = true;
-      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
       document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
     })();
   </script>

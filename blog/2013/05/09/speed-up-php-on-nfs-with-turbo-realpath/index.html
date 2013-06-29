@@ -9,7 +9,7 @@
   <meta name="author" content="Alan Ivey">
 
   
-  <meta name="description" content="If you run a website based on PHP, and have your source files on a network file system like NFS, OCFS2, or GlusterFS, and combine it with PHP&#39;s &hellip;">
+  <meta name="description" content="If you run a website based on PHP, and have your source files on a network file system like NFS, OCFS2, or GlusterFS, and combine it with PHP&rsquo;s &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -103,15 +103,15 @@
   </header>
 
 
-<div class="entry-content"><p>If you run a website based on PHP, and have your source files on a network file system like NFS, OCFS2, or GlusterFS, and combine it with PHP&#39;s <a href="http://www.php.net/manual/en/ini.core.php#ini.open-basedir">open_basedir</a> protection, you&#39;ll quickly notice that the performance will degrade substantially. Normally, PHP can cache various path locations it learns after processing <a href="http://us2.php.net/manual/en/function.include-once.php">include_once</a> and <a href="http://us2.php.net/manual/en/function.require-once.php">require_once</a> calls via the <a href="http://www.php.net/manual/en/ini.core.php#ini.realpath-cache-size">realpath_cache</a>. There&#39;s a <a href="https://bugs.php.net/bug.php?id=52312">bug in PHP</a> that effectively disables the realpath_cache entirely when combined with open_basedir. Popular PHP applications with Drupal and WordPress make heavy use of these functions to include other files, so you would very quickly notice the drop in performance in this scenario. If you want to isolate your websites from each other (or from the rest of the operating system), how can you retain any shred of performance?</p>
+<div class="entry-content"><p>If you run a website based on PHP, and have your source files on a network file system like NFS, OCFS2, or GlusterFS, and combine it with PHP&rsquo;s <a href="http://www.php.net/manual/en/ini.core.php#ini.open-basedir">open_basedir</a> protection, you&rsquo;ll quickly notice that the performance will degrade substantially. Normally, PHP can cache various path locations it learns after processing <a href="http://us2.php.net/manual/en/function.include-once.php">include_once</a> and <a href="http://us2.php.net/manual/en/function.require-once.php">require_once</a> calls via the <a href="http://www.php.net/manual/en/ini.core.php#ini.realpath-cache-size">realpath_cache</a>. There&rsquo;s a <a href="https://bugs.php.net/bug.php?id=52312">bug in PHP</a> that effectively disables the realpath_cache entirely when combined with open_basedir. Popular PHP applications with Drupal and WordPress make heavy use of these functions to include other files, so you would very quickly notice the drop in performance in this scenario. If you want to isolate your websites from each other (or from the rest of the operating system), how can you retain any shred of performance?</p>
 
-<p>This is where <a href="http://php.webtutor.pl/">Artur Graniszewski</a>&#39;s <a href="http://php.webtutor.pl/en/2011/07/12/running-php-on-nfs-version-1-2-of-turbo_realpath-extension/">turbo_realpath</a> extension really comes in handy. I won&#39;t retype his installation instructions, so follow the previous link to get it installed manually. </p>
+<p>This is where <a href="http://php.webtutor.pl/">Artur Graniszewski</a>&rsquo;s <a href="http://php.webtutor.pl/en/2011/07/12/running-php-on-nfs-version-1-2-of-turbo_realpath-extension/">turbo_realpath</a> extension really comes in handy. I won&rsquo;t retype his installation instructions, so follow the previous link to get it installed manually.</p>
 
-<p>If you&#39;re running CentOS 5 or CentOS 6, check out <a href="http://yum.echoditto.com/">yum.echoditto.com</a> and you&#39;ll find source and compiled RPMs that will install alongside the RedHat/CentOS-supplied PHP packages. The RPM will create a basic configuration file at <code>/etc/php.d/turbo_realpath.ini</code>. Essentially, it enables the PHP module but defaults all settings off, so you will need to read the comments (taken from <a href="http://php.webtutor.pl/en/2011/07/12/running-php-on-nfs-version-1-2-of-turbo_realpath-extension/">Artur&#39;s most recent post on turbo_realpath</a>) to determine how you want to use it.</p>
+<p>If you&rsquo;re running CentOS 5 or CentOS 6, check out <a href="http://yum.echoditto.com/">yum.echoditto.com</a> and you&rsquo;ll find source and compiled RPMs that will install alongside the RedHat/CentOS-supplied PHP packages. The RPM will create a basic configuration file at <code>/etc/php.d/turbo_realpath.ini</code>. Essentially, it enables the PHP module but defaults all settings off, so you will need to read the comments (taken from <a href="http://php.webtutor.pl/en/2011/07/12/running-php-on-nfs-version-1-2-of-turbo_realpath-extension/">Artur&rsquo;s most recent post on turbo_realpath</a>) to determine how you want to use it.</p>
 
-<h1 id="toc_0">Configuration</h1>
+<h1>Configuration</h1>
 
-<p>We frequently use turbo_realpath on a per-VirtualHost basis with Apache 2.2 and mod_php. If you use PHP-FPM, you can apply similar settings in your FPM pool configuration files. If you install our RPM and don&#39;t edit <code>/etc/php.d/turbo_realpath.ini</code>, add something similar to the following to each VirtualHost:</p>
+<p>We frequently use turbo_realpath on a per-VirtualHost basis with Apache 2.2 and mod_php. If you use PHP-FPM, you can apply similar settings in your FPM pool configuration files. If you install our RPM and don&rsquo;t edit <code>/etc/php.d/turbo_realpath.ini</code>, add something similar to the following to each VirtualHost:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -120,6 +120,7 @@
 </span><span class='line'>  <span class="nb">php_admin_value</span> realpath_cache_basedir <span class="s2">&quot;/var/www/vhosts/domain.com:/usr/share/pear:/usr/share/php:/usr/lib64/php:/usr/lib/php:/tmp:/var/tmp&quot;</span>
 </span><span class='line'><span class="nt">&lt;/IfModule&gt;</span>
 </span></code></pre></td></tr></table></div></figure>
+
 
 <p>This is effectively the same using <code>open_basedir</code>; any directories referenced in <code>realpath_cache_basedir</code> will be the only ones the website is allowed to access, and they will be cached as determined by the <a href="http://www.php.net/manual/en/ini.core.php#ini.realpath-cache-size">realpath_cache_size</a> and <a href="http://www.php.net/manual/en/ini.core.php#ini.realpath-cache-ttl">realpath_cache_ttl</a>. If you look in <code>php.ini</code>, you may notice the default values for these are:</p>
 
@@ -139,19 +140,21 @@
 </span><span class='line'><span class="na">realpath_cache_ttl</span> <span class="o">=</span> <span class="s">120</span>
 </span></code></pre></td></tr></table></div></figure>
 
-<p>You may want to increase these if you&#39;re finding your website is still not loading quickly. On our systems, we have bumped the <code>realpath_cache_size</code> and <code>realpath_cache_ttl</code> settings up to <code>1m</code> and <code>300</code>, respectively.</p>
 
-<h1 id="toc_1">Speed and Security!</h1>
+<p>You may want to increase these if you&rsquo;re finding your website is still not loading quickly. On our systems, we have bumped the <code>realpath_cache_size</code> and <code>realpath_cache_ttl</code> settings up to <code>1m</code> and <code>300</code>, respectively.</p>
 
-<p>With turbo_realpath enabled, <code>realpath_cache_basedir</code> set to appropriate <code>open_basedir</code>-like values, and <code>realpath_cache_size</code> and <code>realpath_cache_ttl</code> increased from defaults, we&#39;re able to have isolated PHP sites and have better performance by caching the locations of included/required files effectively. Hopefully, our RPMs will help you on your system for a quick installation of the excellent turbo_realpath module!</p>
+<h1>Speed and Security!</h1>
 
-<h1 id="toc_2">References</h1>
+<p>With turbo_realpath enabled, <code>realpath_cache_basedir</code> set to appropriate <code>open_basedir</code>-like values, and <code>realpath_cache_size</code> and <code>realpath_cache_ttl</code> increased from defaults, we&rsquo;re able to have isolated PHP sites and have better performance by caching the locations of included/required files effectively. Hopefully, our RPMs will help you on your system for a quick installation of the excellent turbo_realpath module!</p>
+
+<h1>References</h1>
 
 <ul>
 <li><a href="http://php.webtutor.pl/en/2011/06/02/running-php-on-nfs-huge-performance-problems-and-one-simple-solution/">Running PHP on NFS: huge performance problems and one simple solution.</a></li>
 <li><a href="http://php.webtutor.pl/en/2011/07/01/running-php-on-nfs-new-version-of-turbo_realpath-extension/">Running PHP on NFS: new version of turbo_realpath extension</a></li>
 <li><a href="http://php.webtutor.pl/en/2011/07/12/running-php-on-nfs-version-1-2-of-turbo_realpath-extension/">Running PHP on NFS: version 1.2 of turbo_realpath extension</a></li>
 </ul>
+
 </div>
 
 
@@ -182,7 +185,7 @@
     
       <div class="sharing">
   
-  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://alanthing.com/blog/2013/05/09/speed-up-php-on-nfs-with-turbo-realpath/" data-via="alanthing" data-counturl="http://alanthing.com/blog/2013/05/09/speed-up-php-on-nfs-with-turbo-realpath/" >Tweet</a>
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://alanthing.com/blog/2013/05/09/speed-up-php-on-nfs-with-turbo-realpath/" data-via="alanthing" data-counturl="http://alanthing.com/blog/2013/05/09/speed-up-php-on-nfs-with-turbo-realpath/" >Tweet</a>
   
   
   <div class="g-plusone" data-size="medium"></div>
@@ -217,7 +220,7 @@
   <ul id="recent_posts">
     
       <li class="post">
-        <a href="/blog/2013/05/09/speed-up-php-on-nfs-with-turbo-realpath/">Speed up PHP on NFS with turbo_realpath</a>
+        <a href="/blog/2013/05/09/speed-up-php-on-nfs-with-turbo-realpath/">Speed Up PHP on NFS With Turbo_realpath</a>
       </li>
     
       <li class="post">
@@ -233,34 +236,77 @@
       </li>
     
       <li class="post">
-        <a href="/blog/2012/09/04/apache-modules-on-os-x-with-homebrew/">Apache modules on OS X with Homebrew</a>
+        <a href="/blog/2012/09/04/apache-modules-on-os-x-with-homebrew/">Apache Modules on OS X With Homebrew</a>
       </li>
     
   </ul>
 </section>
 
 <section>
-  <h1>Coderwall Badges</h1>
-  <p>
-    <script type="text/javascript">
-      function display_coderwall(args) {
-        var badges = args["data"]["badges"];
-        var wall = '';
-        for ( var i = 0; i < badges.length; i++ ) {
-          var alt_txt = badges[i]["name"];
-          var title_txt = badges[i]["name"] + ' - ' + badges[i]["description"];
-          wall += '<a href="http://coderwall.com/alanthing/"><img src="'
-            + badges[i]["badge"]
-            + '" width="48" height="48" alt="' + alt_txt
-            + '" title="' + title_txt
-            + '"/></a>';
-        }
-        document.write(wall);
-      }
-    </script>
-    <script src="http://coderwall.com/alanthing.json?callback=display_coderwall"></script>
-  </p>
+  <h1>Coderwall</h1>
+  <ul id="cw_badges">
+    <li class="loading">Status updating...</li>
+  </ul>
   
+  <div>
+    <a href="http://coderwall.com/alanthing" target="_blank" class="cw_badge"><img
+       alt="Endorse alanthing on Coderwall"
+       src="http://api.coderwall.com/alanthing/endorsecount.png" /></a>
+  </div>
+  
+
+  <script type="text/javascript">
+    var coderwall = (function(){
+      function render(options, badges){
+        var fragment = '',
+            t = $(options.target)[0],
+            height = 65,
+            width = 65,
+            index;
+
+        for (index in badges) {
+          fragment += '<a class="cw_badge"title="' + badges[index].description + '" target="_blank" href="http://coderwall.com/' + options.user + '">';
+          fragment +=   '<img alt="' + badges[index].description + '" height="' + width + '" width="' + height + '" src="' + badges[index].badge + '"/>';
+          fragment += '</a>';
+        }
+
+        t.innerHTML = fragment;
+      }
+      return {
+        showBadges: function(options){
+          $.ajax({
+              url: 'http://coderwall.com/' + options.user + '.json?callback=?'
+            , type: 'jsonp'
+            , error: function (err) { $(options.target + ' li.loading').addClass('error').text("Error loading feed"); }
+            , success: function(res) {
+                render(options, res.data.badges);
+            }
+          });
+        }
+      };
+    })();
+
+    $.domReady(function(){
+      if (!window.jXHR){
+        var jxhr = document.createElement('script');
+        jxhr.type = 'text/javascript';
+        jxhr.src = '/javascripts/libs/jXHR.js';
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(jxhr, s);
+      }
+      if (!window.$){
+        var b = document.createElement('script');
+        b.type = 'text/javascript';
+        b.src = '/javascripts/ender.js';
+        var sc = document.getElementsByTagName('script')[0];
+        sc.parentNode.insertBefore(jxhr, s);
+      }
+      coderwall.showBadges({
+        user: 'alanthing',
+        target: '#cw_badges'
+      });
+    });
+  </script>
 </section>
 
 
@@ -355,7 +401,7 @@
       var twitterWidgets = document.createElement('script');
       twitterWidgets.type = 'text/javascript';
       twitterWidgets.async = true;
-      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
       document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
     })();
   </script>

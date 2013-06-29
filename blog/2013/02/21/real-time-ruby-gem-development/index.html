@@ -9,7 +9,7 @@
   <meta name="author" content="Alan Ivey">
 
   
-  <meta name="description" content="Recently, I&#39;ve been working on adding functionality for Storm on Demand&#39;s API to the excellent fog library. There didn&#39;t seem to be a &hellip;">
+  <meta name="description" content="Recently, I&rsquo;ve been working on adding functionality for Storm on Demand&rsquo;s API to the excellent fog library. There didn&rsquo;t seem to be &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -103,54 +103,61 @@
   </header>
 
 
-<div class="entry-content"><p>Recently, I&#39;ve been working on adding functionality for <a href="http://www.stormondemand.com">Storm on Demand</a>&#39;s <a href="https://www.stormondemand.com/api/docs/1.0/">API</a> to the excellent <a href="http://fog.io">fog</a> library. There didn&#39;t seem to be a clear way, that I could find, to work on a Ruby gem in real-time, meaning I save the file in my editor and immediately run some code. Most <a href="http://gembundler.com/rubygems.html">guides</a> I <a href="http://blog.thepete.net/2010/11/creating-and-publishing-your-first-ruby.html">found</a> tended to advise to create the gem file and install it. <a href="http://rakeroutes.com/blog/lets-write-a-gem-part-two/">Stephen Ball demostrates</a> the use of <code>bundle console</code> which drops you into <code>irb</code> for testing, but I was looking for a way to test my own scripts outside of a shell with my recently-saved gem files. </p>
+<div class="entry-content"><p>Recently, I&rsquo;ve been working on adding functionality for <a href="http://www.stormondemand.com">Storm on Demand</a>&rsquo;s <a href="https://www.stormondemand.com/api/docs/1.0/">API</a> to the excellent <a href="http://fog.io">fog</a> library. There didn&rsquo;t seem to be a clear way, that I could find, to work on a Ruby gem in real-time, meaning I save the file in my editor and immediately run some code. Most <a href="http://gembundler.com/rubygems.html">guides</a> I <a href="http://blog.thepete.net/2010/11/creating-and-publishing-your-first-ruby.html">found</a> tended to advise to create the gem file and install it. <a href="http://rakeroutes.com/blog/lets-write-a-gem-part-two/">Stephen Ball demostrates</a> the use of <code>bundle console</code> which drops you into <code>irb</code> for testing, but I was looking for a way to test my own scripts outside of a shell with my recently-saved gem files.</p>
 
-<p>Thankfully this isn&#39;t too difficult to set up and this will allow you to work on your gem in &quot;real-time;&quot; save and test, without <code>bundle console</code> or installing lots of dev gems.</p>
+<p>Thankfully this isn&rsquo;t too difficult to set up and this will allow you to work on your gem in &ldquo;real-time;&rdquo; save and test, without <code>bundle console</code> or installing lots of dev gems.</p>
 
-<p>I should note two things here: I&#39;m not a Ruby developer, and I&#39;ve really only tested this thoroughly with fog, no others. If this ends up being a terrible way to do things, please let me know.</p>
+<p>I should note two things here: I&rsquo;m not a Ruby developer, and I&rsquo;ve really only tested this thoroughly with fog, no others. If this ends up being a terrible way to do things, please let me know.</p>
 
-<p>I&#39;m using <a href="http://rvm.io/">RVM</a> to keep my gem development isolated from the rest of my system. If you haven&#39;t already, <a href="https://rvm.io/rvm/install/">set up rvm</a> on your system. If you&#39;re using <a href="https://github.com/sstephenson/rbenv">rbenv</a> instead, use <a href="https://github.com/jamis/rbenv-gemset">applicable commands</a>.</p>
+<p>I&rsquo;m using <a href="http://rvm.io/">RVM</a> to keep my gem development isolated from the rest of my system. If you haven&rsquo;t already, <a href="https://rvm.io/rvm/install/">set up rvm</a> on your system. If you&rsquo;re using <a href="https://github.com/sstephenson/rbenv">rbenv</a> instead, use <a href="https://github.com/jamis/rbenv-gemset">applicable commands</a>.</p>
 
-<p>You&#39;ll obviously need to start in a gem development directory. In my case, I start with fog:</p>
+<p>You&rsquo;ll obviously need to start in a gem development directory. In my case, I start with fog:</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 </pre></td><td class='code'><pre><code class=''><span class='line'>git clone git@github.com:fog/fog.git
 </span><span class='line'>cd fog</span></code></pre></td></tr></table></div></figure>
 
-<p>I&#39;m going to switch to ruby 1.9.3 and use a new gemset called fogdev:</p>
+
+<p>I&rsquo;m going to switch to ruby 1.9.3 and use a new gemset called fogdev:</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class=''><span class='line'>rvm use 1.9.3 && rvm gemset create fogdev && rvm use 1.9.3@fogdev</span></code></pre></td></tr></table></div></figure>
 
-<p>You may want to create a <code>.rvmrc</code> file so you don&#39;t have to use <code>rvm use</code> constantly.</p>
+
+<p>You may want to create a <code>.rvmrc</code> file so you don&rsquo;t have to use <code>rvm use</code> constantly.</p>
 
 <p>Install the prerequesite gems as listed in the gemspec file with bundler:</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class=''><span class='line'>bundle install</span></code></pre></td></tr></table></div></figure>
 
-<p>I&#39;m going to grab the version number of fog from the gemspec file so I can reuse it later (if there are multiple &#39;.gemspec&#39; files in your directory, change &#39;*.gemspec&#39; to &#39;name.gemspec&#39; as appropriate):</p>
+
+<p>I&rsquo;m going to grab the version number of fog from the gemspec file so I can reuse it later (if there are multiple &lsquo;.gemspec&rsquo; files in your directory, change &lsquo;*.gemspec&rsquo; to &lsquo;name.gemspec&rsquo; as appropriate):</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class=''><span class='line'>export GEMVERSION=$(grep -E '^[ \t]+s.version' *.gemspec | awk '{print $3}' | sed 's/'\''//g')</span></code></pre></td></tr></table></div></figure>
 
-<p>Now at this point, you can build and install the gem with <code>rake build &amp;&amp; gem install pkg/fog-${GEMVERSION}.gem</code> or <code>gem build</code> or any other tools as most tutorials advise, but then whenever you edit the source files you&#39;ll have to repeat. Let&#39;s create some symbolic links instead. Start by going to the rvm gemset folder (this may be a different location for your environment):</p>
+
+<p>Now at this point, you can build and install the gem with <code>rake build &amp;&amp; gem install pkg/fog-${GEMVERSION}.gem</code> or <code>gem build</code> or any other tools as most tutorials advise, but then whenever you edit the source files you&rsquo;ll have to repeat. Let&rsquo;s create some symbolic links instead. Start by going to the rvm gemset folder (this may be a different location for your environment):</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class=''><span class='line'>cd ~/.rvm/gems/ruby-1.9.3-p286\@fogdev/</span></code></pre></td></tr></table></div></figure>
 
-<p>It seems as though the earlier <code>bundle install</code> command created the file bin/fog for me, but it doesn&#39;t work without either installing a gem or running the remaining commands below. Particularly for fog, if this bin/fog file is missing and you need it, you can grab it with the following:</p>
+
+<p>It seems as though the earlier <code>bundle install</code> command created the file bin/fog for me, but it doesn&rsquo;t work without either installing a gem or running the remaining commands below. Particularly for fog, if this bin/fog file is missing and you need it, you can grab it with the following:</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class=''><span class='line'>[ ! -f bin/fog ] && curl --silent --output bin/fog https://gist.github.com/alanthing/5004411/raw/13f748f1cc19df7511ea2a01de6824eac3358905/fog && chmod +x bin/fog</span></code></pre></td></tr></table></div></figure>
 
-<p>Let&#39;s add our development gem with symbolic links (again, change as appropriate for your gem):</p>
+
+<p>Let&rsquo;s add our development gem with symbolic links (again, change as appropriate for your gem):</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 </pre></td><td class='code'><pre><code class=''><span class='line'>ln -s ~/fog/fog.gemspec specifications/fog-${GEMVERSION}.gemspec
 </span><span class='line'>ln -s ~/fog gems/fog-${GEMVERSION}</span></code></pre></td></tr></table></div></figure>
+
 
 <p>Now if you run <code>gem list</code> you should see your gem listed:</p>
 
@@ -171,6 +178,7 @@
 </span><span class='line'>jekyll (0.12.0)
 </span><span class='line'>...snip...</span></code></pre></td></tr></table></div></figure>
 
+
 <p>And, in my case, running <code>fog</code> uses the gemset file bin/fog and drops me into a fog-ised irb:</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
@@ -181,6 +189,7 @@
 </span><span class='line'>  Welcome to fog interactive!
 </span><span class='line'>  :default provides VirtualBox and Vmfusion
 </span><span class='line'>&gt;&gt; </span></code></pre></td></tr></table></div></figure>
+
 
 <p>If you see any mistakes or have any questions, let me know!</p>
 </div>
@@ -213,7 +222,7 @@
     
       <div class="sharing">
   
-  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://alanthing.com/blog/2013/02/21/real-time-ruby-gem-development/" data-via="alanthing" data-counturl="http://alanthing.com/blog/2013/02/21/real-time-ruby-gem-development/" >Tweet</a>
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://alanthing.com/blog/2013/02/21/real-time-ruby-gem-development/" data-via="alanthing" data-counturl="http://alanthing.com/blog/2013/02/21/real-time-ruby-gem-development/" >Tweet</a>
   
   
   <div class="g-plusone" data-size="medium"></div>
@@ -250,7 +259,7 @@
   <ul id="recent_posts">
     
       <li class="post">
-        <a href="/blog/2013/05/09/speed-up-php-on-nfs-with-turbo-realpath/">Speed up PHP on NFS with turbo_realpath</a>
+        <a href="/blog/2013/05/09/speed-up-php-on-nfs-with-turbo-realpath/">Speed Up PHP on NFS With Turbo_realpath</a>
       </li>
     
       <li class="post">
@@ -266,34 +275,77 @@
       </li>
     
       <li class="post">
-        <a href="/blog/2012/09/04/apache-modules-on-os-x-with-homebrew/">Apache modules on OS X with Homebrew</a>
+        <a href="/blog/2012/09/04/apache-modules-on-os-x-with-homebrew/">Apache Modules on OS X With Homebrew</a>
       </li>
     
   </ul>
 </section>
 
 <section>
-  <h1>Coderwall Badges</h1>
-  <p>
-    <script type="text/javascript">
-      function display_coderwall(args) {
-        var badges = args["data"]["badges"];
-        var wall = '';
-        for ( var i = 0; i < badges.length; i++ ) {
-          var alt_txt = badges[i]["name"];
-          var title_txt = badges[i]["name"] + ' - ' + badges[i]["description"];
-          wall += '<a href="http://coderwall.com/alanthing/"><img src="'
-            + badges[i]["badge"]
-            + '" width="48" height="48" alt="' + alt_txt
-            + '" title="' + title_txt
-            + '"/></a>';
-        }
-        document.write(wall);
-      }
-    </script>
-    <script src="http://coderwall.com/alanthing.json?callback=display_coderwall"></script>
-  </p>
+  <h1>Coderwall</h1>
+  <ul id="cw_badges">
+    <li class="loading">Status updating...</li>
+  </ul>
   
+  <div>
+    <a href="http://coderwall.com/alanthing" target="_blank" class="cw_badge"><img
+       alt="Endorse alanthing on Coderwall"
+       src="http://api.coderwall.com/alanthing/endorsecount.png" /></a>
+  </div>
+  
+
+  <script type="text/javascript">
+    var coderwall = (function(){
+      function render(options, badges){
+        var fragment = '',
+            t = $(options.target)[0],
+            height = 65,
+            width = 65,
+            index;
+
+        for (index in badges) {
+          fragment += '<a class="cw_badge"title="' + badges[index].description + '" target="_blank" href="http://coderwall.com/' + options.user + '">';
+          fragment +=   '<img alt="' + badges[index].description + '" height="' + width + '" width="' + height + '" src="' + badges[index].badge + '"/>';
+          fragment += '</a>';
+        }
+
+        t.innerHTML = fragment;
+      }
+      return {
+        showBadges: function(options){
+          $.ajax({
+              url: 'http://coderwall.com/' + options.user + '.json?callback=?'
+            , type: 'jsonp'
+            , error: function (err) { $(options.target + ' li.loading').addClass('error').text("Error loading feed"); }
+            , success: function(res) {
+                render(options, res.data.badges);
+            }
+          });
+        }
+      };
+    })();
+
+    $.domReady(function(){
+      if (!window.jXHR){
+        var jxhr = document.createElement('script');
+        jxhr.type = 'text/javascript';
+        jxhr.src = '/javascripts/libs/jXHR.js';
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(jxhr, s);
+      }
+      if (!window.$){
+        var b = document.createElement('script');
+        b.type = 'text/javascript';
+        b.src = '/javascripts/ender.js';
+        var sc = document.getElementsByTagName('script')[0];
+        sc.parentNode.insertBefore(jxhr, s);
+      }
+      coderwall.showBadges({
+        user: 'alanthing',
+        target: '#cw_badges'
+      });
+    });
+  </script>
 </section>
 
 
@@ -388,7 +440,7 @@
       var twitterWidgets = document.createElement('script');
       twitterWidgets.type = 'text/javascript';
       twitterWidgets.async = true;
-      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
       document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
     })();
   </script>

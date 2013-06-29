@@ -9,7 +9,7 @@
   <meta name="author" content="Alan Ivey">
 
   
-  <meta name="description" content="As I&#39;ve said before, we love drush. It&#39;s hard to imagine doing Drupal work without it. If OS X is your workstation, it&#39;s pretty simple to &hellip;">
+  <meta name="description" content="As I&rsquo;ve said before, we love drush. It&rsquo;s hard to imagine doing Drupal work without it. If OS X is your workstation, it&rsquo;s pretty &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -103,11 +103,11 @@
   </header>
 
 
-<div class="entry-content"><p><a href="http://echodittolabs.org/blog/2011/03/keep-drush-up-to-date">As I&#39;ve said before</a>, we love <a href="http://drupal.org/project/drush">drush</a>. It&#39;s hard to imagine doing Drupal work without it. If OS X is your workstation, it&#39;s pretty simple to install with pear, as described on the project page. Let&#39;s review that method and cover two others, git and Homebrew, and how to keep them updated.</p>
+<div class="entry-content"><p><a href="http://echodittolabs.org/blog/2011/03/keep-drush-up-to-date">As I&rsquo;ve said before</a>, we love <a href="http://drupal.org/project/drush">drush</a>. It&rsquo;s hard to imagine doing Drupal work without it. If OS X is your workstation, it&rsquo;s pretty simple to install with pear, as described on the project page. Let&rsquo;s review that method and cover two others, git and Homebrew, and how to keep them updated.</p>
 
 <p>All commands listed below are to be executed on the command line with the Terminal application. But if you use Drush regularly then you already knew that!</p>
 
-<h2 id="toc_0">Homebrew</h2>
+<h2>Homebrew</h2>
 
 <p>If you need introduced to Homebrew, or need help installing it, check out the <a href="http://mxcl.github.com/homebrew/">Homebrew project homepage</a>. The installation script is at the bottom.</p>
 
@@ -116,21 +116,24 @@
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class=''><span class='line'>brew install drush</span></code></pre></td></tr></table></div></figure>
 
-<p>Yup, that&#39;s it! Upgrading is simple as well, as explained in the <a href="https://github.com/mxcl/homebrew/wiki/FAQ">Homebrew FAQ</a>:</p>
+
+<p>Yup, that&rsquo;s it! Upgrading is simple as well, as explained in the <a href="https://github.com/mxcl/homebrew/wiki/FAQ">Homebrew FAQ</a>:</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 </pre></td><td class='code'><pre><code class=''><span class='line'>brew update
 </span><span class='line'>brew upgrade drush</span></code></pre></td></tr></table></div></figure>
 
-<h2 id="toc_1">PEAR</h2>
 
-<p>Whether you&#39;ve installed your own copy of PHP with Homebrew, are using the one included with MAMP, or the version provided by OS X, drush is easy to install using the <code>pear</code> command.</p>
+<h2>PEAR</h2>
 
-<p>If you are using the built-in php with OS X, you&#39;ll need to prefix each command with <code>sudo</code>.</p>
+<p>Whether you&rsquo;ve installed your own copy of PHP with Homebrew, are using the one included with MAMP, or the version provided by OS X, drush is easy to install using the <code>pear</code> command.</p>
+
+<p>If you are using the built-in php with OS X, you&rsquo;ll need to prefix each command with <code>sudo</code>.</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class=''><span class='line'>pear channel-discover pear.drush.org</span></code></pre></td></tr></table></div></figure>
+
 
 <p><strong>Homebrew Note:</strong> If you are using Homebrew and get an error about not being able to create a lock file, run the following command (change php54 to php53 if applicable): <code>touch $(brew --prefix php54)/lib/php/.lock &amp;&amp; chmod 0644 $(brew --prefix php54)/lib/php/.lock</code></p>
 
@@ -140,7 +143,7 @@
 <span class='line-number'>2</span>
 </pre></td><td class='code'><pre><code class=''><span class='line'>pear install drush/drush
 </span><span class='line'>pear upgrade --force Console_Getopt</span></code></pre></td></tr></table></div></figure>
-    
+
 
 <p><strong>Homebrew Note:</strong> If you do not have drush available in your path after installing, relink PHP and you should then have the symlink available in <em>/usr/local/bin</em>: <code>brew unlink php54 &amp;&amp; brew link php54</code></p>
 
@@ -151,7 +154,8 @@
 </pre></td><td class='code'><pre><code class=''><span class='line'>pear channel-update pear.drush.org
 </span><span class='line'>pear upgrade drush</span></code></pre></td></tr></table></div></figure>
 
-<h2 id="toc_2">Git</h2>
+
+<h2>Git</h2>
 
 <p>If you would prefer to keep track of the source code for Drush, or perhaps be a contributor, you will want to use Git so you can easily make and keep track of changes. If you do not have git installed on your system, install <a href="http://itunes.apple.com/us/app/xcode/id497799835?mt=12">Xcode</a> or <a href="http://developer.apple.com/downloads">Command Line Tools for Xcode</a> and then proceed. These commands will clone the drush repository, checkout the latest stable tag, and create a symlink in <em>/usr/local/bin</em>:</p>
 
@@ -168,6 +172,7 @@
 </span><span class='line'>cd /usr/local/bin 2&gt;/dev/null || mkdir /usr/local/bin && cd /usr/local/bin
 </span><span class='line'>ln -s ../drush/drush || sudo ln -s ../drush/drush</span></code></pre></td></tr></table></div></figure>
 
+
 <p>To update, fetch the latest code and grab the latest stable tag:</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
@@ -176,6 +181,7 @@
 </pre></td><td class='code'><pre><code class=''><span class='line'>cd /usr/local/drush
 </span><span class='line'>git fetch
 </span><span class='line'>git checkout $(git tag|grep "^[0-9]"|egrep -v "alpha|beta|rc"|tail -1)</span></code></pre></td></tr></table></div></figure>
+
 
 <p>If you have any questions or improvements, please leave a comment!</p>
 </div>
@@ -208,7 +214,7 @@
     
       <div class="sharing">
   
-  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://alanthing.com/blog/2012/08/29/three-ways-get-drush-os-x/" data-via="alanthing" data-counturl="http://alanthing.com/blog/2012/08/29/three-ways-get-drush-os-x/" >Tweet</a>
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://alanthing.com/blog/2012/08/29/three-ways-get-drush-os-x/" data-via="alanthing" data-counturl="http://alanthing.com/blog/2012/08/29/three-ways-get-drush-os-x/" >Tweet</a>
   
   
   <div class="g-plusone" data-size="medium"></div>
@@ -245,7 +251,7 @@
   <ul id="recent_posts">
     
       <li class="post">
-        <a href="/blog/2013/05/09/speed-up-php-on-nfs-with-turbo-realpath/">Speed up PHP on NFS with turbo_realpath</a>
+        <a href="/blog/2013/05/09/speed-up-php-on-nfs-with-turbo-realpath/">Speed Up PHP on NFS With Turbo_realpath</a>
       </li>
     
       <li class="post">
@@ -261,34 +267,77 @@
       </li>
     
       <li class="post">
-        <a href="/blog/2012/09/04/apache-modules-on-os-x-with-homebrew/">Apache modules on OS X with Homebrew</a>
+        <a href="/blog/2012/09/04/apache-modules-on-os-x-with-homebrew/">Apache Modules on OS X With Homebrew</a>
       </li>
     
   </ul>
 </section>
 
 <section>
-  <h1>Coderwall Badges</h1>
-  <p>
-    <script type="text/javascript">
-      function display_coderwall(args) {
-        var badges = args["data"]["badges"];
-        var wall = '';
-        for ( var i = 0; i < badges.length; i++ ) {
-          var alt_txt = badges[i]["name"];
-          var title_txt = badges[i]["name"] + ' - ' + badges[i]["description"];
-          wall += '<a href="http://coderwall.com/alanthing/"><img src="'
-            + badges[i]["badge"]
-            + '" width="48" height="48" alt="' + alt_txt
-            + '" title="' + title_txt
-            + '"/></a>';
-        }
-        document.write(wall);
-      }
-    </script>
-    <script src="http://coderwall.com/alanthing.json?callback=display_coderwall"></script>
-  </p>
+  <h1>Coderwall</h1>
+  <ul id="cw_badges">
+    <li class="loading">Status updating...</li>
+  </ul>
   
+  <div>
+    <a href="http://coderwall.com/alanthing" target="_blank" class="cw_badge"><img
+       alt="Endorse alanthing on Coderwall"
+       src="http://api.coderwall.com/alanthing/endorsecount.png" /></a>
+  </div>
+  
+
+  <script type="text/javascript">
+    var coderwall = (function(){
+      function render(options, badges){
+        var fragment = '',
+            t = $(options.target)[0],
+            height = 65,
+            width = 65,
+            index;
+
+        for (index in badges) {
+          fragment += '<a class="cw_badge"title="' + badges[index].description + '" target="_blank" href="http://coderwall.com/' + options.user + '">';
+          fragment +=   '<img alt="' + badges[index].description + '" height="' + width + '" width="' + height + '" src="' + badges[index].badge + '"/>';
+          fragment += '</a>';
+        }
+
+        t.innerHTML = fragment;
+      }
+      return {
+        showBadges: function(options){
+          $.ajax({
+              url: 'http://coderwall.com/' + options.user + '.json?callback=?'
+            , type: 'jsonp'
+            , error: function (err) { $(options.target + ' li.loading').addClass('error').text("Error loading feed"); }
+            , success: function(res) {
+                render(options, res.data.badges);
+            }
+          });
+        }
+      };
+    })();
+
+    $.domReady(function(){
+      if (!window.jXHR){
+        var jxhr = document.createElement('script');
+        jxhr.type = 'text/javascript';
+        jxhr.src = '/javascripts/libs/jXHR.js';
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(jxhr, s);
+      }
+      if (!window.$){
+        var b = document.createElement('script');
+        b.type = 'text/javascript';
+        b.src = '/javascripts/ender.js';
+        var sc = document.getElementsByTagName('script')[0];
+        sc.parentNode.insertBefore(jxhr, s);
+      }
+      coderwall.showBadges({
+        user: 'alanthing',
+        target: '#cw_badges'
+      });
+    });
+  </script>
 </section>
 
 
@@ -383,7 +432,7 @@
       var twitterWidgets = document.createElement('script');
       twitterWidgets.type = 'text/javascript';
       twitterWidgets.async = true;
-      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
       document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
     })();
   </script>
