@@ -64,6 +64,8 @@ default_asides: [asides/recent_posts.html, asides/coderwall.html, asides/github.
 
 # Coderwall
 coderwall_user: alanthing
+coderwall_endorse: True
+coderwall_endrosecount: True
 
 # Github repositories
 github_user: alanthing
