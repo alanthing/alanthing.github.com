@@ -5,11 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Combined Apache logs for load balanced web servers - alanthing</title>
+  <title>Alan's 2011 Favorites - alanthing</title>
   <meta name="author" content="Alan Ivey">
 
   
-  <meta name="description" content="When dealing with a load spike or unexplained poor performance, once of the first things to do is to check the Apache web server logs. However, when &hellip;">
+  <meta name="description" content="Favorite Links of 2011 Google Reader &ndash; between the Android app, Reeder for iPad, and the website, keeps me up to date on the news. Stack &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://alanthing.com/blog/2010/12/07/combined-apache-logs-for-load-balanced-web-servers">
+  <link rel="canonical" href="http://alanthing.com/blog/2012/01/30/alans-2011-favorites">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="alanthing" type="application/atom+xml">
@@ -80,7 +80,7 @@
   
   <header>
     
-      <h1 class="entry-title">Combined Apache Logs for Load Balanced Web Servers</h1>
+      <h1 class="entry-title">Alan's 2011 Favorites</h1>
     
     
       <p class="meta">
@@ -96,87 +96,48 @@
   
 
 
-<time datetime="2010-12-07T14:34:00-05:00" pubdate data-updated="true">Dec 7<span>th</span>, 2010</time>
+<time datetime="2012-01-30T17:00:00-05:00" pubdate data-updated="true">Jan 30<span>th</span>, 2012</time>
         
       </p>
     
   </header>
 
 
-<div class="entry-content"><p>When dealing with a load spike or unexplained poor performance, once of the first things to do is to check the Apache web server logs. However, when dealing with multiple web servers behind a load balancer, it can be cumbersome to check through multiple logs on different machines.</p>
+<div class="entry-content"><h2>Favorite Links of 2011</h2>
 
-<p>Luckily, if you have shared storage, it’s pretty simple to write to a single log file. Apache allows for log file locations to go to a pipe, which means you can redirect the output anywhere else. This was initially done to allow Apache to release open file descriptors since it can begin to create problems with more than 300 domains. But you don’t need to have 300 websites to see the benefits of using a pipe for logging.</p>
+<p><a href="http://www.google.com/reader">Google Reader</a> &ndash; between the Android app, Reeder for iPad, and the website, keeps me up to date on the news.</p>
 
-<p>In your VirtualHost declaration, change your logging options from:</p>
+<p><a href="http://stackoverflow.com/">Stack Overflow</a> and other Stack Exchange sites &ndash; one of the best ways to get help and help others.</p>
 
-<pre><code>CustomLog logs/domain.com-access_log combined
-</code></pre>
+<p><a href="http://9gag.com/">9GAG</a> &ndash; thanks to (our summer intern) Vicky for showing this to me, I waste a lot of time looking at internet memes.</p>
 
-<p>to:</p>
+<h2>Best Entertainment of 2011</h2>
 
-<pre><code>CustomLog "|/bin/cat » /var/www/vhosts/_logs/domain.com-access_log" combined
-</code></pre>
+<p><a href="http://www.nbc.com/friday-night-lights/">Friday Night Lights</a> &ndash; the final season was aired on NBC in the first half of the year. It gets my vote for the best drama of all time.</p>
 
-<p>In this example, /var/www/vhosts is the shared SAN storage device, and by using “cat »” we append Apache output in real-time to the log file. As multiple machines do this simultaneously, you begin to have a single log file from multiple machines. You can do the same thing with your ErrorLog:</p>
+<p><a href="http://www.nbc.com/community/">Community</a> &ndash; one of the smartest and most brilliant comedies in recent memory. It&rsquo;s a shame NBC doesn&rsquo;t get it and has decided to &ldquo;bench&rdquo; it for the immediate future. It doesn&rsquo;t get good Nielson rating because a majority of their audience watches it on Netflix/Hulu/DVR/etc.</p>
 
-<pre><code>ErrorLog  "|/bin/cat » /var/www/vhosts/_logs/domain.com-error_log"
-</code></pre>
+<p><a href="http://www.imdb.com/title/tt0800369/">Thor</a> &ndash; it won&rsquo;t win any awards for best screenplay, but 1) it was a beautiful movie with great special effects, and 2) the closer we get to an Avengers movie, the more this geek gets excited!</p>
 
-<p>There is a slight problem with this approach: it doesn’t give us enough information. If one of the 4 servers behind the load balancer was the source of a problem, it would be helpful to determine which server each log entry is coming from.</p>
+<h2>Favorite Restaurant</h2>
 
-<p>For CustomLog, we can create a new LogType that adds the server’s IP address at the end of the line, and the LogType name will be “combinedIP”:</p>
+<p><a href="http://www.rachelscreperie.com">Rachel&rsquo;s Creperie</a> &ndash; at the end of the block of my new co-working space, offers a new way to try many kinds of foods you&rsquo;d normally just slap in between two pieces of boring bread.</p>
 
-<pre><code>LogFormat "%h %l %u %t "%r" %&gt;s %b "%{Referer}i" "%{User-Agent}i" %A" combinedIP
-</code></pre>
+<h2>Favorite Game</h2>
 
-<p>This format is identical to “combined” and just adds %A at the end. Then, simply change the end of the CustomLog line:</p>
+<p><a href="http://youtube.com/watch?v=lPVgqEd8noA">Farkle!</a> &ndash; the link explains all of the rules.  All it requires is 6 dice and 1 or more friends. It channels Yahtzee but has some fun twists.</p>
 
-<pre><code>CustomLog "|/bin/cat » /var/www/vhosts/_logs/domain.com-access_log" combinedIP
-</code></pre>
+<h2>Favorite Mobile App</h2>
 
-<p>Here’s an example of what your log file will look like, showing entries from two servers:</p>
+<p><a href="http://www.wordswithfriends.com/">Words With Friends</a> &ndash; I know it&rsquo;s more like the game of 2010, but this year they added the Android version so I can play Facebook and iPhone friends, and it gives my brain a quick puzzle when I have some downtime.</p>
 
-<pre><code>1.2.3.4 - - [07/Dec/2010:11:22:08 -0500] "GET /blog/feed HTTP/1.1" 304 - "-" "-" 192.168.1.6
-5.6.7.8 - - [07/Dec/2010:11:22:08 -0500] "GET /blog/feed HTTP/1.1" 304 - "-" "-" 192.168.1.8
-</code></pre>
+<h2>Favorite Technology Innovation</h2>
 
-<p>These log entries are the same as the typical “combined” LogType but with the addition of the IP address at the end.</p>
+<p>Music in the Cloud, either <a href="http://music.google.com/about/">Google Music</a>, <a href="http://www.amazon.com/b?ie=UTF8&amp;node=2658409011">Amazon Cloud Player</a>, or <a href="https://www.icloud.com/">iCloud</a> &ndash; they make listening to the same music on my laptop and my phone a snap. Sync-less bliss&hellip;</p>
 
-<p>But what about the ErrorLog? There is no way to define a LogType for the ErrorLog, and it would be helpful to know which server originated error, say, if MaxClients was reached, or there is a misconfiguration in a configuration file. Since we’re piping the ErrorLog output to /bin/cat, we can instead pipe it to a script that simply adds the server hostname on the end (I chose not to use an IP address because 1) some servers have multiple IP addresses, and 2) I cannot insert the VirtualHost’s IP address automatically. Better to know the server and then determine the IP address is necessary). We’ll start by creating a simple script at /usr/local/bin/httpd_errors (I’m not using bash since I was not able to get it to write to the log file in real time, it would only write once Apache was reloaded. I did not spend much time to determine why, and I knew it would work in PHP):</p>
+<h2>Favorite Cause</h2>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">#!/usr/bin/php -q</span>
-</span><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="nv">$stdin</span> <span class="o">=</span> <span class="nb">fopen</span> <span class="p">(</span><span class="err">‘</span><span class="nx">php</span><span class="o">://</span><span class="nx">stdin</span><span class="err">’</span><span class="p">,</span> <span class="err">‘</span><span class="nx">r</span><span class="err">’</span><span class="p">);</span>
-</span><span class='line'><span class="nb">ob_implicit_flush</span> <span class="p">(</span><span class="k">true</span><span class="p">);</span> <span class="c1">// Use unbuffered output</span>
-</span><span class='line'><span class="k">while</span> <span class="p">(</span><span class="nv">$line</span> <span class="o">=</span> <span class="nb">fgets</span> <span class="p">(</span><span class="nv">$stdin</span><span class="p">))</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>    <span class="k">print</span> <span class="nb">chop</span><span class="p">(</span><span class="nv">$line</span><span class="p">)</span><span class="o">.</span><span class="err">”</span> <span class="o">-</span> <span class="err">“</span><span class="o">.</span><span class="nb">system</span><span class="p">(</span><span class="err">‘</span><span class="nx">hostname</span> <span class="o">-</span><span class="nx">f</span><span class="err">’</span><span class="p">)</span><span class="o">.</span><span class="err">”</span><span class="nx">\n</span><span class="err">”</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Make the script executable with “chmod +x /usr/local/bin/httpd_errors”, and then change your ErrorLog in your Apache configuration:</p>
-
-<pre><code>ErrorLog  ”|/usr/local/bin/httpd_errors » /var/www/vhosts/_logs/domain.com-error_log”
-</code></pre>
-
-<p>And your error logs will now reveal which server the error originated from:</p>
-
-<pre><code>[Tue Dec 07 11:20:51 2010] [error] [client 1.2.3.4] File does not exist: /var/www/vhosts/domain.com/favicon.ico - wsrv1
-[Tue Dec 07 11:24:27 2010] [error] [client 5.6.7.8] File does not exist: /var/www/vhosts/domain.com/favicon.ico - wsrv2
-</code></pre>
-
-<p>There you have it, combined Apache logs for multiple web servers. If you have any suggestions, questions, tips, etc, leave a comment!</p>
+<p>It wasn&rsquo;t new to 2011, but I think 2011 is when <a href="http://kickstarter.com">Kickstarter</a> really became huge. It&rsquo;s amazing to see peoples&#8217; dreams come to life.</p>
 </div>
 
 
@@ -199,7 +160,7 @@
   
 
 
-<time datetime="2010-12-07T14:34:00-05:00" pubdate data-updated="true">Dec 7<span>th</span>, 2010</time>
+<time datetime="2012-01-30T17:00:00-05:00" pubdate data-updated="true">Jan 30<span>th</span>, 2012</time>
       
 
 
@@ -207,7 +168,7 @@
     
       <div class="sharing">
   
-  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://alanthing.com/blog/2010/12/07/combined-apache-logs-for-load-balanced-web-servers/" data-via="alanthing" data-counturl="http://alanthing.com/blog/2010/12/07/combined-apache-logs-for-load-balanced-web-servers/" >Tweet</a>
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://alanthing.com/blog/2012/01/30/alans-2011-favorites/" data-via="alanthing" data-counturl="http://alanthing.com/blog/2012/01/30/alans-2011-favorites/" >Tweet</a>
   
   
   <div class="g-plusone" data-size="medium"></div>
@@ -220,10 +181,10 @@
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/blog/2010/10/15/native-local-development-environment-os-x/" title="Previous Post: Native local development environment in OS X">&laquo; Native local development environment in OS X</a>
+        <a class="basic-alignment left" href="/blog/2011/10/11/os-x-107-lion-development-macports/" title="Previous Post: OS X 10.7 Lion Development: MacPorts">&laquo; OS X 10.7 Lion Development: MacPorts</a>
       
       
-        <a class="basic-alignment right" href="/blog/2011/01/05/are-your-drupal-sites-running-the-latest-core/" title="Next Post: Are your Drupal sites running the latest core?">Are your Drupal sites running the latest core? &raquo;</a>
+        <a class="basic-alignment right" href="/blog/2012/02/10/nodejs-and-npm-centos/" title="Next Post: Node.js and NPM on CentOS">Node.js and NPM on CentOS &raquo;</a>
       
     </p>
   </footer>
@@ -372,8 +333,8 @@
       
         
         // var disqus_developer = 1;
-        var disqus_identifier = 'http://alanthing.com/blog/2010/12/07/combined-apache-logs-for-load-balanced-web-servers/';
-        var disqus_url = 'http://alanthing.com/blog/2010/12/07/combined-apache-logs-for-load-balanced-web-servers/';
+        var disqus_identifier = 'http://alanthing.com/blog/2012/01/30/alans-2011-favorites/';
+        var disqus_url = 'http://alanthing.com/blog/2012/01/30/alans-2011-favorites/';
         var disqus_script = 'embed.js';
       
     (function () {

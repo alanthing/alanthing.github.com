@@ -9,7 +9,7 @@
   <meta name="author" content="Alan Ivey">
 
   
-  <meta name="description" content="OS X Lion comes with most of the tools you would need to do &ldquo;MAMP&rdquo; (Mac OS X, Apache, MySQL/MariaDB, PHP) development, as outlined in my &hellip;">
+  <meta name="description" content="Update: This no longer appears to be necessary as of nodejs 0.8.0. It may have been fixed earlier but I noticed neither of these changes are &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -77,6 +77,133 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/02/10/nodejs-and-npm-centos/">Node.js and NPM on CentOS</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-02-10T17:23:00-05:00" pubdate data-updated="true">Feb 10<span>th</span>, 2012</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><strong><em>Update:</em> This no longer appears to be necessary as of nodejs 0.8.0.</strong> It may have been fixed earlier but I noticed neither of these changes are necessary anymore. Something new though, I had problems with node-gyp, and the solution was to install python26 with yum and then re-run the npm command with <code>PYTHON="/usr/bin/python26" npm install -deps</code> or similar.</p>
+
+<p>The preferred way to install node and NPM seems to be installing from source, but I&rsquo;m a perennial fan of using packages to keep things tidy, especially if I need to uninstall something. I started by going to the <a href="http://nodejs.org/#download">Node.js download page</a>, and through to <a href="https://github.com/joyent/node/wiki/Installing-Node.js-via-package-manager">Installing with a package manager</a>. I installed the yum release RPM for the <a href="http://nodejs.tchol.org/">tchol.org</a> repository as directed and installed <strong>nodejs</strong> and <strong>npm</strong> with yum. From there, I ran into two problems but thankfully they were fairly easy to resolve.</p>
+
+<p>The first thing I wanted to do was install <a href="https://github.com/nodejitsu/forever">forever</a> globally so I could use it to keep applications running persistently. But running <code>npm install forever -g</code> kept stalling. The npm RPM installed from the tchol.org repository creates the symlink /usr/lib/node_modules to /usr/lib/nodejs. That&rsquo;s fine, but /usr/lib/nodejs is owned by root:root. Running a npm install command with sudo attempted to set the ownership of the NPM modules as nobody:user, and NPM wasn&rsquo;t exiting due to permissions for some reason.</p>
+
+<p>I have ACLs enabled on my file system, so I fixed this by allowing nobody write access to /usr/lib/nodejs:</p>
+
+<pre><code>sudo setfacl -m u:nobody:rwx /usr/lib/nodejs
+</code></pre>
+
+<p>If you don&rsquo;t have ACLs enabled on your filesystem, you could allow nobody to be the folder owner:</p>
+
+<pre><code>sudo chown nobody:nobody /usr/lib/nodejs
+</code></pre>
+
+<p>The second problem I ran into was, after installing forever, it wouldn&rsquo;t run. The nodejs package installed the binary as /usr/bin/nodejs but /usr/bin/forever begins with <strong>#!/usr/bin/env node</strong>, which will not return a valid interpreter. I wanted to install a symlink into /usr/local/bin, but some users don&rsquo;t always have that in their path, so I created a link via:</p>
+
+<pre><code>sudo ln -s /usr/bin/nodejs /usr/bin/node
+</code></pre>
+
+<p>Now I&rsquo;m able to install anything I need to with NPM and run my Node.js applications with Forever. I&rsquo;m still very new to Node, so if you think I should be doing things a better way, let me know in the comments!</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/01/30/alans-2011-favorites/">Alan&#8217;s 2011 Favorites</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-01-30T17:00:00-05:00" pubdate data-updated="true">Jan 30<span>th</span>, 2012</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h2>Favorite Links of 2011</h2>
+
+<p><a href="http://www.google.com/reader">Google Reader</a> &ndash; between the Android app, Reeder for iPad, and the website, keeps me up to date on the news.</p>
+
+<p><a href="http://stackoverflow.com/">Stack Overflow</a> and other Stack Exchange sites &ndash; one of the best ways to get help and help others.</p>
+
+<p><a href="http://9gag.com/">9GAG</a> &ndash; thanks to (our summer intern) Vicky for showing this to me, I waste a lot of time looking at internet memes.</p>
+
+<h2>Best Entertainment of 2011</h2>
+
+<p><a href="http://www.nbc.com/friday-night-lights/">Friday Night Lights</a> &ndash; the final season was aired on NBC in the first half of the year. It gets my vote for the best drama of all time.</p>
+
+<p><a href="http://www.nbc.com/community/">Community</a> &ndash; one of the smartest and most brilliant comedies in recent memory. It&rsquo;s a shame NBC doesn&rsquo;t get it and has decided to &ldquo;bench&rdquo; it for the immediate future. It doesn&rsquo;t get good Nielson rating because a majority of their audience watches it on Netflix/Hulu/DVR/etc.</p>
+
+<p><a href="http://www.imdb.com/title/tt0800369/">Thor</a> &ndash; it won&rsquo;t win any awards for best screenplay, but 1) it was a beautiful movie with great special effects, and 2) the closer we get to an Avengers movie, the more this geek gets excited!</p>
+
+<h2>Favorite Restaurant</h2>
+
+<p><a href="http://www.rachelscreperie.com">Rachel&rsquo;s Creperie</a> &ndash; at the end of the block of my new co-working space, offers a new way to try many kinds of foods you&rsquo;d normally just slap in between two pieces of boring bread.</p>
+
+<h2>Favorite Game</h2>
+
+<p><a href="http://youtube.com/watch?v=lPVgqEd8noA">Farkle!</a> &ndash; the link explains all of the rules.  All it requires is 6 dice and 1 or more friends. It channels Yahtzee but has some fun twists.</p>
+
+<h2>Favorite Mobile App</h2>
+
+<p><a href="http://www.wordswithfriends.com/">Words With Friends</a> &ndash; I know it&rsquo;s more like the game of 2010, but this year they added the Android version so I can play Facebook and iPhone friends, and it gives my brain a quick puzzle when I have some downtime.</p>
+
+<h2>Favorite Technology Innovation</h2>
+
+<p>Music in the Cloud, either <a href="http://music.google.com/about/">Google Music</a>, <a href="http://www.amazon.com/b?ie=UTF8&amp;node=2658409011">Amazon Cloud Player</a>, or <a href="https://www.icloud.com/">iCloud</a> &ndash; they make listening to the same music on my laptop and my phone a snap. Sync-less bliss&hellip;</p>
+
+<h2>Favorite Cause</h2>
+
+<p>It wasn&rsquo;t new to 2011, but I think 2011 is when <a href="http://kickstarter.com">Kickstarter</a> really became huge. It&rsquo;s amazing to see peoples&#8217; dreams come to life.</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1203,6 +1330,148 @@
       
   <header>
     
+      <h1 class="entry-title"><a href="/blog/2011/03/25/keep-drush-date/">Keep Drush Up to Date</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-03-25T17:39:00-04:00" pubdate data-updated="true">Mar 25<span>th</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><strong>UPDATE:</strong> See <a href="/blog/2012/08/29/three-ways-get-drush-os-x/">Three Ways to Get Drush on OS X</a> for a newer guide.</p>
+
+<p>At <a href="http://www.echoditto.com">EchoDitto</a>, we&rsquo;re big fans of <a href="http://drupal.org/project/drush">Drush</a>. It&rsquo;s installed on all of our servers and it&rsquo;s a great way to <a href="http://drush.ws/#core-cron">perform maintenance tasks</a>, <a href="http://drush.ws/#pm-download">download core and modules</a>, and <a href="http://www.lullabot.com/articles/drush-make-and-pressflow">much much more</a>. I&rsquo;m not a big fan of installing from zip files though, so let&rsquo;s use git to easily keep our Drush install up to date.</p>
+
+<p>Before <a href="http://www.lullabot.com/blog/git-coming-soon-drupalorg">the git transition</a>, I would use Subversion to check out the latest drush release somewhere, like /usr/local/drush (on my Mac), using the CVS clone <a href="http://dembach.net/subversible/en">Subversible</a>. Today, however, I noticed that the latest tagged release Subversible has is <a href="https://subversible.svn.beanstalkapp.com/modules/drush/tags/">4.2</a>, and the <a href="http://drupal.org/project/drush">Drush project page</a> has 4.4 ready to download. I figured now would be a good time to start using <a href="http://git-scm.com/">git</a> for this and stop relying on a third-party to provide the code for Subversion.</p>
+
+<p>The commands below will walk through cloning the Drush git repository and then switching to the latest release. I realize the <a href="http://drush.ws/#self-update">drush self-update</a> will soon make this irrelevant, but this method works today and is a great exercise in learning how Drupal is using git, especially important coming from Subversion.</p>
+
+<p>Clone the repository. It will create the subfolder &ldquo;drush&rdquo; from your current working directory:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>git clone --branch master http://git.drupal.org/project/drush.git
+</span><span class='line'><span class="nb">cd </span>drush
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Use pear to download <em>includes/table.inc</em>. This one-liner will take care of everything for you as long as you have pear installed and are in the new drush directory:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>pear download Console_Table
+</span><span class='line'>tar zxvf <span class="sb">`</span>ls Console_Table-*.tgz<span class="sb">`</span> <span class="sb">`</span>ls Console_Table-*.tgz | sed -e <span class="s1">&#39;s/\.[a-z]\{3\}$//&#39;</span><span class="sb">`</span>/Table.php
+</span><span class='line'>mv <span class="sb">`</span>ls Console_Table-*.tgz | sed -e <span class="s1">&#39;s/\.[a-z]\{3\}$//&#39;</span><span class="sb">`</span>/Table.php includes/table.inc
+</span><span class='line'>chmod 0644 includes/table.inc <span class="o">&amp;&amp;</span> rm -fr Console_Table-*
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>At this point you may or may not have a functioning Drush installation, because you&rsquo;re using the HEAD of the Drush code repository and it might contain broken code. I would recommend switching the checkout to the latest release. We&rsquo;ll start by viewing all releases:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>git tag
+</span><span class='line'>5.x-1.0
+</span><span class='line'>5.x-1.0-beta1
+</span><span class='line'>5.x-1.0-beta2
+</span><span class='line'>... snip ...
+</span><span class='line'>7.x-4.2
+</span><span class='line'>7.x-4.3
+</span><span class='line'>7.x-4.4
+</span><span class='line'>debian/4.3-1
+</span><span class='line'>debian/4.4-1
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>As of this writing, there are over 50 results from this command, but you&rsquo;ll see the latest is &ldquo;7.x-4.4&rdquo;. If we want our local Drush install to be at 4.4, change the checkout:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>git checkout 7.x-4.4
+</span><span class='line'>Previous HEAD position was 1532d0c... <span class="c">#1079434 by msonnabaum. Add .gitignore for includes/table.inc</span>
+</span><span class='line'>HEAD is now at a808ff0... Updating drush version
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>That&rsquo;s it! Drush is set up on 4.4:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>drush --version
+</span><span class='line'>drush version 4.4
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Let&rsquo;s say 4.5 is released tomorrow and you want to change your checkout. First you&rsquo;ll need to update the local git repository: <code>git pull</code></p>
+
+<p>View the list of tags:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>git tag
+</span><span class='line'>5.x-1.0
+</span><span class='line'>5.x-1.0-beta1
+</span><span class='line'>5.x-1.0-beta2
+</span><span class='line'>... snip ...
+</span><span class='line'>7.x-4.3
+</span><span class='line'>7.x-4.4
+</span><span class='line'>7.x-4.5
+</span><span class='line'>debian/4.3-1
+</span><span class='line'>debian/4.4-1
+</span><span class='line'>debian/4.5-1
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And switch your checkout to the new release: <code>git checkout 7.x-4.5</code></p>
+
+<p>Repeat for future releases, and enjoy! Of course, once <a href="http://drush.ws/#self-update">drush self-update</a> begins working, that will be the preferred method, but this will work today. Please questions or comments below.</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
       <h1 class="entry-title"><a href="/blog/2011/02/22/dump-each-mysql-table-file/">Dump Each MySQL Table to a File</a></h1>
     
     
@@ -1546,331 +1815,6 @@
 
 
 <p>Resulting RPMs will be in /var/lib/epel-5-x86_64/results. If on a 32-bit system, replace epel-5-x86_64 with epel-5-i386.</p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2011/01/05/are-your-wordpress-sites-running-the-latest-core/">Are Your WordPress Sites Running the Latest Core?</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2011-01-05T20:31:00-05:00" pubdate data-updated="true">Jan 5<span>th</span>, 2011</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>In addition to hosting Drupal sites, we also host a number of WordPress sites. Similar to (checking all of our Drupal core versions)[<a href="http://echodittolabs.org/blog/2011/01/are-your-drupal-sites-running-latest-core">http://echodittolabs.org/blog/2011/01/are-your-drupal-sites-running-latest-core</a>], we needed an easy way to quickly see what versions we are running on all of our WordPress sites. Kudos to <a href="http://echodittolabs.org/users/ethan">Ethan</a> for getting this one kicked off; here is a bash script to check your definable <code>$WEBHOME</code> (where you deposit all of your WordPress webroots) and scan for WordPress versions.</p>
-
-<p>Note: this requires bash, grep, wc, sed, awk, and tree. If your system doesn&rsquo;t have tree, it&rsquo;s usually pretty easy to get from EPEL/Homebrew/apt-get/[mac]ports/etc.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c">#!/bin/bash</span>
-</span><span class='line'>
-</span><span class='line'><span class="c"># Where to start scanning</span>
-</span><span class='line'><span class="nv">WEBHOME</span><span class="o">=</span>/var/www/vhosts
-</span><span class='line'>
-</span><span class='line'><span class="c"># Workaround to fix awk counting below</span>
-</span><span class='line'><span class="nv">WEBHOMECOUNT</span><span class="o">=</span><span class="k">$(($(</span><span class="nb">echo</span> <span class="s2">&quot;${WEBHOME}&quot;</span>|grep -o <span class="s2">&quot;/&quot;</span>|wc -l| sed s/<span class="se">\ </span>//g<span class="k">)</span><span class="o">+</span><span class="m">2</span><span class="k">))</span>
-</span><span class='line'>
-</span><span class='line'><span class="c"># Other projects could use &#39;version.php&#39; so we include </span>
-</span><span class='line'><span class="c"># &#39;wp-includes/&#39; in our search to limit it to WordPress</span>
-</span><span class='line'><span class="k">for </span>i in <span class="k">$(</span>tree -L 5 -if <span class="k">${</span><span class="nv">WEBHOME</span><span class="k">}</span> | grep <span class="s1">&#39;wp-includes/version.php&#39;</span><span class="k">)</span>; <span class="k">do</span>
-</span><span class='line'><span class="k">  </span><span class="nv">SITE</span><span class="o">=</span><span class="k">$(</span><span class="nb">echo</span> <span class="nv">$i</span>|awk -v <span class="nv">count</span><span class="o">=</span><span class="s2">&quot;$WEBHOMECOUNT&quot;</span> -F/ <span class="s1">&#39;{for(j=count;j&lt;=NF-2;j++) \</span>
-</span><span class='line'><span class="s1">        printf $j&quot;/&quot;}&#39;</span> | sed <span class="s1">&#39;s/.$//g&#39;</span><span class="k">)</span>
-</span><span class='line'>  <span class="nv">VERSION</span><span class="o">=</span><span class="k">$(</span>grep <span class="s2">&quot;wp_version = &quot;</span> <span class="nv">$i</span>|awk -F<span class="se">\&#39;</span> <span class="s1">&#39;{print $2}&#39;</span><span class="k">)</span>
-</span><span class='line'>  <span class="nb">echo</span> <span class="nv">$SITE</span> - <span class="nv">$VERSION</span>
-</span><span class='line'><span class="k">done</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>As a result, you&rsquo;ll see output like this:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>./wordpress-version-check.sh
-</span><span class='line'>speedyupdates.com - 3.0.4
-</span><span class='line'>littlebehind.org - 3.0.3
-</span><span class='line'>scaredtoupgrade.com/blog - 2.8.2
-</span><span class='line'>kickinitoldschool.org/web/wordpress - 2.0.2
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>If you think there&rsquo;s a better way, or have any questions, let me know in the comments.</p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2011/01/05/are-your-drupal-sites-running-the-latest-core/">Are Your Drupal Sites Running the Latest Core?</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2011-01-05T19:25:00-05:00" pubdate data-updated="true">Jan 5<span>th</span>, 2011</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>At <a href="http://www.echoditto.com">EchoDitto</a>, we host a lot of Drupal sites. Just about all of our web servers contain more than one completely separate Drupal cores since we develop most of our websites independently. We also keep an eye out on <a href="http://drupal.org/security">Drupal Security</a> and when to apply core updates. Since we&rsquo;re not using Aegir, nor do we run every site off of a single multi-site core install, we need a quick and easy way to see what versions we&rsquo;re running.</p>
-
-<p>Here&rsquo;s a shell script we recently developed to report the Drupal Core versions for all of our sites under a single parent folder. It works on Drupal 4 through 7. It&rsquo;s not been tested outside of our platform, or non-RHEL systems, but it should be universal as long as you have bash, find, awk, and grep. I decided not to use <a href="http://drupal.org/project/drush">Drush</a> because it would involve bootstrapping every site and invoking PHP; this is just more lightweight. Drush also would not work for Drupal 4 sites, which we surprisingly still have a couple kicking around still.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c">#!/bin/bash</span>
-</span><span class='line'>
-</span><span class='line'><span class="c"># Where to start looking</span>
-</span><span class='line'><span class="nv">WEBHOME</span><span class="o">=</span>/var/www/vhosts
-</span><span class='line'>
-</span><span class='line'><span class="c"># Workaround to fix awk counting below, but it works</span>
-</span><span class='line'><span class="nv">WEBHOMECOUNT</span><span class="o">=</span><span class="k">$(($(</span><span class="nb">echo</span> <span class="s2">&quot;${WEBHOME}&quot;</span>|grep -o <span class="s2">&quot;/&quot;</span>|wc -l| sed s/<span class="se">\ </span>//g<span class="k">)</span><span class="o">+</span><span class="m">2</span><span class="k">))</span>
-</span><span class='line'>
-</span><span class='line'><span class="c"># Change maxdepth from 5 to some other value if your webroot is not being detected</span>
-</span><span class='line'><span class="k">for </span>i in <span class="k">$(</span>find <span class="nv">$WEBHOME</span> -maxdepth 5 -type f -name system.module<span class="k">)</span>; <span class="k">do</span>
-</span><span class='line'>  <span class="c"># Grabs only the version number from the file as described </span>
-</span><span class='line'>  <span class="c"># at http://drupal.org/handbook/version-info</span>
-</span><span class='line'>  <span class="nv">VERSION</span><span class="o">=</span><span class="k">$(</span>grep <span class="s2">&quot;VERSION&quot;</span> <span class="k">${</span><span class="nv">i</span><span class="k">}</span>|awk -F<span class="se">\&#39;</span> <span class="s1">&#39;{print $4}&#39;</span><span class="k">)</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="c"># Drupal 4 has the system.module file in a lower directory than 5+</span>
-</span><span class='line'>  <span class="k">if</span> <span class="o">[[</span> <span class="nv">$VERSION</span> <span class="o">==</span> 4* <span class="o">]]</span>; <span class="k">then</span>
-</span><span class='line'><span class="k">    </span><span class="nv">SITE</span><span class="o">=</span><span class="k">$(</span><span class="nb">echo</span> <span class="nv">$i</span>|awk -v <span class="nv">count</span><span class="o">=</span><span class="s2">&quot;$WEBHOMECOUNT&quot;</span> -F/ <span class="s1">&#39;{for(j=count;j&lt;=NF-2;j++) \</span>
-</span><span class='line'><span class="s1">           printf $j&quot;/&quot;}&#39;</span> | sed <span class="s1">&#39;s/.$//g&#39;</span><span class="k">)</span>
-</span><span class='line'>  <span class="k">else</span>
-</span><span class='line'><span class="k">    </span><span class="nv">SITE</span><span class="o">=</span><span class="k">$(</span><span class="nb">echo</span> <span class="nv">$i</span>|awk -v <span class="nv">count</span><span class="o">=</span><span class="s2">&quot;$WEBHOMECOUNT&quot;</span> -F/ <span class="s1">&#39;{for(j=count;j&lt;=NF-3;j++) \</span>
-</span><span class='line'><span class="s1">           printf $j&quot;/&quot;}&#39;</span> | sed <span class="s1">&#39;s/.$//g&#39;</span><span class="k">)</span>
-</span><span class='line'>    <span class="k">if</span> <span class="o">[</span> -z <span class="nv">$VERSION</span> <span class="o">]</span>; <span class="k">then</span>
-</span><span class='line'>      <span class="c"># Drupal 7 does not keep the version number on system.module, despite the </span>
-</span><span class='line'>      <span class="c"># drupal.org page. Grab from changelog (disabled b/c it includes extra info)</span>
-</span><span class='line'>      <span class="c">#VERSION=&quot;$(sed &#39;3q;d&#39; ${WEBHOME}/${SITE}/CHANGELOG.txt)&quot;</span>
-</span><span class='line'>      <span class="c"># All versions of Drupal have the version of the module in system.info, </span>
-</span><span class='line'>      <span class="c"># so we grab it here for D7. The only reason I&#39;m not using this for all </span>
-</span><span class='line'>      <span class="c"># versions is because of the aforementioned drupal.org page</span>
-</span><span class='line'>      <span class="nv">VERSION</span><span class="o">=</span><span class="k">$(</span>grep <span class="s2">&quot;version = \&quot;&quot;</span> <span class="k">${</span><span class="nv">WEBHOME</span><span class="k">}</span>/<span class="k">${</span><span class="nv">SITE</span><span class="k">}</span>/modules/system/system.info <span class="se">\</span>
-</span><span class='line'>                | awk -F<span class="se">\&quot;</span> <span class="s1">&#39;{print $2}&#39;</span><span class="k">)</span>
-</span><span class='line'>    <span class="k">fi</span>
-</span><span class='line'><span class="k">  fi</span>
-</span><span class='line'><span class="k">  </span><span class="nb">echo</span> <span class="nv">$SITE</span> - <span class="nv">$VERSION</span>
-</span><span class='line'><span class="k">done</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>As a result, you&rsquo;ll see the directory tree after <code>$WEBHOME</code> where the root of the site is and the version number. Below is an example:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>./drupal-version-check.sh
-</span><span class='line'>mysite.org/www - 5.22
-</span><span class='line'>thissite.net - 4.7.11
-</span><span class='line'>subfolder/drupalftw.com - 6.12
-</span><span class='line'>blah.org/trunk - 7.0
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>If you have suggestions, please send them over. This script is still young and I&rsquo;d love to see if anyone has any better ideas.</p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2010/12/07/combined-apache-logs-for-load-balanced-web-servers/">Combined Apache Logs for Load Balanced Web Servers</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2010-12-07T14:34:00-05:00" pubdate data-updated="true">Dec 7<span>th</span>, 2010</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>When dealing with a load spike or unexplained poor performance, once of the first things to do is to check the Apache web server logs. However, when dealing with multiple web servers behind a load balancer, it can be cumbersome to check through multiple logs on different machines.</p>
-
-<p>Luckily, if you have shared storage, it’s pretty simple to write to a single log file. Apache allows for log file locations to go to a pipe, which means you can redirect the output anywhere else. This was initially done to allow Apache to release open file descriptors since it can begin to create problems with more than 300 domains. But you don’t need to have 300 websites to see the benefits of using a pipe for logging.</p>
-
-<p>In your VirtualHost declaration, change your logging options from:</p>
-
-<pre><code>CustomLog logs/domain.com-access_log combined
-</code></pre>
-
-<p>to:</p>
-
-<pre><code>CustomLog "|/bin/cat » /var/www/vhosts/_logs/domain.com-access_log" combined
-</code></pre>
-
-<p>In this example, /var/www/vhosts is the shared SAN storage device, and by using “cat »” we append Apache output in real-time to the log file. As multiple machines do this simultaneously, you begin to have a single log file from multiple machines. You can do the same thing with your ErrorLog:</p>
-
-<pre><code>ErrorLog  "|/bin/cat » /var/www/vhosts/_logs/domain.com-error_log"
-</code></pre>
-
-<p>There is a slight problem with this approach: it doesn’t give us enough information. If one of the 4 servers behind the load balancer was the source of a problem, it would be helpful to determine which server each log entry is coming from.</p>
-
-<p>For CustomLog, we can create a new LogType that adds the server’s IP address at the end of the line, and the LogType name will be “combinedIP”:</p>
-
-<pre><code>LogFormat "%h %l %u %t "%r" %&gt;s %b "%{Referer}i" "%{User-Agent}i" %A" combinedIP
-</code></pre>
-
-<p>This format is identical to “combined” and just adds %A at the end. Then, simply change the end of the CustomLog line:</p>
-
-<pre><code>CustomLog "|/bin/cat » /var/www/vhosts/_logs/domain.com-access_log" combinedIP
-</code></pre>
-
-<p>Here’s an example of what your log file will look like, showing entries from two servers:</p>
-
-<pre><code>1.2.3.4 - - [07/Dec/2010:11:22:08 -0500] "GET /blog/feed HTTP/1.1" 304 - "-" "-" 192.168.1.6
-5.6.7.8 - - [07/Dec/2010:11:22:08 -0500] "GET /blog/feed HTTP/1.1" 304 - "-" "-" 192.168.1.8
-</code></pre>
-
-<p>These log entries are the same as the typical “combined” LogType but with the addition of the IP address at the end.</p>
-
-<p>But what about the ErrorLog? There is no way to define a LogType for the ErrorLog, and it would be helpful to know which server originated error, say, if MaxClients was reached, or there is a misconfiguration in a configuration file. Since we’re piping the ErrorLog output to /bin/cat, we can instead pipe it to a script that simply adds the server hostname on the end (I chose not to use an IP address because 1) some servers have multiple IP addresses, and 2) I cannot insert the VirtualHost’s IP address automatically. Better to know the server and then determine the IP address is necessary). We’ll start by creating a simple script at /usr/local/bin/httpd_errors (I’m not using bash since I was not able to get it to write to the log file in real time, it would only write once Apache was reloaded. I did not spend much time to determine why, and I knew it would work in PHP):</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">#!/usr/bin/php -q</span>
-</span><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="nv">$stdin</span> <span class="o">=</span> <span class="nb">fopen</span> <span class="p">(</span><span class="err">‘</span><span class="nx">php</span><span class="o">://</span><span class="nx">stdin</span><span class="err">’</span><span class="p">,</span> <span class="err">‘</span><span class="nx">r</span><span class="err">’</span><span class="p">);</span>
-</span><span class='line'><span class="nb">ob_implicit_flush</span> <span class="p">(</span><span class="k">true</span><span class="p">);</span> <span class="c1">// Use unbuffered output</span>
-</span><span class='line'><span class="k">while</span> <span class="p">(</span><span class="nv">$line</span> <span class="o">=</span> <span class="nb">fgets</span> <span class="p">(</span><span class="nv">$stdin</span><span class="p">))</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>    <span class="k">print</span> <span class="nb">chop</span><span class="p">(</span><span class="nv">$line</span><span class="p">)</span><span class="o">.</span><span class="err">”</span> <span class="o">-</span> <span class="err">“</span><span class="o">.</span><span class="nb">system</span><span class="p">(</span><span class="err">‘</span><span class="nx">hostname</span> <span class="o">-</span><span class="nx">f</span><span class="err">’</span><span class="p">)</span><span class="o">.</span><span class="err">”</span><span class="nx">\n</span><span class="err">”</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Make the script executable with “chmod +x /usr/local/bin/httpd_errors”, and then change your ErrorLog in your Apache configuration:</p>
-
-<pre><code>ErrorLog  ”|/usr/local/bin/httpd_errors » /var/www/vhosts/_logs/domain.com-error_log”
-</code></pre>
-
-<p>And your error logs will now reveal which server the error originated from:</p>
-
-<pre><code>[Tue Dec 07 11:20:51 2010] [error] [client 1.2.3.4] File does not exist: /var/www/vhosts/domain.com/favicon.ico - wsrv1
-[Tue Dec 07 11:24:27 2010] [error] [client 5.6.7.8] File does not exist: /var/www/vhosts/domain.com/favicon.ico - wsrv2
-</code></pre>
-
-<p>There you have it, combined Apache logs for multiple web servers. If you have any suggestions, questions, tips, etc, leave a comment!</p>
 </div>
   
   

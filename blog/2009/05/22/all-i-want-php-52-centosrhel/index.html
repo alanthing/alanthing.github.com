@@ -1,0 +1,710 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>All I want is PHP 5.2 on CentOS/RHEL! - alanthing</title>
+  <meta name="author" content="Alan Ivey">
+
+  
+  <meta name="description" content="An updated, easier method can be found here. At EchoDitto, most of our servers are running CentOS Linux, which is a 100% binary-compatible version of &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://alanthing.com/blog/2009/05/22/all-i-want-php-52-centosrhel">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="alanthing" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-34327970-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">alanthing</a></h1>
+  
+    <h2>Linux and other things</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:alanthing.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">All I Want Is PHP 5.2 on CentOS/RHEL!</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-05-22T14:07:00-04:00" pubdate data-updated="true">May 22<span>nd</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p><strong><a href="/blog/2011/01/25/easy-php-5-dot-2-rpms-on-centos/">An updated, easier method can be found here.</a></strong></p>
+
+<p>At <a href="http://www.echoditto.com">EchoDitto</a>, most of our servers are running <a href="http://www.centos.org/">CentOS Linux</a>, which is a 100% binary-compatible version of the industry standard <a href="http://www.redhat.com/rhel/server/">Red Hat Enterprise Linux</a> (RHEL) without any of the fees. The problem with RHEL/CentOS is that they shipped with PHP 5.1.6, and as of this writing PHP is at 5.2.9. That&rsquo;s not a big deal, being a minor point revision behind, until you come across an application or module that needs a minimum of version 5.2. The last thing I want to do is install packages from a third-party or build it from source and risk breaking other packages. So what&rsquo;s the answer? Building it from the source rpm. There&rsquo;s no better way to keep the system free of third-party packages but also up to date.</p>
+
+<p>Why source RPMs and not the source from <a href="http://www.php.net/downloads.php">PHP</a>? Building a source RPM is the same procedure used to build the packages that Red Hat creates, and includes the libraries and dependencies and sub-packages that you would normally get from Red Hat directly. It will also include all of the same build flags in your new version that were available in the older package, meaning your PHP scripts won&rsquo;t suddenly break. This ultimately ensures binary compatibility and the ability to easily upgrade if Red Hat or CentOS were to release a package newer than yours.</p>
+
+<p>Sure, you could enable the <a href="http://wiki.centos.org/AdditionalResources/Repositories">CentOS Testing repository</a>, but with all of the warnings about packages breaking your system, and configuring yum to only update PHP and not mess up mysql or Apache, I&rsquo;d rather build and install only the packages that I need without worrying about breaking other packages. Want PHP 5.2 on your CentOS or RHEL server? Follow along.</p>
+
+<ul>
+<li>Start by downloading the latest PHP 5.2 source RPM from the aforementioned CentOS Testing repository from <a href="http://dev.centos.org/centos/5/testing/SRPMS/">http://dev.centos.org/centos/5/testing/SRPMS/</a>. As of this writing, they&rsquo;re at <a href="http://dev.centos.org/centos/5/testing/SRPMS/php-5.2.6-2.el5s2.src.rpm">php-5.2.6-2</a>. Why aren&rsquo;t we using the 5.1.6 source? The source RPM for 5.2.6 includes the latest patches from Red Hat that you can normally only get from being a part of the non-free Red Hat Network.</li>
+</ul>
+
+
+<p>I&rsquo;ll assume you&rsquo;re running as root for this guide. Download the source RPM with wget:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>wget http://dev.centos.org/centos/5/testing/SRPMS/php-5.2.6-2.el5s2.src.rpm
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>Install the source RPM</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>rpm -ivh php-5.2.6-2.el5s2.src.rpm
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>If you get an error and the install fails, you may need to manually create the SOURCES directory and install again</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>mkdir -p /usr/src/redhat/SOURCES
+</span><span class='line'>rpm -ivh php-5.2.6-2.el5s2.src.rpm
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>Download the latest stable release of PHP from <a href="http://www.php.net/downloads.php">the php.net download page</a> and save it in the SOURCES folder. Change the version number to the latest version if needed.</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">cd</span> /usr/src/redhat/SOURCES
+</span><span class='line'>wget http://us3.php.net/get/php-5.2.9.tar.gz/from/us.php.net/
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>In the SPECS folder, copy the original php.spec file in case you make mistakes or wish to build 5.2.6.</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">cd</span> /usr/src/redhat/SPECS
+</span><span class='line'>cp php.spec php526.spec
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>Edit php.spec and change the version and revision numbers to be 5.2.9 (or later) and the revision to 1 since this is your first build.</li>
+</ul>
+
+
+<pre>Summary: The PHP HTML-embedded scripting language
+Name: php
+Version: 5.2.9
+Release: 1%{?dist}
+License: PHP
+Group: Development/Languages
+URL: http://www.php.net/</pre>
+
+
+<ul>
+<li>Make sure you have the Development Tools group install for rpmbuild if you haven&rsquo;t already done so.</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>yum groupinstall <span class="s2">&quot;Development Tools&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>Try and build the spec file to see if you are missing any packages. For this tutorial, I am running from the minimal package set.</li>
+</ul>
+
+
+<pre>
+rpmbuild -ba php.spec 
+cat: /usr/include/httpd/.mmn: No such file or directory
+error: Failed build dependencies:
+    bzip2-devel is needed by php-5.2.9-1.i386
+    curl-devel >= 7.9 is needed by php-5.2.9-1.i386
+    db4-devel is needed by php-5.2.9-1.i386
+    expat-devel is needed by php-5.2.9-1.i386
+    gmp-devel is needed by php-5.2.9-1.i386
+    aspell-devel >= 0.50.0 is needed by php-5.2.9-1.i386
+    httpd-devel >= 2.0.46-1 is needed by php-5.2.9-1.i386
+    libjpeg-devel is needed by php-5.2.9-1.i386
+    libpng-devel is needed by php-5.2.9-1.i386
+    pam-devel is needed by php-5.2.9-1.i386
+    openssl-devel is needed by php-5.2.9-1.i386
+    sqlite-devel >= 3.0.0 is needed by php-5.2.9-1.i386
+    zlib-devel is needed by php-5.2.9-1.i386
+    pcre-devel >= 6.6 is needed by php-5.2.9-1.i386
+    readline-devel is needed by php-5.2.9-1.i386
+    krb5-devel is needed by php-5.2.9-1.i386
+    libc-client-devel is needed by php-5.2.9-1.i386
+    cyrus-sasl-devel is needed by php-5.2.9-1.i386
+    openldap-devel is needed by php-5.2.9-1.i386
+    mysql-devel >= 4.1.0 is needed by php-5.2.9-1.i386
+    postgresql-devel is needed by php-5.2.9-1.i386
+    unixODBC-devel is needed by php-5.2.9-1.i386
+    libxml2-devel is needed by php-5.2.9-1.i386
+    net-snmp-devel is needed by php-5.2.9-1.i386
+    libxslt-devel >= 1.0.18-1 is needed by php-5.2.9-1.i386
+    libxml2-devel >= 2.4.14-1 is needed by php-5.2.9-1.i386
+    ncurses-devel is needed by php-5.2.9-1.i386
+    gd-devel is needed by php-5.2.9-1.i386
+    freetype-devel is needed by php-5.2.9-1.i386
+</pre>
+
+
+<ul>
+<li>Install any required packages with yum. If any of these packages have other dependencies they will be downloaded as well. This might take a while.</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>yum install bzip2-devel curl-devel db4-devel expat-devel gmp-devel aspell-devel httpd-devel libjpeg-devel libpng-devel pam-devel openssl-devel sqlite-devel zlib-devel pcre-devel readline-devel krb5-devel libc-client-devel cyrus-sasl-devel openldap-devel mysql-devel postgresql-devel unixODBC-devel libxml2-devel net-snmp-devel libxslt-devel libxml2-devel ncurses-devel gd-devel freetype-devel
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>Try and build the spec file again to see if any patches fail to load properly. This usually happens if a patch has been rolled into the mainline PHP project and is no longer needed.</li>
+</ul>
+
+
+<pre>
+rpmbuild -ba php.spec
+Executing(%prep): /bin/sh -e /var/tmp/rpm-tmp.81391
++ umask 022
++ cd /usr/src/redhat/BUILD
++ LANG=C
++ export LANG
++ unset DISPLAY
++ cd /usr/src/redhat/BUILD
++ rm -rf php-5.2.9
++ /bin/gzip -dc /usr/src/redhat/SOURCES/php-5.2.9.tar.gz
++ tar -xf -
++ STATUS=0
+... output snipped ...
+Patch #32 (php-5.2.5-systzdata.patch):
++ patch -p1 -b --suffix .systzdata -s
++ echo 'Patch #50 (php-5.2.4-tests-dashn.patch):'
+Patch #50 (php-5.2.4-tests-dashn.patch):
++ patch -p1 -b --suffix .tests-dashn -s
+Reversed (or previously applied) patch detected!  Assume -R? [n] 
+Apply anyway? [n] 
+1 out of 1 hunk ignored -- saving rejects to file ext/standard/tests/file/bug26615.phpt.rej
+1 out of 1 hunk FAILED -- saving rejects to file ext/standard/tests/file/proc_open01.phpt.rej
+Reversed (or previously applied) patch detected!  Assume -R? [n] 
+Apply anyway? [n] 
+1 out of 1 hunk ignored -- saving rejects to file ext/standard/tests/file/bug26938.phpt.rej
+error: Bad exit status from /var/tmp/rpm-tmp.81391 (%prep)
+
+
+RPM build errors:
+    Bad exit status from /var/tmp/rpm-tmp.81391 (%prep)
+</pre>
+
+
+<ul>
+<li>Looks like Patch 50 failed. Edit the spec file and comment out the line that begins with %patch50</li>
+</ul>
+
+
+<pre>
+%patch30 -p1 -b .dlopen
+%patch31 -p1 -b .easter
+%patch32 -p1 -b .systzdata
+
+#%patch50 -p1 -b .tests-dashn
+%patch51 -p1 -b .tests-wddx
+</pre>
+
+
+<ul>
+<li><p>For 5.2.9 as of this writing, this is the only patch that fails to load properly. In later versions, you may find that other patches fail to load, and you should comment those out as well.</p></li>
+<li><p>Build the spec file again and after several minutes it will be complete and you&rsquo;ll have a handful of rpms in /usr/src/redhat/RPMS/i386</p></li>
+</ul>
+
+
+<pre>
+rpmbuild -ba php.spec
+Executing(%prep): /bin/sh -e /var/tmp/rpm-tmp.77534
++ umask 022
++ cd /usr/src/redhat/BUILD
++ LANG=C
++ export LANG
++ unset DISPLAY
++ cd /usr/src/redhat/BUILD
++ rm -rf php-5.2.9
++ /bin/gzip -dc /usr/src/redhat/SOURCES/php-5.2.9.tar.gz
++ tar -xf -
++ STATUS=0
+... output snipped ...
+Wrote: /usr/src/redhat/RPMS/i386/php-ncurses-5.2.9-1.i386.rpm
+Wrote: /usr/src/redhat/RPMS/i386/php-gd-5.2.9-1.i386.rpm
+Wrote: /usr/src/redhat/RPMS/i386/php-bcmath-5.2.9-1.i386.rpm
+Wrote: /usr/src/redhat/RPMS/i386/php-dba-5.2.9-1.i386.rpm
+Wrote: /usr/src/redhat/RPMS/i386/php-debuginfo-5.2.9-1.i386.rpm
+Executing(%clean): /bin/sh -e /var/tmp/rpm-tmp.7525
++ umask 022
++ cd /usr/src/redhat/BUILD
++ cd php-5.2.9
++ '[' /var/tmp/php-5.2.9-1-root-root '!=' / ']'
++ rm -rf /var/tmp/php-5.2.9-1-root-root
++ rm files.bcmath files.common files.dba files.dbase files.dom files.gd files.imap [snip]
++ exit 0
+</pre>
+
+
+<ul>
+<li>You&rsquo;ll probably want to also build the php-extras source RPM as well. php-extras provides extensions for dbase, readline, mcrypt, mhash, tidy and mssql. Since there is no package in CentOS Testing, grab the latest from 5.1.6.</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>wget http://mirror.centos.org/centos/5/extras/SRPMS/php-extras-5.1.6-15.el5.centos.1.src.rpm
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>And install it.</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>rpm -ivh php-extras-5.1.6-15.el5.centos.1.src.rpm
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>Copy the php-extras.spec file like you did for php.spec so you can have the original.</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">cd</span> /usr/src/redhat/SPECS
+</span><span class='line'>cp php-extras.spec php-extras516.spec
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>We ultimately need to replace the patches in php-extras.spec with the same from the much newer php.spec, as well as the ABI version numbers in the beginning of the file. <a href="http://www.webtatic.com/blog/2009/05/installing-php-526-extra-extensions/">Webtatic.com has already done this</a> and you can go ahead and <a href="http://www.webtatic.com/files/2009/05/php-extras.spec">download the edited spec file</a>, which also includes new PHP 5.2 extensions for json and filter. Remember, if you had a failed patch from php.spec, you&rsquo;ll need to comment it out in php-extras.spec as well. For 5.2.9, I had to comment out patch50 again.</li>
+</ul>
+
+
+<pre>
+%patch32 -p1 -b .systzdata
+
+%patch50 -p1 -b .tests-dashn
+%patch51 -p1 -b .tests-wddx
+
+%build
+</pre>
+
+
+<ul>
+<li>Once your php-extras.spec file is up to date, build the spec file and see if you&rsquo;re missing any dependencies.</li>
+</ul>
+
+
+<pre>
+rpmbuild -ba php-extras.spec 
+error: Failed build dependencies:
+    php-devel = 5.2.9 is needed by php-extras-5.2.9-1.i386
+    libmcrypt-devel is needed by php-extras-5.2.9-1.i386
+    mhash-devel is needed by php-extras-5.2.9-1.i386
+    libtidy-devel is needed by php-extras-5.2.9-1.i386
+    freetds-devel is needed by php-extras-5.2.9-1.i386
+</pre>
+
+
+<ul>
+<li>Let&rsquo;s go back and install the php package that we need. If you only want the minimum needed to build php-extras, start by installing php-devel and seeing what it asks for, and install it&rsquo;s dependencies.</li>
+</ul>
+
+
+<pre>
+cd /usr/src/redhat/RPMS/i386
+rpm -ivh php-devel-5.2.9-1.i386.rpm 
+error: Failed dependencies:
+    php = 5.2.9-1 is needed by php-devel-5.2.9-1.i386
+rpm -ivh php-5.2.9-1.i386.rpm php-devel-5.2.9-1.i386.rpm 
+error: Failed dependencies:
+    php-cli = 5.2.9-1 is needed by php-5.2.9-1.i386
+    php-common = 5.2.9-1 is needed by php-5.2.9-1.i386
+rpm -ivh php-5.2.9-1.i386.rpm php-devel-5.2.9-1.i386.rpm php-cli-5.2.9-1.i386.rpm php-common-5.2.9-1.i386.rpm 
+Preparing...                ########################################### [100%]
+   1:php-common             ########################################### [ 25%]
+   2:php-cli                ########################################### [ 50%]
+   3:php                    ########################################### [ 75%]
+   4:php-devel              ########################################### [100%]
+</pre>
+
+
+<ul>
+<li>After installing those four packages, install the other packages with yum.</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>yum install libmcrypt-devel mhash-devel libtidy-devel freetds-devel
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>Now that all of the dependencies are resolved, build the php-extras.spec file.</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">cd</span> /usr/src/redhat/SPECS
+</span><span class='line'>rpmbuild -ba php-extras.spec
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>If you&rsquo;re using RHEL, the build might fail for two reasons: a library for tidy is needed, and mhash-devel isn&rsquo;t available for RHEL. Both are easy to fix. Install &lsquo;tidy&rsquo; with yum, and while mhash-devel isn&rsquo;t available, you can download libmhash-devel and edit the spec file to require libmhash-devel instead of mhash-devel.</li>
+</ul>
+
+
+<p>You should now have all of your RPMs in /usr/src/redhat/RPMS/i386 (or x86_64) and install whichever packages you want. If in doubt, install them all. They&rsquo;re mainly static libraries and won&rsquo;t bloat your system. You may not want to install the debuginfo packages since you may find little use for them.</p>
+
+<p>Staying updated is easy, download the source from php.net into /usr/src/redhat/SOURCES and edit the spec files for the new version numbers, rebuild, and install RPMs. If you&rsquo;re concerned about new patches being needed, you can grab the latest source RPM from Centos: <a href="http://dev.centos.org/centos/5/testing/SRPMS/">http://dev.centos.org/centos/5/testing/SRPMS/</a>. If CentOS were to ever come out with a newer version, or you want to subscribe to a yum repo and they provided a higher version, it would update as normal. You would need to rebuild in pear/pecl libraries by uninstall+installing them.</p>
+
+<p>Yes, this is an involved process the first time around, but after doing this once you only need to download the latest source from php.net and edit the spec file version number and rebuild and update. If an old patch fails in a newer version you&rsquo;ll need to comment it out, but it&rsquo;s that simple.</p>
+
+<p>This also works for 64-bit installations. Thanks to <a href="http://www.atoomnet.net/centos_updated_php.php">DiNo</a> for helping me get PHP built on a 64-bit RHEL installation.</p>
+
+<p>If you&rsquo;d like to skip the steps and get right to building, you can download and install the source RPMs and build again the spec files. If you&rsquo;d like to do itself, you can compare my spec files to yours. Enjoy the latest PHP hotness!</p>
+
+<ul>
+<li><a href="http://www.filedropper.com/php-spec-files">PHP Spec files</a></li>
+<li><a href="http://www.filedropper.com/php-529-1src">php 5.2.9 source RPM</a> MD5 = 008d5f2ced015c5f6463afb616737b04</li>
+<li><a href="http://www.filedropper.com/php-extras-529-1src">php-extras 5.2.9 source RPM</a> MD5 = 2f8a7e815170bf31509180c196ade19a</li>
+</ul>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Alan Ivey</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-05-22T14:07:00-04:00" pubdate data-updated="true">May 22<span>nd</span>, 2009</time>
+      
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://alanthing.com/blog/2009/05/22/all-i-want-php-52-centosrhel/" data-via="alanthing" data-counturl="http://alanthing.com/blog/2009/05/22/all-i-want-php-52-centosrhel/" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
+    <div class="fb-like" data-send="true" data-width="450" data-show-faces="false"></div>
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2009/04/24/takeaways-from-the-big-internet-gathering/" title="Previous Post: Takeaways from The Big Internet Gathering">&laquo; Takeaways from The Big Internet Gathering</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2010/07/15/tidy-tmp-dev-servers/" title="Next Post: Tidy up /tmp on dev servers">Tidy up /tmp on dev servers &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/05/09/speed-up-php-on-nfs-with-turbo-realpath/">Speed Up PHP on NFS With Turbo_realpath</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/03/17/virtualbox-extension-pack-with-one-line/">VirtualBox Extension Pack With One Line</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/02/21/real-time-ruby-gem-development/">"Real-time" Ruby Gem Development</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/12/19/usable-mamp-os-x-108-mountain-lion/">Usable MAMP on OS X 10.8 Mountain Lion</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/09/04/apache-modules-on-os-x-with-homebrew/">Apache Modules on OS X With Homebrew</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>Coderwall</h1>
+  <ul id="cw_badges">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <div>
+    <a href="http://coderwall.com/alanthing" target="_blank" class="cw_badge"><img
+       alt="Endorse alanthing on Coderwall"
+       src="http://api.coderwall.com/alanthing/endorsecount.png" /></a>
+  </div>
+  
+
+  <script type="text/javascript">
+    var coderwall = (function(){
+      function render(options, badges){
+        var fragment = '',
+            t = $(options.target),
+            height = 65,
+            width = 65,
+            index;
+
+        for (index in badges) {
+          fragment += '<a class="cw_badge"title="' + badges[index].description + '" target="_blank" href="http://coderwall.com/' + options.user + '">';
+          fragment +=   '<img alt="' + badges[index].description + '" height="' + width + '" width="' + height + '" src="' + badges[index].badge + '"/>';
+          fragment += '</a>';
+        }
+
+        t.html(fragment);
+      }
+      return {
+        showBadges: function(options){
+          $.ajax({
+              url: 'http://coderwall.com/' + options.user + '.json?callback=?'
+            , dataType: 'jsonp'
+            , error: function (err) { $(options.target + ' li.loading').addClass('error').text("Error loading feed"); }
+            , success: function(res) {
+                render(options, res.data.badges);
+            }
+          });
+        }
+      };
+    })();
+
+    $(document).ready(function(){
+      coderwall.showBadges({
+        user: 'alanthing',
+        target: '#cw_badges'
+      });
+    });
+  </script>
+</section>
+
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/alanthing">@alanthing</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'alanthing',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - Alan Ivey -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'alanthing';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://alanthing.com/blog/2009/05/22/all-i-want-php-52-centosrhel/';
+        var disqus_url = 'http://alanthing.com/blog/2009/05/22/all-i-want-php-52-centosrhel/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id; js.async = true;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

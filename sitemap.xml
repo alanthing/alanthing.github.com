@@ -5,12 +5,20 @@
         <lastmod>2013-06-28T23:04:41-04:00</lastmod>
     </url>
     <url>
+        <loc>http://alanthing.com/blog/2009/05/22/all-i-want-php-52-centosrhel/</loc>
+        <lastmod>2013-07-09T17:56:48-04:00</lastmod>
+    </url>
+    <url>
         <loc>http://alanthing.com/blog/2010/07/15/tidy-tmp-dev-servers/</loc>
         <lastmod>2013-06-28T23:04:41-04:00</lastmod>
     </url>
     <url>
         <loc>http://alanthing.com/blog/2010/08/12/dropbox-cli-centos-5-easy-way/</loc>
         <lastmod>2013-06-28T23:04:41-04:00</lastmod>
+    </url>
+    <url>
+        <loc>http://alanthing.com/blog/2010/10/15/native-local-development-environment-os-x/</loc>
+        <lastmod>2013-07-09T20:43:22-04:00</lastmod>
     </url>
     <url>
         <loc>
@@ -43,6 +51,10 @@
         <lastmod>2013-06-28T23:04:41-04:00</lastmod>
     </url>
     <url>
+        <loc>http://alanthing.com/blog/2011/03/25/keep-drush-date/</loc>
+        <lastmod>2013-07-09T20:57:20-04:00</lastmod>
+    </url>
+    <url>
         <loc>http://alanthing.com/blog/2011/08/17/use-syslog-instead-watchdog/</loc>
         <lastmod>2013-06-28T23:04:41-04:00</lastmod>
     </url>
@@ -63,8 +75,16 @@
         <lastmod>2013-06-28T23:04:41-04:00</lastmod>
     </url>
     <url>
+        <loc>http://alanthing.com/blog/2012/01/30/alans-2011-favorites/</loc>
+        <lastmod>2013-07-09T21:03:38-04:00</lastmod>
+    </url>
+    <url>
         <loc>http://alanthing.com/blog/2012/02/10/nodejs-and-npm-centos/</loc>
         <lastmod>2013-06-28T23:04:41-04:00</lastmod>
+    </url>
+    <url>
+        <loc>http://alanthing.com/blog/2012/02/29/can-i-get-your-number-dns-made-simple/</loc>
+        <lastmod>2013-07-09T21:06:35-04:00</lastmod>
     </url>
     <url>
         <loc>
@@ -108,11 +128,11 @@
     </url>
     <url>
         <loc>http://alanthing.com/blog/archives/</loc>
-        <lastmod>2013-06-28T23:04:41-04:00</lastmod>
+        <lastmod>2013-07-09T21:06:35-04:00</lastmod>
     </url>
     <url>
         <loc>http://alanthing.com/</loc>
-        <lastmod>2013-06-28T23:04:41-04:00</lastmod>
+        <lastmod>2013-07-09T21:06:35-04:00</lastmod>
     </url>
     <url>
         <loc>http://alanthing.com/robots.txt</loc>

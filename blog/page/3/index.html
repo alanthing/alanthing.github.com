@@ -9,7 +9,7 @@
   <meta name="author" content="Alan Ivey">
 
   
-  <meta name="description" content="Dropbox hardly needs any introduction; put files in your Dropbox and they show up everywhere else you have Dropbox installed and dropbox.com. A &hellip;">
+  <meta name="description" content="In addition to hosting Drupal sites, we also host a number of WordPress sites. Similar to (checking all of our Drupal core versions)[http:// &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -77,6 +77,820 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2011/01/05/are-your-wordpress-sites-running-the-latest-core/">Are Your WordPress Sites Running the Latest Core?</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-01-05T20:31:00-05:00" pubdate data-updated="true">Jan 5<span>th</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>In addition to hosting Drupal sites, we also host a number of WordPress sites. Similar to (checking all of our Drupal core versions)[<a href="http://echodittolabs.org/blog/2011/01/are-your-drupal-sites-running-latest-core">http://echodittolabs.org/blog/2011/01/are-your-drupal-sites-running-latest-core</a>], we needed an easy way to quickly see what versions we are running on all of our WordPress sites. Kudos to <a href="http://echodittolabs.org/users/ethan">Ethan</a> for getting this one kicked off; here is a bash script to check your definable <code>$WEBHOME</code> (where you deposit all of your WordPress webroots) and scan for WordPress versions.</p>
+
+<p>Note: this requires bash, grep, wc, sed, awk, and tree. If your system doesn&rsquo;t have tree, it&rsquo;s usually pretty easy to get from EPEL/Homebrew/apt-get/[mac]ports/etc.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c">#!/bin/bash</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># Where to start scanning</span>
+</span><span class='line'><span class="nv">WEBHOME</span><span class="o">=</span>/var/www/vhosts
+</span><span class='line'>
+</span><span class='line'><span class="c"># Workaround to fix awk counting below</span>
+</span><span class='line'><span class="nv">WEBHOMECOUNT</span><span class="o">=</span><span class="k">$(($(</span><span class="nb">echo</span> <span class="s2">&quot;${WEBHOME}&quot;</span>|grep -o <span class="s2">&quot;/&quot;</span>|wc -l| sed s/<span class="se">\ </span>//g<span class="k">)</span><span class="o">+</span><span class="m">2</span><span class="k">))</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># Other projects could use &#39;version.php&#39; so we include </span>
+</span><span class='line'><span class="c"># &#39;wp-includes/&#39; in our search to limit it to WordPress</span>
+</span><span class='line'><span class="k">for </span>i in <span class="k">$(</span>tree -L 5 -if <span class="k">${</span><span class="nv">WEBHOME</span><span class="k">}</span> | grep <span class="s1">&#39;wp-includes/version.php&#39;</span><span class="k">)</span>; <span class="k">do</span>
+</span><span class='line'><span class="k">  </span><span class="nv">SITE</span><span class="o">=</span><span class="k">$(</span><span class="nb">echo</span> <span class="nv">$i</span>|awk -v <span class="nv">count</span><span class="o">=</span><span class="s2">&quot;$WEBHOMECOUNT&quot;</span> -F/ <span class="s1">&#39;{for(j=count;j&lt;=NF-2;j++) \</span>
+</span><span class='line'><span class="s1">        printf $j&quot;/&quot;}&#39;</span> | sed <span class="s1">&#39;s/.$//g&#39;</span><span class="k">)</span>
+</span><span class='line'>  <span class="nv">VERSION</span><span class="o">=</span><span class="k">$(</span>grep <span class="s2">&quot;wp_version = &quot;</span> <span class="nv">$i</span>|awk -F<span class="se">\&#39;</span> <span class="s1">&#39;{print $2}&#39;</span><span class="k">)</span>
+</span><span class='line'>  <span class="nb">echo</span> <span class="nv">$SITE</span> - <span class="nv">$VERSION</span>
+</span><span class='line'><span class="k">done</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>As a result, you&rsquo;ll see output like this:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>./wordpress-version-check.sh
+</span><span class='line'>speedyupdates.com - 3.0.4
+</span><span class='line'>littlebehind.org - 3.0.3
+</span><span class='line'>scaredtoupgrade.com/blog - 2.8.2
+</span><span class='line'>kickinitoldschool.org/web/wordpress - 2.0.2
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>If you think there&rsquo;s a better way, or have any questions, let me know in the comments.</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2011/01/05/are-your-drupal-sites-running-the-latest-core/">Are Your Drupal Sites Running the Latest Core?</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-01-05T19:25:00-05:00" pubdate data-updated="true">Jan 5<span>th</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>At <a href="http://www.echoditto.com">EchoDitto</a>, we host a lot of Drupal sites. Just about all of our web servers contain more than one completely separate Drupal cores since we develop most of our websites independently. We also keep an eye out on <a href="http://drupal.org/security">Drupal Security</a> and when to apply core updates. Since we&rsquo;re not using Aegir, nor do we run every site off of a single multi-site core install, we need a quick and easy way to see what versions we&rsquo;re running.</p>
+
+<p>Here&rsquo;s a shell script we recently developed to report the Drupal Core versions for all of our sites under a single parent folder. It works on Drupal 4 through 7. It&rsquo;s not been tested outside of our platform, or non-RHEL systems, but it should be universal as long as you have bash, find, awk, and grep. I decided not to use <a href="http://drupal.org/project/drush">Drush</a> because it would involve bootstrapping every site and invoking PHP; this is just more lightweight. Drush also would not work for Drupal 4 sites, which we surprisingly still have a couple kicking around still.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c">#!/bin/bash</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># Where to start looking</span>
+</span><span class='line'><span class="nv">WEBHOME</span><span class="o">=</span>/var/www/vhosts
+</span><span class='line'>
+</span><span class='line'><span class="c"># Workaround to fix awk counting below, but it works</span>
+</span><span class='line'><span class="nv">WEBHOMECOUNT</span><span class="o">=</span><span class="k">$(($(</span><span class="nb">echo</span> <span class="s2">&quot;${WEBHOME}&quot;</span>|grep -o <span class="s2">&quot;/&quot;</span>|wc -l| sed s/<span class="se">\ </span>//g<span class="k">)</span><span class="o">+</span><span class="m">2</span><span class="k">))</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># Change maxdepth from 5 to some other value if your webroot is not being detected</span>
+</span><span class='line'><span class="k">for </span>i in <span class="k">$(</span>find <span class="nv">$WEBHOME</span> -maxdepth 5 -type f -name system.module<span class="k">)</span>; <span class="k">do</span>
+</span><span class='line'>  <span class="c"># Grabs only the version number from the file as described </span>
+</span><span class='line'>  <span class="c"># at http://drupal.org/handbook/version-info</span>
+</span><span class='line'>  <span class="nv">VERSION</span><span class="o">=</span><span class="k">$(</span>grep <span class="s2">&quot;VERSION&quot;</span> <span class="k">${</span><span class="nv">i</span><span class="k">}</span>|awk -F<span class="se">\&#39;</span> <span class="s1">&#39;{print $4}&#39;</span><span class="k">)</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c"># Drupal 4 has the system.module file in a lower directory than 5+</span>
+</span><span class='line'>  <span class="k">if</span> <span class="o">[[</span> <span class="nv">$VERSION</span> <span class="o">==</span> 4* <span class="o">]]</span>; <span class="k">then</span>
+</span><span class='line'><span class="k">    </span><span class="nv">SITE</span><span class="o">=</span><span class="k">$(</span><span class="nb">echo</span> <span class="nv">$i</span>|awk -v <span class="nv">count</span><span class="o">=</span><span class="s2">&quot;$WEBHOMECOUNT&quot;</span> -F/ <span class="s1">&#39;{for(j=count;j&lt;=NF-2;j++) \</span>
+</span><span class='line'><span class="s1">           printf $j&quot;/&quot;}&#39;</span> | sed <span class="s1">&#39;s/.$//g&#39;</span><span class="k">)</span>
+</span><span class='line'>  <span class="k">else</span>
+</span><span class='line'><span class="k">    </span><span class="nv">SITE</span><span class="o">=</span><span class="k">$(</span><span class="nb">echo</span> <span class="nv">$i</span>|awk -v <span class="nv">count</span><span class="o">=</span><span class="s2">&quot;$WEBHOMECOUNT&quot;</span> -F/ <span class="s1">&#39;{for(j=count;j&lt;=NF-3;j++) \</span>
+</span><span class='line'><span class="s1">           printf $j&quot;/&quot;}&#39;</span> | sed <span class="s1">&#39;s/.$//g&#39;</span><span class="k">)</span>
+</span><span class='line'>    <span class="k">if</span> <span class="o">[</span> -z <span class="nv">$VERSION</span> <span class="o">]</span>; <span class="k">then</span>
+</span><span class='line'>      <span class="c"># Drupal 7 does not keep the version number on system.module, despite the </span>
+</span><span class='line'>      <span class="c"># drupal.org page. Grab from changelog (disabled b/c it includes extra info)</span>
+</span><span class='line'>      <span class="c">#VERSION=&quot;$(sed &#39;3q;d&#39; ${WEBHOME}/${SITE}/CHANGELOG.txt)&quot;</span>
+</span><span class='line'>      <span class="c"># All versions of Drupal have the version of the module in system.info, </span>
+</span><span class='line'>      <span class="c"># so we grab it here for D7. The only reason I&#39;m not using this for all </span>
+</span><span class='line'>      <span class="c"># versions is because of the aforementioned drupal.org page</span>
+</span><span class='line'>      <span class="nv">VERSION</span><span class="o">=</span><span class="k">$(</span>grep <span class="s2">&quot;version = \&quot;&quot;</span> <span class="k">${</span><span class="nv">WEBHOME</span><span class="k">}</span>/<span class="k">${</span><span class="nv">SITE</span><span class="k">}</span>/modules/system/system.info <span class="se">\</span>
+</span><span class='line'>                | awk -F<span class="se">\&quot;</span> <span class="s1">&#39;{print $2}&#39;</span><span class="k">)</span>
+</span><span class='line'>    <span class="k">fi</span>
+</span><span class='line'><span class="k">  fi</span>
+</span><span class='line'><span class="k">  </span><span class="nb">echo</span> <span class="nv">$SITE</span> - <span class="nv">$VERSION</span>
+</span><span class='line'><span class="k">done</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>As a result, you&rsquo;ll see the directory tree after <code>$WEBHOME</code> where the root of the site is and the version number. Below is an example:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>./drupal-version-check.sh
+</span><span class='line'>mysite.org/www - 5.22
+</span><span class='line'>thissite.net - 4.7.11
+</span><span class='line'>subfolder/drupalftw.com - 6.12
+</span><span class='line'>blah.org/trunk - 7.0
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>If you have suggestions, please send them over. This script is still young and I&rsquo;d love to see if anyone has any better ideas.</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2010/12/07/combined-apache-logs-for-load-balanced-web-servers/">Combined Apache Logs for Load Balanced Web Servers</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-12-07T14:34:00-05:00" pubdate data-updated="true">Dec 7<span>th</span>, 2010</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>When dealing with a load spike or unexplained poor performance, once of the first things to do is to check the Apache web server logs. However, when dealing with multiple web servers behind a load balancer, it can be cumbersome to check through multiple logs on different machines.</p>
+
+<p>Luckily, if you have shared storage, it’s pretty simple to write to a single log file. Apache allows for log file locations to go to a pipe, which means you can redirect the output anywhere else. This was initially done to allow Apache to release open file descriptors since it can begin to create problems with more than 300 domains. But you don’t need to have 300 websites to see the benefits of using a pipe for logging.</p>
+
+<p>In your VirtualHost declaration, change your logging options from:</p>
+
+<pre><code>CustomLog logs/domain.com-access_log combined
+</code></pre>
+
+<p>to:</p>
+
+<pre><code>CustomLog "|/bin/cat » /var/www/vhosts/_logs/domain.com-access_log" combined
+</code></pre>
+
+<p>In this example, /var/www/vhosts is the shared SAN storage device, and by using “cat »” we append Apache output in real-time to the log file. As multiple machines do this simultaneously, you begin to have a single log file from multiple machines. You can do the same thing with your ErrorLog:</p>
+
+<pre><code>ErrorLog  "|/bin/cat » /var/www/vhosts/_logs/domain.com-error_log"
+</code></pre>
+
+<p>There is a slight problem with this approach: it doesn’t give us enough information. If one of the 4 servers behind the load balancer was the source of a problem, it would be helpful to determine which server each log entry is coming from.</p>
+
+<p>For CustomLog, we can create a new LogType that adds the server’s IP address at the end of the line, and the LogType name will be “combinedIP”:</p>
+
+<pre><code>LogFormat "%h %l %u %t "%r" %&gt;s %b "%{Referer}i" "%{User-Agent}i" %A" combinedIP
+</code></pre>
+
+<p>This format is identical to “combined” and just adds %A at the end. Then, simply change the end of the CustomLog line:</p>
+
+<pre><code>CustomLog "|/bin/cat » /var/www/vhosts/_logs/domain.com-access_log" combinedIP
+</code></pre>
+
+<p>Here’s an example of what your log file will look like, showing entries from two servers:</p>
+
+<pre><code>1.2.3.4 - - [07/Dec/2010:11:22:08 -0500] "GET /blog/feed HTTP/1.1" 304 - "-" "-" 192.168.1.6
+5.6.7.8 - - [07/Dec/2010:11:22:08 -0500] "GET /blog/feed HTTP/1.1" 304 - "-" "-" 192.168.1.8
+</code></pre>
+
+<p>These log entries are the same as the typical “combined” LogType but with the addition of the IP address at the end.</p>
+
+<p>But what about the ErrorLog? There is no way to define a LogType for the ErrorLog, and it would be helpful to know which server originated error, say, if MaxClients was reached, or there is a misconfiguration in a configuration file. Since we’re piping the ErrorLog output to /bin/cat, we can instead pipe it to a script that simply adds the server hostname on the end (I chose not to use an IP address because 1) some servers have multiple IP addresses, and 2) I cannot insert the VirtualHost’s IP address automatically. Better to know the server and then determine the IP address is necessary). We’ll start by creating a simple script at /usr/local/bin/httpd_errors (I’m not using bash since I was not able to get it to write to the log file in real time, it would only write once Apache was reloaded. I did not spend much time to determine why, and I knew it would work in PHP):</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">#!/usr/bin/php -q</span>
+</span><span class='line'><span class="cp">&lt;?php</span>
+</span><span class='line'><span class="nv">$stdin</span> <span class="o">=</span> <span class="nb">fopen</span> <span class="p">(</span><span class="err">‘</span><span class="nx">php</span><span class="o">://</span><span class="nx">stdin</span><span class="err">’</span><span class="p">,</span> <span class="err">‘</span><span class="nx">r</span><span class="err">’</span><span class="p">);</span>
+</span><span class='line'><span class="nb">ob_implicit_flush</span> <span class="p">(</span><span class="k">true</span><span class="p">);</span> <span class="c1">// Use unbuffered output</span>
+</span><span class='line'><span class="k">while</span> <span class="p">(</span><span class="nv">$line</span> <span class="o">=</span> <span class="nb">fgets</span> <span class="p">(</span><span class="nv">$stdin</span><span class="p">))</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="k">print</span> <span class="nb">chop</span><span class="p">(</span><span class="nv">$line</span><span class="p">)</span><span class="o">.</span><span class="err">”</span> <span class="o">-</span> <span class="err">“</span><span class="o">.</span><span class="nb">system</span><span class="p">(</span><span class="err">‘</span><span class="nx">hostname</span> <span class="o">-</span><span class="nx">f</span><span class="err">’</span><span class="p">)</span><span class="o">.</span><span class="err">”</span><span class="nx">\n</span><span class="err">”</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Make the script executable with “chmod +x /usr/local/bin/httpd_errors”, and then change your ErrorLog in your Apache configuration:</p>
+
+<pre><code>ErrorLog  ”|/usr/local/bin/httpd_errors » /var/www/vhosts/_logs/domain.com-error_log”
+</code></pre>
+
+<p>And your error logs will now reveal which server the error originated from:</p>
+
+<pre><code>[Tue Dec 07 11:20:51 2010] [error] [client 1.2.3.4] File does not exist: /var/www/vhosts/domain.com/favicon.ico - wsrv1
+[Tue Dec 07 11:24:27 2010] [error] [client 5.6.7.8] File does not exist: /var/www/vhosts/domain.com/favicon.ico - wsrv2
+</code></pre>
+
+<p>There you have it, combined Apache logs for multiple web servers. If you have any suggestions, questions, tips, etc, leave a comment!</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2010/10/15/native-local-development-environment-os-x/">Native Local Development Environment in OS X</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-10-15T14:46:00-04:00" pubdate data-updated="true">Oct 15<span>th</span>, 2010</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><strong>UPDATE:</strong> <a href="/blog/2011/08/24/os-x-107-lion-development-native-mamp-mysql-installer/">A newer version of this has been posted here</a>.</p>
+
+<p>Apple OS X comes with Apache and PHP built-in but need some tweaking to work. It also does not come with MySQL. Because of this, many developers have chosen to use MacPorts, Homebrew, or MAMP to install new binaries for Apache, PHP, and MySQL. However, doing this means your system would have multiple copies of Apache and PHP on your machine, and could create conflicts depending on how your built-in tools are configured. This tutorial will show you how to get the built-in versions of Apache and PHP running with an easy to install version of MySQL.</p>
+
+<p>Additionally, it will show how to set up and install Drush, and phpMyAdmin. Setting up a new website is as easy as editing a single text file and adding a line to your <em>/etc/hosts</em> file. All of our changes will avoid editing default configuration files, either those provided by Apple in OS X or from downloaded packages, so that future updates will not break our customizations.</p>
+
+<h2>Apache</h2>
+
+<ul>
+<li>Apple uses what appears to be the FreeBSD &ldquo;version&rdquo; of Apache 2.2, and includes various sample files. One of the sample files is a virtual hosts file that we will copy to our <em>~/Sites</em> folder for easy editing. Launch the terminal and get started:</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>cp /etc/apache2/extra/httpd-vhosts.conf ~/Sites
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>In order to prevent future major OS updates from breaking our configuration, we&rsquo;ll be editing as few existing files as possible. Luckily, by default, OS X&rsquo;s <em>httpd.conf</em> file (the main configuration file for Apache) includes all <em>.conf files in another folder, </em>/etc/apache2/other*:</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>tail -1 /etc/apache2/httpd.conf
+</span><span class='line'>Include /private/etc/apache2/other/*.conf
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>We then create a symbolic link in <em>/etc/apache2/other</em> to our newly-copied <em>httpd-vhosts.conf</em> from our <em>~/Sites</em> folder:</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>sudo ln -s ~/Sites/httpd-vhosts.conf /etc/apache2/other
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>The <em>~/Sites/httpd-vhosts.conf</em> is now where we will add all new virtual hosts. We will place our site root folders in <em>~/Sites</em> and define them in this file. But first, we need to make some changes (or, <a href="http://www.echoditto.com/sites/default/files/labs/httpd-vhosts.conf_.txt">download this edited httpd-vhosts.conf file</a> and change <strong>fname</strong> in <strong>/Users/fname</strong> to the appropriate path for your system). Begin by adding this text to the top of the file, which will enable the <em>~/Sites</em> folder and subfolders to be accessed by Apache (again, replace <em>/Users/fname</em> with your appropriate path for home directory):</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># Ensure all of the VirtualHost directories are listed below</span>
+</span><span class='line'>&lt;Directory <span class="s2">&quot;/Users/fname/Sites&quot;</span>&gt;
+</span><span class='line'>    Options Indexes FollowSymLinks MultiViews
+</span><span class='line'>    AllowOverride All
+</span><span class='line'>    Order allow,deny
+</span><span class='line'>    Allow from all
+</span><span class='line'>&lt;/Directory&gt;
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>Add these lines anywhere in the file to ensure that <a href="http://localhost">http://localhost</a> still serves the default folder:</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># For localhost in the OS X default location</span>
+</span><span class='line'>&lt;VirtualHost _default_:80&gt;
+</span><span class='line'>  ServerName localhost
+</span><span class='line'>  DocumentRoot /Library/WebServer/Documents
+</span><span class='line'>&lt;/VirtualHost&gt;&lt;/code&gt;
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>We will cover setting up a Virtual Host later, so let&rsquo;s reload our Apache settings to activate our new configuration:</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>sudo apachectl graceful
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Or, go to the <strong>Sharing Preference Pane</strong> and uncheck/[re]check the <strong>Web Sharing</strong> item to stop and start Apache.</p>
+
+<p><img src="http://www.echoditto.com/sites/default/files/1Sharing-1.jpg" alt="Sharing" /></p>
+
+<h2>PHP</h2>
+
+<ul>
+<li>As of OS X 10.6.6, OS X ships with PHP 5.3.3, but it is not enabled in Apache by default. By looking at <em>/etc/apache2/httpd.conf</em>, you can see that the line to load in the PHP module is commented out:</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>grep php /etc/apache2/httpd.conf
+</span><span class='line'><span class="c">#LoadModule php5_module        libexec/apache2/libphp5.so&lt;/code&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>Since we are trying to avoid editing default configuration files where possible, we can add this information, along with the configuration to allow <em>.php files to run, without the comment at the beginning of the line, in the same folder that we put the symlink for </em>httpd-vhosts.conf*:</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sudo sh -c <span class="s2">&quot;cat &gt; /etc/apache2/other/php5-loadmodule.conf &lt;&lt;&#39;EOF&#39;</span>
+</span><span class='line'><span class="s2">LoadModule php5_module        libexec/apache2/libphp5.so</span>
+</span><span class='line'><span class="s2">EOF&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>PHP on OS X does not come with a configuration file at php.ini and PHP runs on its defaults. There is, however, a sample file ready to be copied and edited. The lines below will copy the sample file to <em>/etc/php.ini</em> (optionally, <a href="http://www.echoditto.com/sites/default/files/labs/php.ini_.txt">download the edited file</a> and insert at <em>/etc/php.ini</em>) and add some developer-friendly changes to your configuration.</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sudo cp -a /etc/php.ini.default /etc/php.ini
+</span><span class='line'><span class="nv">$ </span>sudo sh -c <span class="s2">&quot;cat &gt;&gt; /etc/php.ini &lt;&lt;&#39;EOF&#39;</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="s2">;;</span>
+</span><span class='line'><span class="s2">;; User customizations below</span>
+</span><span class='line'><span class="s2">;;</span>
+</span><span class='line'>
+</span><span class='line'><span class="s2">; Original - memory_limit = 128M</span>
+</span><span class='line'><span class="s2">memory_limit = 196M</span>
+</span><span class='line'><span class="s2">; Original - post_max_size = 8M</span>
+</span><span class='line'><span class="s2">post_max_size = 200M</span>
+</span><span class='line'><span class="s2">; Original - upload_max_filesize = 2M</span>
+</span><span class='line'><span class="s2">upload_max_filesize = 100M</span>
+</span><span class='line'><span class="s2">; Original - default_socket_timeout = 60</span>
+</span><span class='line'><span class="s2">default_socket_timeout = 600</span>
+</span><span class='line'><span class="s2">; Original - max_execution_time = 30</span>
+</span><span class='line'><span class="s2">max_execution_time = 300</span>
+</span><span class='line'><span class="s2">; Original - max_input_time = 60</span>
+</span><span class='line'><span class="s2">max_input_time = 600</span>
+</span><span class='line'><span class="s2">; Original - log_errors = off</span>
+</span><span class='line'><span class="s2">log_errors = on</span>
+</span><span class='line'><span class="s2">; Original - display_errors = Off</span>
+</span><span class='line'><span class="s2">display_errors = on</span>
+</span><span class='line'><span class="s2">; Original - display_startup_errors = Off</span>
+</span><span class='line'><span class="s2">display_startup_errors = on</span>
+</span><span class='line'><span class="s2">; Original - error_reporting = E_ALL &amp; ~E_DEPRECATED</span>
+</span><span class='line'><span class="s2">error_reporting = E_ALL &amp; ~E_DEPRECATED &amp; ~E_NOTICE</span>
+</span><span class='line'><span class="s2">EOF&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>OS X&rsquo;s PHP does ship with pear and pecl, but they are not in the $PATH, nor are there binaries to add or symlink to your path. The first two commands will perform a channel-update for pear and again for pecl, the second two will add an alias for each for your current session, and the last two will add the aliases permanently to your local environment (you may get PHP Notices that appear to be errors but they are simply notices. You can change error_reporting in <em>php.ini</em> to silence the Notices):</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sudo php /usr/lib/php/pearcmd.php channel-update pear.php.net
+</span><span class='line'><span class="nv">$ </span>sudo php /usr/lib/php/peclcmd.php channel-update pecl.php.net
+</span><span class='line'><span class="nv">$ </span><span class="nb">alias </span><span class="nv">pear</span><span class="o">=</span><span class="s2">&quot;php /usr/lib/php/pearcmd.php&quot;</span>
+</span><span class='line'><span class="nv">$ </span><span class="nb">alias </span><span class="nv">pecl</span><span class="o">=</span><span class="s2">&quot;php /usr/lib/php/peclcmd.php&quot;</span>
+</span><span class='line'><span class="nv">$ </span>cat &gt;&gt; ~/.bashrc <span class="s">&lt;&lt;&#39;EOF&#39;</span>
+</span><span class='line'>
+</span><span class='line'><span class="s">alias pear=&quot;php /usr/lib/php/pearcmd.php&quot;</span>
+</span><span class='line'><span class="s">alias pecl=&quot;php /usr/lib/php/peclcmd.php&quot;</span>
+</span><span class='line'><span class="s">EOF</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>We do a lot of Drupal development, and a commonly-added PHP PECL module for Drupal is uploadprogress. With the new alias we just set, adding it is easy. Build the PELC package, add it <em>php.ini</em>, and reload the PHP configuration into Apache:
+<sub>Note: PECL modules require a compiler such as gcc to build. Install Xcode to build PECL packages such as uploadprogress.</sub></li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>pecl install uploadprogress
+</span><span class='line'><span class="nv">$ </span>sudo sh -c <span class="s2">&quot;cat &gt;&gt; /etc/php.ini &lt;&lt;&#39;EOF&#39;</span>
+</span><span class='line'>
+</span><span class='line'><span class="s2">; Enable PECL extension uploadprogress</span>
+</span><span class='line'><span class="s2">extension=uploadprogress.so</span>
+</span><span class='line'><span class="s2">EOF&quot;</span>
+</span><span class='line'><span class="nv">$ </span>sudo apachectl graceful
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>If you&rsquo;d like to install APC, see <a href="http://pecl.php.net/bugs/bug.php?id=15968">http://pecl.php.net/bugs/bug.php?id=15968</a> and search for **[2009-09-10 23:16 UTC]**, or if you are using <a href="http://mxcl.github.com/homebrew/">Homebrew</a>, see <a href="http://i.justrealized.com/2010/install-php-apc-mac-os/">http://i.justrealized.com/2010/install-php-apc-mac-os/</a></a>.</li>
+</ul>
+
+
+<h2>MySQL</h2>
+
+<p>MySQL is the only thing that doesn&rsquo;t not ship with OS X that is needed to run a &ldquo;LAMP&rdquo; website like Drupal or WordPress. MySQL/Sun/Oracle provides pre-built MySQL binaries for OS X that don&rsquo;t conflict with other system packages, and even provides a nice System Preferences pane for starting/stopping the process and a checkbox to start MySQL at boot.</p>
+
+<ul>
+<li>Go to the download site for OS X pre-built binaries at: <a href="http://dev.mysql.com/downloads/mysql/index.html#macosx-dmg">http://dev.mysql.com/downloads/mysql/index.html#macosx-dmg</a> and choose the most appropriate type for your system. For systems running Snow Leopard, choose <strong>Mac OS X ver. 10.6 (x86, 64-bit), DMG Archive</strong> (on the following screen, you can scroll down for the download links to avoid having to create a user and password).</li>
+</ul>
+
+
+<p><img src="http://www.echoditto.com/sites/default/files/labs/2MySQL%20__%20Download%20MySQL%20Community%20Server.jpg" alt="Download DMG" /></p>
+
+<ul>
+<li>Open the downloaded disk image and begin by installing the <strong>mysql-5.1.51-osx10.6-x86_64.pkg</strong> file (or named similarly to the version number you downloaded):</li>
+</ul>
+
+
+<p><img src="http://www.echoditto.com/sites/default/files/labs/3Install%20MySQL%205.1.51-community%20for%20Mac%20OS%20X.jpg" alt="MySQL Installer" /></p>
+
+<p>Once the Installer script is completed, install the Preference Pane by double-clicking on <strong>MySQL.prefPane</strong>. If you are not sure where to install the preference pane, choose &ldquo;Install for this user only&rdquo;:</p>
+
+<p><sub><strong>Note:</strong> If you wish to have MySQL start on boot, check out the <a href="http://stackoverflow.com/questions/1334272/cant-start-mysql-in-mac-os-10-6-snow-leopard">first answer on this Stack Overflow post</a>.</sub></p>
+
+<p><img src="http://www.echoditto.com/sites/default/files/labs/4System%20Preferences.jpg" alt="Install MySQL System Preferences pane" /></p>
+
+<ul>
+<li>The preference pane is now installed and you can check the box to have MySQL start on boot or start and stop it on demand with this button. To access this screen again, load System Preferences. Click &ldquo;Start MySQL Server&rdquo; now:</li>
+</ul>
+
+
+<p><img src="http://www.echoditto.com/sites/default/files/5MySQL.jpg" alt="MySQL pane" /></p>
+
+<ul>
+<li>The MySQL installer installed its files to /usr/local/mysql, and the binaries are in /usr/local/mysql/bin which is not in the $PATH of any user by default. Rather than edit the $PATH shell variable, we add symbolic links in /usr/local/bin (a location already in $PATH) to a few MySQL binaries. Add more or omit as desired. This is an optional step, but will make tasks like using Drush or performing a mysqldump in the command line much easier:</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">cd</span> /usr/local/bin
+</span><span class='line'>ln -s /usr/local/mysql/bin/mysql
+</span><span class='line'>ln -s /usr/local/mysql/bin/mysqladmin
+</span><span class='line'>ln -s /usr/local/mysql/bin/mysqldump
+</span><span class='line'>ln -s /usr/local/mysql/support-files/mysql.server
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>Next we&rsquo;ll run <code>mysql_secure_installation</code> to set the root user&rsquo;s password and other setup-related tasks. This script ships with MySQL and only needs to be run once, and it should be run with sudo. As you run it, you can accept all other defaults after you set the root user&rsquo;s password:</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>sudo /usr/local/mysql/bin/mysql_secure_installation
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>If you were create a simple php file containing &ldquo;phpinfo();&rdquo; to view the PHP Information, you will see that Apple-built PHP looks for the MySQL socket at <em>/var/mysql/mysql.sock</em>:</li>
+</ul>
+
+
+<p><img src="http://www.echoditto.com/sites/default/files/labs/6phpinfo.jpg" alt="phpinfo" /></p>
+
+<p>The problem is that the MySQL binary provided by Oracle puts the socket file in <em>/tmp</em>, which is the standard location on most systems. Other tutorials have recommended rebuilding PHP from source, or changing where PHP looks for the socket file via <em>/etc/php.ini</em>, or changing where MySQL places it when starting via <em>/etc/my.cnf</em>, but it is far easier and more fool-proof to create a symbolic link for <em>/tmp/mysql.sock</em> in the location OS X&rsquo;s PHP is looking for it. Since this keeps us from changing defaults, it ensures that a PHP update (via Apple) or a MySQL update (via Oracle) will not have an impact on functionality:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>sudo mkdir /var/mysql
+</span><span class='line'>sudo chown _mysql:wheel /var/mysql
+</span><span class='line'>sudo ln -s /tmp/mysql.sock /var/mysql
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>After installing MySQL, several sample my.cnf files are created but none is placed in <em>/etc/my.cnf</em>, meaning that MySQL will always load in the default configuration. Since we will be using MySQL for local development, we will start with a &ldquo;small&rdquo; configuration file and make a few changes to increase the max_allowed_packet variable under <strong>[mysqld]</strong> and <strong>[mysqldump]</strong> (optionally, use the contents of <a href="http://www.echoditto.com/sites/default/files/labs/my.cnf_.txt">this sample file</a> in <em>/etc/my.cnf</em>). Later on, we can edit <em>/etc/my.cnf</em> to make other changes as desired:</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>sudo cp /usr/local/mysql/support-files/my-small.cnf /etc/my.cnf
+</span><span class='line'>sudo sed -i <span class="s2">&quot;&quot;</span> <span class="s1">&#39;s/max_allowed_packet = 16M/max_allowed_packet = 2G/g&#39;</span> /etc/my.cnf
+</span><span class='line'>sudo sed -i <span class="s2">&quot;&quot;</span> <span class="s2">&quot;/\[mysqld\]/ a\\`echo -e &#39;\n\r&#39;`max_allowed_packet = 2G`echo -e &#39;\n\r&#39;`&quot;</span> /etc/my.cnf
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>To load in these changes, go back to the MySQL System Preferences pane, and restart the server by pressing &ldquo;Stop MySQL Server&rdquo; followed by &ldquo;Start MySQL Server.&rdquo; Or, you can do this on the command line (if you added this symlink as shown above):</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sudo mysql.server restart
+</span><span class='line'>
+</span><span class='line'>Shutting down MySQL
+</span><span class='line'>... SUCCESS!
+</span><span class='line'>Starting MySQL
+</span><span class='line'>... SUCCESS!
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>phpMyAdmin</h2>
+
+<p>At this point, the full &ldquo;MAMP stack&rdquo; (Macintosh OS X, Apache, MySQL, PHP) is ready, but adding phpMyAdmin will make administering your MySQL install easier.</p>
+
+<ul>
+<li><p>phpMyAdmin will complain that the PHP extension &lsquo;php-mcrypt&rsquo; is not available. Since you will not likely be allowing anyone other than yourself to use phpMyAdmin, you could ignore it, but if you want to build the extension, it is possible to build it as a shared object instead of having to rebuild PHP from source. Follow Michael Gracie&rsquo;s guide here (for his Step 2, grab the PHP source that matches <code>$ php --version</code> on your system): <a href="http://michaelgracie.com/2009/09/23/plugging-mcrypt-into-php-on-mac-os-x-snow-leopard-10.6.1/">http://michaelgracie.com/2009/09/23/plugging-mcrypt-into-php-on-mac-os-x-snow-leopard-10.6.1/</a> (or, if you prefer Homebrew: <a href="http://blog.rogeriopvl.com/archives/php-mcrypt-in-snow-leopard-with-homebrew/">http://blog.rogeriopvl.com/archives/php-mcrypt-in-snow-leopard-with-homebrew/</a>.</p>
+
+<p>The following files will be added:</p>
+
+<ul>
+<li> /usr/local/lib/libmcrypt</li>
+<li> /usr/local/include/mcrypt.h</li>
+<li> /usr/local/include/mutils/mcrypt.h</li>
+<li> /usr/local/bin/libmcrypt-config</li>
+<li> /usr/local/lib/libmcrypt.la</li>
+<li> /usr/local/lib/libmcrypt.4.4.8.dylib</li>
+<li> /usr/local/lib/libmcrypt.4.dylib</li>
+<li> /usr/local/lib/libmcrypt.dylib</li>
+<li> /usr/local/share/aclocal/libmcrypt.m4</li>
+<li> /usr/local/man/man3/mcrypt.3</li>
+<li> /usr/lib/php/extensions/no-debug-non-zts-20090626/mcrypt.so</li>
+</ul>
+</li>
+<li><p>The following lines will install the latest phpMyAdmin to <em>/Library/WebServer/Documents</em> and set up <em>config.inc.php</em>. Afterwards, you will be able to access phpMyAdmin at <a href="http://localhost/phpMyAdmin"><a href="http://localhost/phpMyAdmin">http://localhost/phpMyAdmin</a></a>:</p></li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">cd</span> /Library/WebServer/Documents
+</span><span class='line'>curl -s -L -O http://downloads.sourceforge.net/project/phpmyadmin/phpMyAdmin/<span class="sb">`</span>curl -s -L http://www.phpmyadmin.net/home_page/index.php | grep -m1 dlname |awk -F<span class="s1">&#39;Download &#39;</span> <span class="s1">&#39;{print $2}&#39;</span>|cut -d <span class="s2">&quot;&lt;&quot;</span> -f1<span class="sb">`</span>/phpMyAdmin-<span class="sb">`</span>curl -s -L http://www.phpmyadmin.net/home_page/index.php | grep -m1 dlname |awk -F<span class="s1">&#39;Download &#39;</span> <span class="s1">&#39;{print $2}&#39;</span>|cut -d <span class="s2">&quot;&lt;&quot;</span> -f1<span class="sb">`</span>-english.tar.gz
+</span><span class='line'>tar zxpf <span class="sb">`</span>ls -1 phpMyAdmin*tar.gz|sort|tail -1<span class="sb">`</span>
+</span><span class='line'>rm <span class="sb">`</span>ls -1 phpMyAdmin*tar.gz|sort|tail -1<span class="sb">`</span>
+</span><span class='line'>mv <span class="sb">`</span>ls -d1 phpMyAdmin-*|sort|tail -1<span class="sb">`</span> phpMyAdmin
+</span><span class='line'><span class="nb">cd </span>phpMyAdmin
+</span><span class='line'>cp config.sample.inc.php config.inc.php
+</span><span class='line'>sed -i <span class="s2">&quot;&quot;</span> <span class="s2">&quot;s/blowfish_secret\&#39;\] = \&#39;/blowfish_secret\&#39;\] = \&#39;`cat /dev/urandom | strings | grep -o &#39;[[:alnum:]]&#39; | head -n 50 | tr -d &#39;\n&#39;`/&quot;</span> config.inc.php
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Drush</h2>
+
+<p>Drush is a helpful tool that provides a &ldquo;Drupal shell&rdquo; to speed up your Drupal development.</p>
+
+<ul>
+<li>Run the following in the Terminal to get Drush 4.2 installed in <em>/usr/local</em> and add drush to the $PATH:</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>svn co http://subversible.svn.beanstalkapp.com/modules/drush/tags/DRUPAL-7--4-2/ /usr/local/drush
+</span><span class='line'><span class="nb">cd</span> /tmp
+</span><span class='line'>pear download Console_Table
+</span><span class='line'>tar zxvf <span class="sb">`</span>ls Console_Table-*.tgz<span class="sb">`</span> <span class="sb">`</span>ls Console_Table-*.tgz | sed -e <span class="s1">&#39;s/\.[a-z]\{3\}$//&#39;</span><span class="sb">`</span>/Table.php
+</span><span class='line'>mv <span class="sb">`</span>ls Console_Table-*.tgz | sed -e <span class="s1">&#39;s/\.[a-z]\{3\}$//&#39;</span><span class="sb">`</span>/Table.php /usr/local/drush/includes/table.inc
+</span><span class='line'>rm -fr Console_Table-*
+</span><span class='line'>ln -s /usr/local/drush/drush /usr/local/bin/drush&lt;/code&gt;
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Virtual Hosts</h2>
+
+<p>Now that all of the components to run a website locally are in place, it only takes a few changes to <em>~/Sites/httpd-vhosts.conf</em> to get a new local site up and running.</p>
+
+<ul>
+<li><p>Your website code should be in a directory in <em>~/Sites</em>. For the purposes of this example, the webroot will be at <em>~/Sites/thewebsite</em>.</p></li>
+<li><p>You need to choose a &ldquo;domain name&rdquo; for your local site that you will use to access it in your browser. For the example, we will use &ldquo;myproject.local&rdquo;. The first thing you need to do is add a line to <em>/etc/hosts</em> to direct your &ldquo;domain name&rdquo; to your local system:</p></li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sudo sh -c <span class="err">&quot;</span>cat &gt;&gt; /etc/hosts <span class="s">&lt;&lt;&#39;EOF&#39;</span>
+</span><span class='line'><span class="s">127.0.0.1 myproject.local</span>
+</span><span class='line'><span class="s">EOF</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li><p>If you have been following the rest of this guide and used a copy of <em>/etc/apache2/extra/httpd-vhosts.conf</em> in <em>~/Sites/httpd-vhosts.conf</em>, you can delete the first of the two example Virtual Hosts and edit the second one. You can also delete the <strong>ServerAdmin</strong> line as it is not necessary.</p></li>
+<li><p>Change the <strong>ServerName</strong> to <strong>myproject.local</strong> (or whatever you entered into <em>/etc/hosts</em>) so Apache will respond when you visit <a href="http://myproject.local">http://myproject.local</a> in a browser.</p></li>
+<li><p>Change the <strong>DocumentRoot</strong> to the path of your webroot, which in this example is <strong>/Users/fname/Sites/thewebsite</strong></p></li>
+<li><p>It&rsquo;s highly recommended to set a CustomLog and an ErrorLog for each virtual host, otherwise all logged output will be in the same file for all sites. Change the line starting with <strong>CustomLog</strong> from &ldquo;dummy-host2.example.com-access_log&rdquo; to &ldquo;myproject.local-access_log&rdquo;, and for <strong>ErrorLog</strong> change &ldquo;dummy-host2.example.com-error_log&rdquo; to &ldquo;myproject.local-error_log&rdquo;</p></li>
+<li><p>Save the file and reload the Apache configuration as shown in Step 6 under the Apache section, and visit <a href="http://myproject.local">http://myproject.local</a> in your browser.</p></li>
+</ul>
+
+
+<p>Going forward, all you have to do to add a new website is duplicate and edit the <strong>&lt;VirtualHost *:80></strong> to <strong>&lt;/VirtualHost></strong> section underneath your existing configuration, make new edits, edit <em>/etc/hosts</em> again, and reload Apache.</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -212,6 +1026,401 @@ Terminated</p></li>
 
 
 <p>Do you have other ideas for managing temporary files that don&rsquo;t clean up after themselves? Let me know in the comments.</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2009/05/22/all-i-want-php-52-centosrhel/">All I Want Is PHP 5.2 on CentOS/RHEL!</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-05-22T14:07:00-04:00" pubdate data-updated="true">May 22<span>nd</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><strong><a href="/blog/2011/01/25/easy-php-5-dot-2-rpms-on-centos/">An updated, easier method can be found here.</a></strong></p>
+
+<p>At <a href="http://www.echoditto.com">EchoDitto</a>, most of our servers are running <a href="http://www.centos.org/">CentOS Linux</a>, which is a 100% binary-compatible version of the industry standard <a href="http://www.redhat.com/rhel/server/">Red Hat Enterprise Linux</a> (RHEL) without any of the fees. The problem with RHEL/CentOS is that they shipped with PHP 5.1.6, and as of this writing PHP is at 5.2.9. That&rsquo;s not a big deal, being a minor point revision behind, until you come across an application or module that needs a minimum of version 5.2. The last thing I want to do is install packages from a third-party or build it from source and risk breaking other packages. So what&rsquo;s the answer? Building it from the source rpm. There&rsquo;s no better way to keep the system free of third-party packages but also up to date.</p>
+
+<p>Why source RPMs and not the source from <a href="http://www.php.net/downloads.php">PHP</a>? Building a source RPM is the same procedure used to build the packages that Red Hat creates, and includes the libraries and dependencies and sub-packages that you would normally get from Red Hat directly. It will also include all of the same build flags in your new version that were available in the older package, meaning your PHP scripts won&rsquo;t suddenly break. This ultimately ensures binary compatibility and the ability to easily upgrade if Red Hat or CentOS were to release a package newer than yours.</p>
+
+<p>Sure, you could enable the <a href="http://wiki.centos.org/AdditionalResources/Repositories">CentOS Testing repository</a>, but with all of the warnings about packages breaking your system, and configuring yum to only update PHP and not mess up mysql or Apache, I&rsquo;d rather build and install only the packages that I need without worrying about breaking other packages. Want PHP 5.2 on your CentOS or RHEL server? Follow along.</p>
+
+<ul>
+<li>Start by downloading the latest PHP 5.2 source RPM from the aforementioned CentOS Testing repository from <a href="http://dev.centos.org/centos/5/testing/SRPMS/">http://dev.centos.org/centos/5/testing/SRPMS/</a>. As of this writing, they&rsquo;re at <a href="http://dev.centos.org/centos/5/testing/SRPMS/php-5.2.6-2.el5s2.src.rpm">php-5.2.6-2</a>. Why aren&rsquo;t we using the 5.1.6 source? The source RPM for 5.2.6 includes the latest patches from Red Hat that you can normally only get from being a part of the non-free Red Hat Network.</li>
+</ul>
+
+
+<p>I&rsquo;ll assume you&rsquo;re running as root for this guide. Download the source RPM with wget:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>wget http://dev.centos.org/centos/5/testing/SRPMS/php-5.2.6-2.el5s2.src.rpm
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>Install the source RPM</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>rpm -ivh php-5.2.6-2.el5s2.src.rpm
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>If you get an error and the install fails, you may need to manually create the SOURCES directory and install again</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>mkdir -p /usr/src/redhat/SOURCES
+</span><span class='line'>rpm -ivh php-5.2.6-2.el5s2.src.rpm
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>Download the latest stable release of PHP from <a href="http://www.php.net/downloads.php">the php.net download page</a> and save it in the SOURCES folder. Change the version number to the latest version if needed.</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">cd</span> /usr/src/redhat/SOURCES
+</span><span class='line'>wget http://us3.php.net/get/php-5.2.9.tar.gz/from/us.php.net/
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>In the SPECS folder, copy the original php.spec file in case you make mistakes or wish to build 5.2.6.</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">cd</span> /usr/src/redhat/SPECS
+</span><span class='line'>cp php.spec php526.spec
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>Edit php.spec and change the version and revision numbers to be 5.2.9 (or later) and the revision to 1 since this is your first build.</li>
+</ul>
+
+
+<pre>Summary: The PHP HTML-embedded scripting language
+Name: php
+Version: 5.2.9
+Release: 1%{?dist}
+License: PHP
+Group: Development/Languages
+URL: http://www.php.net/</pre>
+
+
+<ul>
+<li>Make sure you have the Development Tools group install for rpmbuild if you haven&rsquo;t already done so.</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>yum groupinstall <span class="s2">&quot;Development Tools&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>Try and build the spec file to see if you are missing any packages. For this tutorial, I am running from the minimal package set.</li>
+</ul>
+
+
+<pre>
+rpmbuild -ba php.spec 
+cat: /usr/include/httpd/.mmn: No such file or directory
+error: Failed build dependencies:
+    bzip2-devel is needed by php-5.2.9-1.i386
+    curl-devel >= 7.9 is needed by php-5.2.9-1.i386
+    db4-devel is needed by php-5.2.9-1.i386
+    expat-devel is needed by php-5.2.9-1.i386
+    gmp-devel is needed by php-5.2.9-1.i386
+    aspell-devel >= 0.50.0 is needed by php-5.2.9-1.i386
+    httpd-devel >= 2.0.46-1 is needed by php-5.2.9-1.i386
+    libjpeg-devel is needed by php-5.2.9-1.i386
+    libpng-devel is needed by php-5.2.9-1.i386
+    pam-devel is needed by php-5.2.9-1.i386
+    openssl-devel is needed by php-5.2.9-1.i386
+    sqlite-devel >= 3.0.0 is needed by php-5.2.9-1.i386
+    zlib-devel is needed by php-5.2.9-1.i386
+    pcre-devel >= 6.6 is needed by php-5.2.9-1.i386
+    readline-devel is needed by php-5.2.9-1.i386
+    krb5-devel is needed by php-5.2.9-1.i386
+    libc-client-devel is needed by php-5.2.9-1.i386
+    cyrus-sasl-devel is needed by php-5.2.9-1.i386
+    openldap-devel is needed by php-5.2.9-1.i386
+    mysql-devel >= 4.1.0 is needed by php-5.2.9-1.i386
+    postgresql-devel is needed by php-5.2.9-1.i386
+    unixODBC-devel is needed by php-5.2.9-1.i386
+    libxml2-devel is needed by php-5.2.9-1.i386
+    net-snmp-devel is needed by php-5.2.9-1.i386
+    libxslt-devel >= 1.0.18-1 is needed by php-5.2.9-1.i386
+    libxml2-devel >= 2.4.14-1 is needed by php-5.2.9-1.i386
+    ncurses-devel is needed by php-5.2.9-1.i386
+    gd-devel is needed by php-5.2.9-1.i386
+    freetype-devel is needed by php-5.2.9-1.i386
+</pre>
+
+
+<ul>
+<li>Install any required packages with yum. If any of these packages have other dependencies they will be downloaded as well. This might take a while.</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>yum install bzip2-devel curl-devel db4-devel expat-devel gmp-devel aspell-devel httpd-devel libjpeg-devel libpng-devel pam-devel openssl-devel sqlite-devel zlib-devel pcre-devel readline-devel krb5-devel libc-client-devel cyrus-sasl-devel openldap-devel mysql-devel postgresql-devel unixODBC-devel libxml2-devel net-snmp-devel libxslt-devel libxml2-devel ncurses-devel gd-devel freetype-devel
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>Try and build the spec file again to see if any patches fail to load properly. This usually happens if a patch has been rolled into the mainline PHP project and is no longer needed.</li>
+</ul>
+
+
+<pre>
+rpmbuild -ba php.spec
+Executing(%prep): /bin/sh -e /var/tmp/rpm-tmp.81391
++ umask 022
++ cd /usr/src/redhat/BUILD
++ LANG=C
++ export LANG
++ unset DISPLAY
++ cd /usr/src/redhat/BUILD
++ rm -rf php-5.2.9
++ /bin/gzip -dc /usr/src/redhat/SOURCES/php-5.2.9.tar.gz
++ tar -xf -
++ STATUS=0
+... output snipped ...
+Patch #32 (php-5.2.5-systzdata.patch):
++ patch -p1 -b --suffix .systzdata -s
++ echo 'Patch #50 (php-5.2.4-tests-dashn.patch):'
+Patch #50 (php-5.2.4-tests-dashn.patch):
++ patch -p1 -b --suffix .tests-dashn -s
+Reversed (or previously applied) patch detected!  Assume -R? [n] 
+Apply anyway? [n] 
+1 out of 1 hunk ignored -- saving rejects to file ext/standard/tests/file/bug26615.phpt.rej
+1 out of 1 hunk FAILED -- saving rejects to file ext/standard/tests/file/proc_open01.phpt.rej
+Reversed (or previously applied) patch detected!  Assume -R? [n] 
+Apply anyway? [n] 
+1 out of 1 hunk ignored -- saving rejects to file ext/standard/tests/file/bug26938.phpt.rej
+error: Bad exit status from /var/tmp/rpm-tmp.81391 (%prep)
+
+
+RPM build errors:
+    Bad exit status from /var/tmp/rpm-tmp.81391 (%prep)
+</pre>
+
+
+<ul>
+<li>Looks like Patch 50 failed. Edit the spec file and comment out the line that begins with %patch50</li>
+</ul>
+
+
+<pre>
+%patch30 -p1 -b .dlopen
+%patch31 -p1 -b .easter
+%patch32 -p1 -b .systzdata
+
+#%patch50 -p1 -b .tests-dashn
+%patch51 -p1 -b .tests-wddx
+</pre>
+
+
+<ul>
+<li><p>For 5.2.9 as of this writing, this is the only patch that fails to load properly. In later versions, you may find that other patches fail to load, and you should comment those out as well.</p></li>
+<li><p>Build the spec file again and after several minutes it will be complete and you&rsquo;ll have a handful of rpms in /usr/src/redhat/RPMS/i386</p></li>
+</ul>
+
+
+<pre>
+rpmbuild -ba php.spec
+Executing(%prep): /bin/sh -e /var/tmp/rpm-tmp.77534
++ umask 022
++ cd /usr/src/redhat/BUILD
++ LANG=C
++ export LANG
++ unset DISPLAY
++ cd /usr/src/redhat/BUILD
++ rm -rf php-5.2.9
++ /bin/gzip -dc /usr/src/redhat/SOURCES/php-5.2.9.tar.gz
++ tar -xf -
++ STATUS=0
+... output snipped ...
+Wrote: /usr/src/redhat/RPMS/i386/php-ncurses-5.2.9-1.i386.rpm
+Wrote: /usr/src/redhat/RPMS/i386/php-gd-5.2.9-1.i386.rpm
+Wrote: /usr/src/redhat/RPMS/i386/php-bcmath-5.2.9-1.i386.rpm
+Wrote: /usr/src/redhat/RPMS/i386/php-dba-5.2.9-1.i386.rpm
+Wrote: /usr/src/redhat/RPMS/i386/php-debuginfo-5.2.9-1.i386.rpm
+Executing(%clean): /bin/sh -e /var/tmp/rpm-tmp.7525
++ umask 022
++ cd /usr/src/redhat/BUILD
++ cd php-5.2.9
++ '[' /var/tmp/php-5.2.9-1-root-root '!=' / ']'
++ rm -rf /var/tmp/php-5.2.9-1-root-root
++ rm files.bcmath files.common files.dba files.dbase files.dom files.gd files.imap [snip]
++ exit 0
+</pre>
+
+
+<ul>
+<li>You&rsquo;ll probably want to also build the php-extras source RPM as well. php-extras provides extensions for dbase, readline, mcrypt, mhash, tidy and mssql. Since there is no package in CentOS Testing, grab the latest from 5.1.6.</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>wget http://mirror.centos.org/centos/5/extras/SRPMS/php-extras-5.1.6-15.el5.centos.1.src.rpm
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>And install it.</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>rpm -ivh php-extras-5.1.6-15.el5.centos.1.src.rpm
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>Copy the php-extras.spec file like you did for php.spec so you can have the original.</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">cd</span> /usr/src/redhat/SPECS
+</span><span class='line'>cp php-extras.spec php-extras516.spec
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>We ultimately need to replace the patches in php-extras.spec with the same from the much newer php.spec, as well as the ABI version numbers in the beginning of the file. <a href="http://www.webtatic.com/blog/2009/05/installing-php-526-extra-extensions/">Webtatic.com has already done this</a> and you can go ahead and <a href="http://www.webtatic.com/files/2009/05/php-extras.spec">download the edited spec file</a>, which also includes new PHP 5.2 extensions for json and filter. Remember, if you had a failed patch from php.spec, you&rsquo;ll need to comment it out in php-extras.spec as well. For 5.2.9, I had to comment out patch50 again.</li>
+</ul>
+
+
+<pre>
+%patch32 -p1 -b .systzdata
+
+%patch50 -p1 -b .tests-dashn
+%patch51 -p1 -b .tests-wddx
+
+%build
+</pre>
+
+
+<ul>
+<li>Once your php-extras.spec file is up to date, build the spec file and see if you&rsquo;re missing any dependencies.</li>
+</ul>
+
+
+<pre>
+rpmbuild -ba php-extras.spec 
+error: Failed build dependencies:
+    php-devel = 5.2.9 is needed by php-extras-5.2.9-1.i386
+    libmcrypt-devel is needed by php-extras-5.2.9-1.i386
+    mhash-devel is needed by php-extras-5.2.9-1.i386
+    libtidy-devel is needed by php-extras-5.2.9-1.i386
+    freetds-devel is needed by php-extras-5.2.9-1.i386
+</pre>
+
+
+<ul>
+<li>Let&rsquo;s go back and install the php package that we need. If you only want the minimum needed to build php-extras, start by installing php-devel and seeing what it asks for, and install it&rsquo;s dependencies.</li>
+</ul>
+
+
+<pre>
+cd /usr/src/redhat/RPMS/i386
+rpm -ivh php-devel-5.2.9-1.i386.rpm 
+error: Failed dependencies:
+    php = 5.2.9-1 is needed by php-devel-5.2.9-1.i386
+rpm -ivh php-5.2.9-1.i386.rpm php-devel-5.2.9-1.i386.rpm 
+error: Failed dependencies:
+    php-cli = 5.2.9-1 is needed by php-5.2.9-1.i386
+    php-common = 5.2.9-1 is needed by php-5.2.9-1.i386
+rpm -ivh php-5.2.9-1.i386.rpm php-devel-5.2.9-1.i386.rpm php-cli-5.2.9-1.i386.rpm php-common-5.2.9-1.i386.rpm 
+Preparing...                ########################################### [100%]
+   1:php-common             ########################################### [ 25%]
+   2:php-cli                ########################################### [ 50%]
+   3:php                    ########################################### [ 75%]
+   4:php-devel              ########################################### [100%]
+</pre>
+
+
+<ul>
+<li>After installing those four packages, install the other packages with yum.</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>yum install libmcrypt-devel mhash-devel libtidy-devel freetds-devel
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>Now that all of the dependencies are resolved, build the php-extras.spec file.</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">cd</span> /usr/src/redhat/SPECS
+</span><span class='line'>rpmbuild -ba php-extras.spec
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>If you&rsquo;re using RHEL, the build might fail for two reasons: a library for tidy is needed, and mhash-devel isn&rsquo;t available for RHEL. Both are easy to fix. Install &lsquo;tidy&rsquo; with yum, and while mhash-devel isn&rsquo;t available, you can download libmhash-devel and edit the spec file to require libmhash-devel instead of mhash-devel.</li>
+</ul>
+
+
+<p>You should now have all of your RPMs in /usr/src/redhat/RPMS/i386 (or x86_64) and install whichever packages you want. If in doubt, install them all. They&rsquo;re mainly static libraries and won&rsquo;t bloat your system. You may not want to install the debuginfo packages since you may find little use for them.</p>
+
+<p>Staying updated is easy, download the source from php.net into /usr/src/redhat/SOURCES and edit the spec files for the new version numbers, rebuild, and install RPMs. If you&rsquo;re concerned about new patches being needed, you can grab the latest source RPM from Centos: <a href="http://dev.centos.org/centos/5/testing/SRPMS/">http://dev.centos.org/centos/5/testing/SRPMS/</a>. If CentOS were to ever come out with a newer version, or you want to subscribe to a yum repo and they provided a higher version, it would update as normal. You would need to rebuild in pear/pecl libraries by uninstall+installing them.</p>
+
+<p>Yes, this is an involved process the first time around, but after doing this once you only need to download the latest source from php.net and edit the spec file version number and rebuild and update. If an old patch fails in a newer version you&rsquo;ll need to comment it out, but it&rsquo;s that simple.</p>
+
+<p>This also works for 64-bit installations. Thanks to <a href="http://www.atoomnet.net/centos_updated_php.php">DiNo</a> for helping me get PHP built on a 64-bit RHEL installation.</p>
+
+<p>If you&rsquo;d like to skip the steps and get right to building, you can download and install the source RPMs and build again the spec files. If you&rsquo;d like to do itself, you can compare my spec files to yours. Enjoy the latest PHP hotness!</p>
+
+<ul>
+<li><a href="http://www.filedropper.com/php-spec-files">PHP Spec files</a></li>
+<li><a href="http://www.filedropper.com/php-529-1src">php 5.2.9 source RPM</a> MD5 = 008d5f2ced015c5f6463afb616737b04</li>
+<li><a href="http://www.filedropper.com/php-extras-529-1src">php-extras 5.2.9 source RPM</a> MD5 = 2f8a7e815170bf31509180c196ade19a</li>
+</ul>
+
 </div>
   
   

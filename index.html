@@ -1259,7 +1259,7 @@ Reference 2: <a href="http://jsdelfino.blogspot.com/2012/08/autoconf-and-automak
       
   <header>
     
-      <h1 class="entry-title"><a href="/blog/2012/02/10/nodejs-and-npm-centos/">Node.js and NPM on CentOS</a></h1>
+      <h1 class="entry-title"><a href="/blog/2012/02/29/can-i-get-your-number-dns-made-simple/">Can I Get Your Number? DNS Made Simple</a></h1>
     
     
       <p class="meta">
@@ -1275,35 +1275,30 @@ Reference 2: <a href="http://jsdelfino.blogspot.com/2012/08/autoconf-and-automak
   
 
 
-<time datetime="2012-02-10T17:23:00-05:00" pubdate data-updated="true">Feb 10<span>th</span>, 2012</time>
+<time datetime="2012-02-29T09:51:00-05:00" pubdate data-updated="true">Feb 29<span>th</span>, 2012</time>
         
       </p>
     
   </header>
 
 
-  <div class="entry-content"><p><strong><em>Update:</em> This no longer appears to be necessary as of nodejs 0.8.0.</strong> It may have been fixed earlier but I noticed neither of these changes are necessary anymore. Something new though, I had problems with node-gyp, and the solution was to install python26 with yum and then re-run the npm command with <code>PYTHON="/usr/bin/python26" npm install -deps</code> or similar.</p>
+  <div class="entry-content"><p>At <a href="http://www.echoditto.com">EchoDitto</a>, we get a lot of questions about how hosting works, and in particular about changing DNS records for new websites or websites who are moving to new hosting providers. Here&rsquo;s an old but true analogy to make understanding DNS easier: the IP address of your website is like your phone number (it changes if you move houses &ndash; at least, your landline does), and DNS is like the phonebook. If someone wants to call you at your new house they might look you up by name in the phonebook, but if their phonebook hasn&rsquo;t been updated since you moved they&rsquo;re going to call your old house.</p>
 
-<p>The preferred way to install node and NPM seems to be installing from source, but I&rsquo;m a perennial fan of using packages to keep things tidy, especially if I need to uninstall something. I started by going to the <a href="http://nodejs.org/#download">Node.js download page</a>, and through to <a href="https://github.com/joyent/node/wiki/Installing-Node.js-via-package-manager">Installing with a package manager</a>. I installed the yum release RPM for the <a href="http://nodejs.tchol.org/">tchol.org</a> repository as directed and installed <strong>nodejs</strong> and <strong>npm</strong> with yum. From there, I ran into two problems but thankfully they were fairly easy to resolve.</p>
+<p>Here&rsquo;s how it works in more detail:</p>
 
-<p>The first thing I wanted to do was install <a href="https://github.com/nodejitsu/forever">forever</a> globally so I could use it to keep applications running persistently. But running <code>npm install forever -g</code> kept stalling. The npm RPM installed from the tchol.org repository creates the symlink /usr/lib/node_modules to /usr/lib/nodejs. That&rsquo;s fine, but /usr/lib/nodejs is owned by root:root. Running a npm install command with sudo attempted to set the ownership of the NPM modules as nobody:user, and NPM wasn&rsquo;t exiting due to permissions for some reason.</p>
+<p>When visitors want to access your website their computers take the domain name that they type in (echoditto.com, for example) and look up the IP address for that domain by way of Domain Name Service, or DNS.</p>
 
-<p>I have ACLs enabled on my file system, so I fixed this by allowing nobody write access to /usr/lib/nodejs:</p>
+<p>To get your DNS records for users to get to your website, first you need a domain name. Go Daddy and Network Solutions are examples of registrars where you can buy domain names.</p>
 
-<pre><code>sudo setfacl -m u:nobody:rwx /usr/lib/nodejs
-</code></pre>
+<p>Continuing the analogy, the first thing a visitor&rsquo;s computer needs to know is which &ldquo;phonebook&rdquo; your website&rsquo;s IP address is listed in. The registrar will set something called the &ldquo;name server&rdquo; for your domain, which is akin to telling the user which &ldquo;phonebook&rdquo; (name server) to look you up in. The name server contains the details about how your domain name, example.com, will get to the computer that actually contains (or &ldquo;hosts&rdquo;) your website.</p>
 
-<p>If you don&rsquo;t have ACLs enabled on your filesystem, you could allow nobody to be the folder owner:</p>
+<p>In a phonebook, you look up a name and get a phone number. It&rsquo;s similar with DNS &ndash; the user&rsquo;s computer will look up your domain in the name server and get an IP address, which is a numerical address of a computer on the internet. The name server gives the user&rsquo;s computer the exact IP address of the computer that hosts your website. Once it has that information the user&rsquo;s computer can &ldquo;call&rdquo; the number,  which takes them directly to your website.</p>
 
-<pre><code>sudo chown nobody:nobody /usr/lib/nodejs
-</code></pre>
+<p>DNS contains another field along with the IP address, called a TTL, or time-to-live. This time, in seconds, is how long your computer should remember the number in the phonebook before it looks it up again. Computers check in with DNS name servers before visiting a site again to make sure the IP address of a website hasn&rsquo;t changed, and the TTL tells them how often to do that. TTL times can vary, but often you may find it initially set for 1 to 4 hours on average websites. The higher the setting is, the less often the DNS name server will be asked about the IP address and other DNS records.</p>
 
-<p>The second problem I ran into was, after installing forever, it wouldn&rsquo;t run. The nodejs package installed the binary as /usr/bin/nodejs but /usr/bin/forever begins with <strong>#!/usr/bin/env node</strong>, which will not return a valid interpreter. I wanted to install a symlink into /usr/local/bin, but some users don&rsquo;t always have that in their path, so I created a link via:</p>
+<p>When launching a website on a new server, or moving web hosts, you want to temporarily change the TTL to be really low. That makes website visitors check their &ldquo;phonebook&rdquo; more frequently, which means they will stop going to the old IP address as soon as possible after a change is made. It can take a while for a new TTL to take effect for all users if using the typical defaults of 1 to 4 hours, so when we&rsquo;re launching a new site, or changing hosting, we do this ahead of time. Once visitors worldwide have the new lower TTL, we can change the DNS entry for the website to point to the new IP address, and then visitors will see your new website, or your current website on the new host, very quickly.</p>
 
-<pre><code>sudo ln -s /usr/bin/nodejs /usr/bin/node
-</code></pre>
-
-<p>Now I&rsquo;m able to install anything I need to with NPM and run my Node.js applications with Forever. I&rsquo;m still very new to Node, so if you think I should be doing things a better way, let me know in the comments!</p>
+<p>Have other questions about DNS? Ask your computer to look up <a href="http://www.youtube.com/watch?v=oN7ripK5uGM">http://www.youtube.com/watch?v=oN7ripK5uGM</a> to watch a video that explains all of this in another way.</p>
 </div>
   
   
