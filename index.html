@@ -9,7 +9,7 @@
   <meta name="author" content="Alan Ivey">
 
   
-  <meta name="description" content="If you run a website based on PHP, and have your source files on a network file system like NFS, OCFS2, or GlusterFS, and combine it with PHP&rsquo;s &hellip;">
+  <meta name="description" content="Maintaining multiple versions of software can be tricky. Most of the explanations I have come across suggest using the version provided by your Linux &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -77,6 +77,786 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/07/11/creating-php-packages-software-collection/">Creating PHP Packages as a Software Collection</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-07-11T22:33:00-04:00" pubdate data-updated="true">Jul 11<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Maintaining multiple versions of software can be tricky. Most of the explanations I have come across suggest using the version provided by your Linux distribution and installing others from source using a custom path, like <code>./configure --prefix=/opt/php-5.3.26; make; make install</code>, but it&rsquo;s not pleasant to update, manage small sub-packages, or make init.d scripts. The ideal option is to use packages that install to another location alongside the defaults, but hacking up spec files to override the default RPM macros like <code>%configure</code> (for CentOS and RHEL anyway) is not fun. This is where <a href="https://access.redhat.com/site/documentation/en-US/Red_Hat_Developer_Toolset/1/html/Software_Collections_Guide/">Red Hat Software Collections</a> come in to play. While Red Hat recently announced the <a href="http://www.redhat.com/about/news/archive/2013/6/red-hat-software-collections-1.0-beta-now-available">Red Hat Software Collections 1.0 Beta</a> for alternate versions of PHP, Perl, MySQL, and more, let&rsquo;s step through how to create your own Software Collection, or SCL. I&rsquo;ll show how to create PHP 5.3.26 to be installed in /opt/rh/ by converting existing SPEC files, and I&rsquo;ll also include diff files for how I built PHP 5.2.17 as an SCL.</p>
+
+<p>Before I get too deep into the instructions, I&rsquo;d like to share the resources I used:</p>
+
+<ul>
+<li><a href="https://access.redhat.com/site/documentation/en-US/Red_Hat_Developer_Toolset/1/html/Software_Collections_Guide/sect-Converting_a_Conventional_Spec_File.html">Red Hat&rsquo;s documentation on converting SPEC files to SCLs</a></li>
+<li><a href="http://people.redhat.com/rcollet/php54/rhel/5/SRPMS/">PHP 5.4 SCL SRPMs</a> from <a href="http://blog.famillecollet.com/post/2012/11/20/PHP-5.4-as-Software-Collection">Remi Collet</a></li>
+<li><a href="http://www2.atomicorp.com/channels/source/php/">PHP 5.3 SRPMs from AtomiCorp</a>, because I wanted <a href="http://php.net/manual/en/book.mysqlnd.php">mysqlnd</a> and didn&rsquo;t want to hack up the Red Hat SPEC to add it</li>
+<li><a href="http://centos.alt.ru/pub/repository/centos/5/SRPMS/">PHP 5.2 SRPMs from alt.ru</a>, which contains many backported patches and PHP-FPM</li>
+</ul>
+
+
+<p>An important point to be learned is: <strong>Software Collections are essentially easy-to-use RPM macros</strong> that make installing packages into non-standard directories a piece of cake. As I explain various steps, I&rsquo;ll attempt to explain how the Software Collections function and how I&rsquo;ve seen others set them up so we&rsquo;re following best practices in ours.</p>
+
+<h2>Explaining the Software Collection base</h2>
+
+<p>Every Software Collection needs a base package that sets up the directory structure for the packages. When you use Red Hat&rsquo;s method of building SCLs, specifically via the <em>scl-utils-build</em> package, the base package will create <strong>/opt/rh/%{scl_prefix}/root</strong> with subdirectories like bin/, usr/, etc/, as so on.</p>
+
+<p>For the SCL named <em>php53</em>, here is the base directory structure:</p>
+
+<pre>
+/opt/rh/php53/root/bin
+/opt/rh/php53/root/boot
+/opt/rh/php53/root/dev
+/opt/rh/php53/root/etc
+/opt/rh/php53/root/home
+/opt/rh/php53/root/lib
+/opt/rh/php53/root/lib64
+/opt/rh/php53/root/media
+/opt/rh/php53/root/mnt
+/opt/rh/php53/root/opt
+/opt/rh/php53/root/proc
+/opt/rh/php53/root/root
+/opt/rh/php53/root/sbin
+/opt/rh/php53/root/selinux
+/opt/rh/php53/root/srv
+/opt/rh/php53/root/sys
+/opt/rh/php53/root/tmp
+/opt/rh/php53/root/usr
+/opt/rh/php53/root/var
+</pre>
+
+
+<p>Most of the SCLs I have seen contain an <code>enable</code> script at <strong>/opt/rh/%{scl_prefix}/enable</strong> that will add the binaries, man pages, and library paths to the session. In this case, running <code>source /opt/rh/php53/enable</code> will run the following:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">export </span><span class="nv">PATH</span><span class="o">=</span>/opt/rh/php52/root/usr/bin:/opt/rh/php52/root/usr/sbin:<span class="nv">$PATH</span>
+</span><span class='line'><span class="nb">export </span><span class="nv">LD_LIBRARY_PATH</span><span class="o">=</span>/opt/rh/php52/root/usr/lib64:<span class="nv">$LD_LIBRARY_PATH</span>
+</span><span class='line'><span class="nb">export </span><span class="nv">MANPATH</span><span class="o">=</span>/opt/rh/php52/root/usr/share/man:<span class="nv">$MANPATH</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The base package will also create a <em>%{scl_prefix}-build</em> subpackage that creates RPM macros that will come in handy as the SPEC file is edited.</p>
+
+<h2>Building the Software Collection base</h2>
+
+<ul>
+<li><p>Start with <a href="http://people.redhat.com/rcollet/php54/rhel/5/SRPMS/php54-1-2.el5.src.rpm">http://people.redhat.com/rcollet/php54/rhel/5/SRPMS/php54-1-2.el5.src.rpm</a> because it&rsquo;s ready for CentOS 5 and 6</p></li>
+<li><p>Rename or copy php54.spec to php53.spec</p></li>
+<li><p>Set the global variable <code>scl</code> to be <strong>php53</strong>:</p>
+
+<pre><code>%global scl php53
+</code></pre></li>
+<li><p>If you haven&rsquo;t already, install <em>rpm-build</em> and <em>mock</em>, and you&rsquo;ll also need <em>scl-utils-build</em> for later:</p>
+
+<pre><code>yum -y install rpm-build mock scl-utils-build
+</code></pre></li>
+<li><p>CentOS 5 needs additional rpmbuild options when using a CentOS 6 build host because <a href="https://fedoraproject.org/wiki/Features/StrongerHashes">CentOS 6 uses stronger hashes</a> by default</p>
+
+<ul>
+<li><p>CentOS 5:</p>
+
+<pre><code>rpmbuild --define "_source_filedigest_algorithm md5" --define "_binary_filedigest_algorithm md5" -bs --nodeps php53.spec
+</code></pre></li>
+<li><p>CentOS 6:</p>
+
+<pre><code>rpmbuild -bs --nodeps php53.spec
+</code></pre></li>
+</ul>
+</li>
+<li><p>Build with mock (repeat el6 instructions for el5):</p>
+
+<pre><code>mock -v -r epel-6-x86_64 php53-1-2.el5.src.rpm
+</code></pre></li>
+<li><p>Copy resulting files to local folder and create a local Yum repo to be used later (repeat el6 instructions for el5):</p>
+
+<pre><code>mkdir -vp ~/rpmbuild/RPMS/repo/el6/{x86_64,SRPMS}
+cp -va /var/lib/mock/epel-6-x86_64/result/*.{noarch,x86_64}.rpm ~/rpmbuild/RPMS/repo/el6/x86_64
+cp -va /var/lib/mock/epel-6-x86_64/result/*.src.rpm ~/rpmbuild/RPMS/repo/el6/SRPMS
+createrepo -v -d ~/rpmbuild/RPMS/repo/el6/x86_64
+</code></pre></li>
+</ul>
+
+
+<h2>Mock</h2>
+
+<p>We used <code>mock</code> to build the SCL base package, and to make our lives significantly easier, we&rsquo;ll continue to use it with some modifications specific to our SCL.</p>
+
+<p>For all remaining steps, unless there are specific notes for CentOS 5 and 6, repeat the 6/el6 instructions for 5/el5.</p>
+
+<ul>
+<li><p>Change to the mock configuration directory:</p>
+
+<pre><code>cd /etc/mock
+</code></pre></li>
+<li><p>Copy the default EPEL files to new ones specific to our SCL:</p>
+
+<pre><code>cp -a epel-6-x86_64.cfg epel-6-x86_64-scl-php53.cfg
+</code></pre></li>
+<li><p>Edit <em>epel-6-x86_64-scl-php53.cfg</em> and:</p>
+
+<ul>
+<li><p>Add <strong>-scl-php53</strong> to the existing value of <em>config_opts[&lsquo;root&rsquo;]</em>:</p>
+
+<pre><code>config_opts['root'] = 'epel-6-x86_64-scl-php53'
+</code></pre></li>
+<li><p>CentOS 5 and 6 have different options for <em>config_opts[&lsquo;chroot_setup_cmd&rsquo;]</em>:</p>
+
+<ul>
+<li><p>CentOS 5: Add <strong>scl-utils-build php53-build</strong> the following to the existing value:</p>
+
+<pre><code>config_opts['chroot_setup_cmd'] = 'install buildsys-build scl-utils-build php53-build'
+</code></pre></li>
+<li><p>CentOS 6: Change from &lsquo;groupinstall buildsys-build&rsquo; to <strong>install @buildsys-build scl-utils-build php53-build</strong> (the @ will grab the group and then still allow for non-group packages to be added):</p>
+
+<pre><code>config_opts['chroot_setup_cmd'] = 'install @buildsys-build scl-utils-build php53-build'
+</code></pre></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>Add the local repo where you left the files from the section above as a new repo; I added mine above <em>[base]</em>. <strong>Change /home/alan to the appropriate path for your system!</strong></p>
+
+<pre><code>[localrepo-6-x86_64]
+name=localrepo-6-x86_64
+enabled=1
+baseurl=file:///home/alan/rpmbuild/RPMS/repo/el6/x86_64
+</code></pre></li>
+</ul>
+
+
+<h2>PHP</h2>
+
+<ul>
+<li><p>Use latest php-5.3.x SRPM from <a href="http://www2.atomicorp.com/channels/source/php/">http://www2.atomicorp.com/channels/source/php/</a></p></li>
+<li><p>Install the SRPM</p>
+
+<pre><code>rpm -ivh php-5.3.26-19.art.src.rpm
+</code></pre></li>
+<li><p>Go to the SPECS folder, typically at <em>~/rpmbuild/SPECS</em>, and copy <em>php-art.spec</em> to <em>php.spec</em></p>
+
+<pre><code>cp -v php-art.spec php.spec
+</code></pre></li>
+<li><p>Several changes are needed to add the SCL macros to the SPEC file; see the <a href="https://access.redhat.com/site/documentation/en-US/Red_Hat_Developer_Toolset/1/html/Software_Collections_Guide/sect-Converting_a_Conventional_Spec_File.html">Red Hat documentation</a>. Download my patch file for a full list of changes needed to convert AtomiCorp&rsquo;s PHP SPEC to one that can be used with and without SCL options: <a href="/files/php_scl.diff">php_scl.diff</a></p>
+
+<pre><code>curl --remote-name --location http://alanthing.com/files/php_scl.diff
+</code></pre>
+
+<p>Let&rsquo;s step through the changes:</p>
+
+<ul>
+<li><p>  The first section allows for variables beginning with <code>_root_</code> to be available if it&rsquo;s not being built with a SCL. As I said earlier, I heavily borrowed from Remi&rsquo;s PHP 5.4 SCL SRPM. The <code>_root_</code> macros are provided by the <em>scl-utils-build</em> package, but this block allows them to work if an SCL is not being used.</p>
+
+<pre><code>+%if 0%{?scl:1}
++%scl_package php
++%else
++%global pkg_name          %{name}
++%global _root_sysconfdir  %{_sysconfdir}
++%global _root_bindir      %{_bindir}
++%global _root_sbindir     %{_sbindir}
++%global _root_includedir  %{_includedir}
++%global _root_libdir      %{_libdir}
++%global _root_prefix      %{_prefix}
++%if 0%{?rhel} &lt; 6
++%global _root_initddir    /etc
++%else
++%global _root_initddir    %{_initddir}
++%endif
++%endif
+</code></pre></li>
+<li><p>  These values allow you to use the SCL mod_php with the built-in version of Apache</p>
+
+<pre><code>+%global _httpd_confdir     %{_root_sysconfdir}/httpd/conf.d
++%global _httpd_moddir      %{_libdir}/httpd/modules
++%global _root_httpd_moddir %{_root_libdir}/httpd/modules
+</code></pre></li>
+<li><p>  There are other changes scattered throughout the file to force using locations outside of the SCL, like:</p>
+
+<pre><code>-%global httpd_mmn %(cat %{_includedir}/httpd/.mmn || echo missing-httpd-devel)
++%global httpd_mmn %(cat %{_root_includedir}/httpd/.mmn || echo missing-httpd-devel)
+</code></pre></li>
+<li><p>  In all of the <em>Name:</em> lines, add the macro <strong>%{?scl_prefix}</strong>, which will only be used when building an SCL. For example, if you use the SCL rpmbuild options, the common package here would be called <em>php53-php-common</em>, but without it would still be called <em>php-common</em>. This applies for the main <em>Name</em> and sub-packages. It&rsquo;s also used for <em>Obsoletes</em>, <em>Conflicts</em>, <em>Provides</em>, and <em>Requires</em>.</p>
+
+<pre><code>-Name: %{phpname}
++Name: %{?scl_prefix}%{phpname}
+
+-Obsoletes: php-mhash
+-Conflicts: php-zend-optimizer
++Obsoletes: %{?scl_prefix}php-mhash
++Conflicts: %{?scl_prefix}php-zend-optimizer
+</code></pre></li>
+<li><p>  The main package would provide <em>mod_php</em> for the built-in Apache, so this addition prevents a collision of having both <code>php</code> and <code>php53-php</code> installed:</p>
+
+<pre><code>+%if 0%{?scl:1}
++Conflicts: php53, php
++%else
+ # php53
+ Obsoletes: php53
++%endif
+</code></pre></li>
+<li><p>  As per the Red Hat documentation, a main package (not php, but php-common, since php-common is needed by every php package) must require the base package</p>
+
+<pre><code>%{?scl:Requires:%scl_runtime}
+</code></pre></li>
+<li><p>  The AtomiCorp SPEC is carefully designed to prevent conflicts with the CentOS 5 packages called <em>php53</em> that are not part of an SCL. I added a change to only keep the <em>Obsoletes</em> if it&rsquo;s not an SCL</p>
+
+<pre><code>+%if 0%{?!scl:1}
+ Obsoletes: php53-imap
++%endif
+</code></pre></li>
+<li><p>  I made a few improvements that aren&rsquo;t related to SCL. I won&rsquo;t list them all here, but one that I noticed was that libevent is no longer needed after PHP 5.3.4, as my comment suggests explaining why I comment it out:</p>
+
+<pre><code>+# libevent needed *until* 5.3.4, see http://bugzilla.redhat.com/show_bug.cgi?id=835671
++#BuildRequires: libevent-devel &gt;= 1.4.11
+</code></pre></li>
+<li><p>  A lot of the compile options will use the built-in libraries, like:</p>
+
+<pre><code>- --with-freetype-dir=%{_prefix} \
+- --with-png-dir=%{_prefix} \
+- --with-xpm-dir=%{_prefix} \
++ --with-freetype-dir=%{_root_prefix} \
++ --with-png-dir=%{_root_prefix} \
++ --with-xpm-dir=%{_root_prefix} \
+</code></pre></li>
+<li><p>  In a few places I use <code>sed</code> to fix config files, here&rsquo;s one where I ensure the SCL root is used for the <em>session.save_path</em> by changing <em>/var/lib</em> to <em>%{_localstatedir}/lib</em></p>
+
+<pre><code>-%{__sed} -e '/session.save_path/s/php/%{phpname}/' %{SOURCE2} &gt;$RPM_BUILD_ROOT%{_sysconfdir}/php.ini
++%{__sed} -e 's|/var/lib/php/session|%{_localstatedir}/lib/%{phpname}/session|' %{SOURCE2} &gt;$RPM_BUILD_ROOT%{_sysconfdir}/php.ini
+</code></pre></li>
+<li><p>  Instead of installing the Apache module files in the system default directories, I decided to keep them in the SCL root and create symbolic links, though I do put the mod_php Apache configuration file in /etc/httpd/conf.d</p>
+
+<pre><code>-  &gt;$RPM_BUILD_ROOT/%{_origsysconfdir}/httpd/conf.d/%{phpname}.conf
++  &gt;$RPM_BUILD_ROOT/%{_httpd_confdir}/%{?scl_prefix}%{phpname}.conf
++%endif
++
++# Symlink SCL DSOs into real httpd moddir, mod_php config into real httpd config directory
++%if %{?scl:1}0
++install -m 755 -d $RPM_BUILD_ROOT%{_root_httpd_moddir}
++install -m 755 -d $RPM_BUILD_ROOT%{_httpd_confdir}
++%if %{phpname} == php
++ln -s %{_httpd_moddir}/libphp5.so $RPM_BUILD_ROOT%{_root_httpd_moddir}/libphp5.so
++ln -s %{_httpd_moddir}/libphp5-zts.so $RPM_BUILD_ROOT%{_root_httpd_moddir}/libphp5-zts.so
++%else
++ln -s %{_httpd_moddir}/libphp5.so $RPM_BUILD_ROOT%{_root_httpd_moddir}/lib%{phpname}.so
++ln -s %{_httpd_moddir}/libphp5-zts.so $RPM_BUILD_ROOT%{_root_httpd_moddir}/lib%{phpname}-zts.so
++%endif
+ %endif
+</code></pre></li>
+<li><p>  A common practice I observed in other SCL files was putting the init.d script in <em>/etc/init.d</em> instead of the SCL root with prepending the SCL name. For example, if you build with SCL options, the PHP-FPM script would be at <em>/etc/init.d/php53-php-fpm</em>, or without it would be <em>/etc/init.d/php-fpm</em>, either one using the correct paths:</p>
+
+<pre><code>-install -m 755 -d $RPM_BUILD_ROOT%{_originitdir}
+-install -m 755 %{SOURCE6} $RPM_BUILD_ROOT%{_originitdir}/php-fpm
++install -m 755 -d $RPM_BUILD_ROOT%{_root_initddir}
++install -m 755 %{SOURCE6} $RPM_BUILD_ROOT%{_root_initddir}/%{?scl_prefix}%{phpname}-fpm
++sed -e '/daemon/s:php-fpm:/usr/sbin/php-fpm:' \
++    -i $RPM_BUILD_ROOT%{_root_initddir}/%{?scl_prefix}%{phpname}-fpm
++sed -e '/php-fpm.pid/s:/var:%{_localstatedir}:' \
++    -e '/subsys/s/php-fpm/%{?scl_prefix}%{phpname}-fpm/' \
++    -e 's:/etc/sysconfig/php-fpm:%{_sysconfdir}/sysconfig/%{phpname}-fpm:' \
++    -e 's:/etc/php-fpm.conf:%{_sysconfdir}/%{phpname}-fpm.conf:' \
++    -e 's:/usr/sbin:%{_sbindir}:' \
++    -i $RPM_BUILD_ROOT%{_root_initddir}/%{?scl_prefix}%{phpname}-fpm
+</code></pre></li>
+<li><p>  Same concept for logrotate configs:</p>
+
+<pre><code> # LogRotate
+-install -m 755 -d $RPM_BUILD_ROOT%{_origsysconfdir}/logrotate.d
+-install -m 644 %{SOURCE7} $RPM_BUILD_ROOT%{_origsysconfdir}/logrotate.d/php-fpm
++install -m 755 -d $RPM_BUILD_ROOT%{_root_sysconfdir}/logrotate.d
++install -m 644 %{SOURCE7} $RPM_BUILD_ROOT%{_root_sysconfdir}/logrotate.d/%{?scl_prefix}%{phpname}-fpm
++sed -e 's:/var:%{_localstatedir}:' \
++    -i $RPM_BUILD_ROOT%{_root_sysconfdir}/logrotate.d/%{?scl_prefix}%{phpname}-fpm
+</code></pre></li>
+<li><p>  While you can <code>source</code> the <em>enable</em> script to get the SCL binaries in your $PATH, we can also create symlinks with the SCL prefix in system folders. This is ideal if you would only need occasional access to the SCL binary, then you could use <code>php53-php</code> instead of <code>/opt/rh/php53/root/usr/bin/php</code>:</p>
+
+<pre><code>+# make the cli commands available in standard root for SCL build
++%if 0%{?scl:1}
++install -m 755 -d $RPM_BUILD_ROOT%{_root_bindir}
++ln -s %{_bindir}/php       $RPM_BUILD_ROOT%{_root_bindir}/%{?scl_prefix}php
++ln -s %{_bindir}/phar.phar $RPM_BUILD_ROOT%{_root_bindir}/%{?scl_prefix}phar
++%endif
+</code></pre></li>
+<li><p>  You have previously seen <code>if 0%{?scl:1}</code> as a way to define an if block if an SCL is being built. For single lines, you can use  <code>%{?scl: --item--}</code>, like conditionally adding directories:</p>
+
+<pre><code>-%{_libdir}/httpd/modules/libphp5.so
+-%{_libdir}/httpd/modules/libphp5-zts.so
++%{?scl: %dir %{_httpd_moddir}}
++%{_httpd_moddir}/libphp5.so
++%{?scl: %{_root_httpd_moddir}/libphp5.so}
++%{_httpd_moddir}/libphp5-zts.so
++%{?scl: %{_root_httpd_moddir}/libphp5-zts.so}
+</code></pre></li>
+<li><p>  <strong>TL;DR:</strong> Read through the diff file, but you&rsquo;re making the SPEC file to be compatible with and without SCL build options. This is great because you don&rsquo;t have to maintain a second SPEC file for building SCL packages. There are several conditions that if you are using an SCL, you can have files/scripts outside of the SCL root, like init.d scripts, logrotate configs, symlinks to binaries, etc.</p></li>
+</ul>
+</li>
+<li><p>Apply the diff file as a patch to the AtomiCorp SPEC file. I&rsquo;m ignoring whitespace because the text editor I used (Sublime Text) removed some spaces for me.</p>
+
+<pre><code>patch -p0 --ignore-whitespace &lt; php_scl.diff
+</code></pre></li>
+<li><p>Use <code>rpmbuild</code> to build the SRPM. The <strong>&mdash;define &ldquo;scl php53&rdquo;</strong> option enables the Software Collection (without it, you&rsquo;d be building PHP packages that install into system default paths), <strong>-bs</strong> will only build a source package, and <strong>&mdash;nodeps</strong> will not check for <em>Requires</em> or <em>BuildRequires</em> on the build system (we&rsquo;ll use <code>mock</code> to build the binary RPMs and it will install required packages into the chroot):</p>
+
+<ul>
+<li><p>CentOS 5: Use MD5 for checksums:</p>
+
+<pre><code>rpmbuild --define "_source_filedigest_algorithm md5" --define "_binary_filedigest_algorithm md5" --define "scl php53" -bs --nodeps php.spec
+</code></pre></li>
+<li><p>CentOS 6:</p>
+
+<pre><code>rpmbuild --define "scl php53" -bs --nodeps php.spec
+</code></pre></li>
+</ul>
+</li>
+<li><p>Use <code>mock</code> with the new chroot configurations we created in <em>/etc/mock</em> earlier:</p>
+
+<pre><code>mock -v -r epel-6-x86_64-scl-php53 php53-php-5.3.26-19.el6.src.rpm
+</code></pre></li>
+<li><p>After several minutes, you should have ready-to-install binary packages in <em>/var/lib/mock/epel-6-x86_64-scl-php53/result/</em>. We&rsquo;ll need some of them to build other packages, like PEAR, APC, Memcache, etc, so we&rsquo;ll add them to our local Yum repo we set up earlier (and this location will serve as where we collect all of our completed RPMs):</p>
+
+<pre><code>cp -va /var/lib/mock/epel-6-x86_64-scl-php53/result/*.{noarch,x86_64}.rpm ~/rpmbuild/RPMS/repo/el6/x86_64
+cp -va /var/lib/mock/epel-6-x86_64-scl-php53/result/*.src.rpm ~/rpmbuild/RPMS/repo/el6/SRPMS
+createrepo -v -d ~/rpmbuild/RPMS/repo/el6/x86_64
+</code></pre>
+
+<p>At this point, you should have several packages in <em>~/rpmbuild/RPMS/repo/el6/x86_64</em>. You&rsquo;ll generally want to copy completed .rpm files out of /var/lib/mock as soon as they&rsquo;re finished being built so they aren&rsquo;t destroyed the next time to run <code>mock</code> with the same chroot (option <em>-r</em>).</p></li>
+</ul>
+
+
+<h2>PEAR</h2>
+
+<ul>
+<li><p>Get latest php-pear from Red Hat at <a href="http://ftp.redhat.com/redhat/linux/enterprise/6Server/en/os/SRPMS/">http://ftp.redhat.com/redhat/linux/enterprise/6Server/en/os/SRPMS/</a> and install:</p>
+
+<pre><code>rpm -ivh php-pear-1.9.4-4.el6.src.rpm
+</code></pre></li>
+<li><p>Grab <a href="/files/php-pear_scl.diff">php-pear_scl.diff</a> to use with <code>patch</code> to convert the SPEC file for use with SCL:</p>
+
+<pre><code>curl --remote-name --location http://alanthing.com/files/php-pear_scl.diff
+</code></pre>
+
+<ul>
+<li><p>I won&rsquo;t rehash with the same amount of detail as we covered for <em>php.spec</em>, but as a quick summary, this patch file will:</p></li>
+<li><p>Define the SCL package name:</p>
+
+<pre><code>+%{?scl:%scl_package php-pear}
++%{!?scl:%global pkg_name %{name}}
+</code></pre></li>
+<li><p>Add <code>%{scl_prefix}</code> to <em>Name</em>, <em>Requires</em>, <em>BuildRequires</em>, <em>Obsoletes</em>, <em>Conflicts</em>, and <em>Provides</em>. Here&rsquo;s one example:</p>
+
+<pre><code>-Name: php-pear
++Name: %{?scl_prefix}php-pear
+</code></pre></li>
+<li><p>Add <code>%{?scl:Requires: %scl_runtime}</code> so the SCL Base Package is a requirement:</p>
+
+<pre><code>+%{?scl:Requires: %scl_runtime}
+</code></pre></li>
+<li><p>Some macros need to use the system default paths. Remember, <code>%{_root_*}</code>-style macros are provided by the <em>scl-utils-build</em> package:</p>
+
+<pre><code>-export PHP_PEAR_SIG_BIN=%{_bindir}/gpg
++export PHP_PEAR_SIG_BIN=%{_root_bindir}/gpg
+</code></pre></li>
+<li><p>The executable scripts for PEAR need to use the actual rpm macro instead of static paths like &ldquo;/usr&rdquo;:</p>
+
+<pre><code>+for exe in pear pecl peardev; do
++    sed -e 's:/usr:%{_prefix}:' \
++        -i $RPM_BUILD_ROOT%{_bindir}/$exe
++done
+</code></pre></li>
+<li><p>Make symbolic links in the system default directories for the SCL executables:</p>
+
+<pre><code>+# make the cli commands available in standard root for SCL build
++%if 0%{?scl:1}
++install -m 755 -d $RPM_BUILD_ROOT%{_root_bindir}
++ln -s %{_bindir}/pear      $RPM_BUILD_ROOT%{_root_bindir}/%{scl_prefix}pear
++ln -s %{_bindir}/pecl      $RPM_BUILD_ROOT%{_root_bindir}/%{scl_prefix}pecl
++%endif
+</code></pre></li>
+</ul>
+</li>
+<li><p>Apply the diff file as a patch to the Red Hat SPEC file:</p>
+
+<pre><code>patch -p0 --ignore-whitespace &lt; php-pear_scl.diff
+</code></pre></li>
+<li><p>Use <code>rpmbuild</code> to build the SRPM:</p>
+
+<ul>
+<li><p>CentOS 5:</p>
+
+<pre><code>rpmbuild --define "_source_filedigest_algorithm md5" --define "_binary_filedigest_algorithm md5" --define "scl php53" -bs --nodeps php-pear.spec
+</code></pre></li>
+<li><p>CentOS 6:</p>
+
+<pre><code>rpmbuild --define "scl php53" -bs --nodeps php-pear.spec
+</code></pre></li>
+</ul>
+</li>
+<li><p>Use <code>mock</code> build the packages in our SCL chroot:</p>
+
+<pre><code>mock -v -r epel-6-x86_64-scl-php53 php53-php-pear-1.9.4-4.el6.src.rpm
+</code></pre></li>
+<li><p>Copy the files to the local Yum repo folder where we&rsquo;re keeping all of our completed RPMs:</p>
+
+<pre><code>cp -va /var/lib/mock/epel-6-x86_64-scl-php53/result/*.{noarch,x86_64}.rpm ~/rpmbuild/RPMS/repo/el6/x86_64
+cp -va /var/lib/mock/epel-6-x86_64-scl-php53/result/*.src.rpm ~/rpmbuild/RPMS/repo/el6/SRPMS
+</code></pre></li>
+<li><p>Since APC and Memcache will need <em>php53-php-pear</em> as a build dependency, we&rsquo;ll need to update the Yum repo files:</p>
+
+<pre><code>createrepo -v -d ~/rpmbuild/RPMS/repo/el6/x86_64
+</code></pre></li>
+</ul>
+
+
+<h2>APC</h2>
+
+<p>For the remaining packages, I will skip explaining the differences in the SPEC files and simply list the commands. If you look at the diff patch for <em>php-pecl-apc.spec</em>, you&rsquo;ll notice that it&rsquo;s very similar to the changes made for PEAR.</p>
+
+<ul>
+<li><p>Get latest php-pecl-apc from Red Hat at <a href="http://ftp.redhat.com/redhat/linux/enterprise/6Server/en/os/SRPMS/">http://ftp.redhat.com/redhat/linux/enterprise/6Server/en/os/SRPMS/</a> and install:</p>
+
+<pre><code>rpm -ivh php-pecl-apc-3.1.9-2.el6.src.rpm
+</code></pre></li>
+<li><p>Grab <a href="/files/php-pecl-apc_scl.diff">php-pecl-apc_scl.diff</a> to use with <code>patch</code> to convert the SPEC file for use with SCL:</p>
+
+<pre><code>curl --remote-name --location http://alanthing.com/files/php-pecl-apc_scl.diff
+</code></pre>
+
+<ul>
+<li><p>Actually, I will point out an important change in this spec file: adding the directory path in front of <code>php</code> and <code>php-config</code> to ensure we&rsquo;re using the SCL binary and not the system default <code>php</code>:</p>
+
+<pre><code>-%global php_zendabiver %((echo 0; php -i 2&gt;/dev/null | sed -n 's/^PHP Extension =&gt; //p') | tail -1)
+-%global php_version %((echo 0; php-config --version 2&gt;/dev/null) | tail -1)
++%global php_zendabiver %((echo 0; %{_bindir}/php -i 2&gt;/dev/null | sed -n 's/^PHP Extension =&gt; //p') | tail -1)
++%global php_version %((echo 0; %{_bindir}/php-config --version 2&gt;/dev/null) | tail -1)
+</code></pre></li>
+</ul>
+</li>
+<li><p>Apply the diff file as a patch to the Red Hat SPEC file:</p>
+
+<pre><code>patch -p0 --ignore-whitespace &lt; php-pecl-apc_scl.diff
+</code></pre></li>
+<li><p>Use <code>rpmbuild</code> to build the SRPM:</p>
+
+<ul>
+<li><p>CentOS 5:</p>
+
+<pre><code>rpmbuild --define "_source_filedigest_algorithm md5" --define "_binary_filedigest_algorithm md5" --define "scl php53" -bs --nodeps php-pecl-apc.spec
+</code></pre></li>
+<li><p>CentOS 6:</p>
+
+<pre><code>rpmbuild --define "scl php53" -bs --nodeps php-pecl-apc.spec
+</code></pre></li>
+</ul>
+</li>
+<li><p>Use <code>mock</code> build the packages in our SCL chroot:</p>
+
+<pre><code>mock -v -r epel-6-x86_64-scl-php53 php53-php-pecl-apc-3.1.9-2.el6.src.rpm
+</code></pre></li>
+<li><p>Copy the files to the local Yum repo folder where we&rsquo;re keeping all of our completed RPMs:</p>
+
+<pre><code>cp -va /var/lib/mock/epel-6-x86_64-scl-php53/result/*.{noarch,x86_64}.rpm ~/rpmbuild/RPMS/repo/el6/x86_64
+cp -va /var/lib/mock/epel-6-x86_64-scl-php53/result/*.src.rpm ~/rpmbuild/RPMS/repo/el6/SRPMS
+</code></pre></li>
+<li><p>No other packages require the completed RPMs to build, so we skip the <code>createrepo</code> command here and move onto the next page.</p></li>
+</ul>
+
+
+<h2>Memcache</h2>
+
+<p>We&rsquo;re going to upgrade php-pecl-memcache from 3.0.5 to 3.0.8. Both are considered &ldquo;beta&rdquo; on <a href="http://pecl.php.net/package/memcache">pecl.php.net</a> so it&rsquo;s not like we&rsquo;re losing stability, but we are gaining features.</p>
+
+<ul>
+<li><p>Get latest php-pecl-memcache from Red Hat at <a href="http://ftp.redhat.com/redhat/linux/enterprise/6Server/en/os/SRPMS/">http://ftp.redhat.com/redhat/linux/enterprise/6Server/en/os/SRPMS/</a> and install:</p>
+
+<pre><code>rpm -ivh php-pecl-memcache-3.0.5-4.el6.src.rpm
+</code></pre></li>
+<li><p>Grab <a href="/files/php-pecl-memcache_scl.diff">php-pecl-memcache_scl.diff</a> to use with <code>patch</code> to convert the SPEC file for use with SCL:</p>
+
+<pre><code>curl --remote-name --location http://alanthing.com/files/php-pecl-memcache_scl.diff
+</code></pre></li>
+<li><p>Download the <a href="http://pecl.php.net/get/memcache-3.0.8.tgz">memcache 3.0.8 source</a> from the PECL website into the ~/rpmbuild/SOURCES directory</p>
+
+<pre><code>curl --output ~/rpmbuild/SOURCES/memcache-3.0.8.tgz --location http://pecl.php.net/get/memcache-3.0.8.tgz
+</code></pre></li>
+<li><p>Apply the diff file as a patch to the Red Hat SPEC file, which will upgrade 3.0.5 to 3.0.8 and remove the need for 3 patches:</p>
+
+<pre><code>patch -p0 --ignore-whitespace &lt; php-pecl-memcache_scl.diff
+</code></pre></li>
+<li><p>Use <code>rpmbuild</code> to build the SRPM:</p>
+
+<ul>
+<li><p>CentOS 5:</p>
+
+<pre><code>rpmbuild --define "_source_filedigest_algorithm md5" --define "_binary_filedigest_algorithm md5" --define "scl php53" -bs --nodeps php-pecl-memcache.spec
+</code></pre></li>
+<li><p>CentOS 6:</p>
+
+<pre><code>rpmbuild --define "scl php53" -bs --nodeps php-pecl-memcache.spec
+</code></pre></li>
+</ul>
+</li>
+<li><p>Use <code>mock</code> build the packages in our SCL chroot:</p>
+
+<pre><code>mock -v -r epel-6-x86_64-scl-php53 php53-php-pecl-memcache-3.0.8-1.el6.src.rpm
+</code></pre></li>
+<li><p>Copy the files to the local Yum repo folder where we&rsquo;re keeping all of our completed RPMs:</p>
+
+<pre><code>cp -va /var/lib/mock/epel-6-x86_64-scl-php53/result/*.{noarch,x86_64}.rpm ~/rpmbuild/RPMS/repo/el6/x86_64
+cp -va /var/lib/mock/epel-6-x86_64-scl-php53/result/*.src.rpm ~/rpmbuild/RPMS/repo/el6/SRPMS
+</code></pre></li>
+</ul>
+
+
+<h2>PHP 5.3 SCL Completed</h2>
+
+<p>You should now have several binary RPMs in <em>~/rpmbuild/RPMS/repo/el6/x86_64</em> ready to be installed as a Software Collection. If you want to distribute your SRPMs, you&rsquo;ll probably want to use the ones generated by <code>mock</code> that are in <em>~/rpmbuild/RPMS/repo/el6/SRPMS</em>.</p>
+
+<h2>PHP 5.2</h2>
+
+<p>PHP 5.2 is quite old, but if 5.3 or higher broke compatibility with old websites, you can install PHP 5.2 as a Software Collection and use PHP-FPM to use only the older version for a specific website. As previously mentioned, I&rsquo;m using a SRPM that has backported patches (presumably from <a href="https://code.google.com/p/php52-backports/">https://code.google.com/p/php52-backports/</a>), so it&rsquo;s certainly more up-to-date than <a href="http://php.net/releases/index.php">the last 5.2 release from php.net</a> (Released: 06 January 2011).</p>
+
+<p>I won&rsquo;t go into detail of the diff patches since they are largely similar to the changes made on the PHP 5.3 SPECs.</p>
+
+<h3>Software Collection base</h3>
+
+<ul>
+<li><p>As with php53, start with <a href="http://people.redhat.com/rcollet/php54/rhel/5/SRPMS/php54-1-2.el5.src.rpm">http://people.redhat.com/rcollet/php54/rhel/5/SRPMS/php54-1-2.el5.src.rpm</a></p></li>
+<li><p>Rename or copy php54.spec to php52.spec</p></li>
+<li><p>Set the global variable <code>scl</code> to be <strong>php52</strong>:</p>
+
+<pre><code>%global scl php52
+</code></pre></li>
+<li><p>Use <code>rpmbuild</code> to build the SRPM:</p>
+
+<ul>
+<li><p>CentOS 5:</p>
+
+<pre><code>rpmbuild --define "_source_filedigest_algorithm md5" --define "_binary_filedigest_algorithm md5" -bs --nodeps php52.spec
+</code></pre></li>
+<li><p>CentOS 6:</p>
+
+<pre><code>rpmbuild -bs --nodeps php52.spec
+</code></pre></li>
+</ul>
+</li>
+<li><p>Build with mock (repeat el6 instructions for el5):</p>
+
+<pre><code>mock -v -r epel-6-x86_64 php52-1-2.el5.src.rpm
+</code></pre></li>
+<li><p>Copy resulting files to local folder and create a local Yum repo to be used later (repeat el6 instructions for el5):</p>
+
+<pre><code>mkdir -vp ~/rpmbuild/RPMS/repo/el6/{x86_64,SRPMS}
+cp -va /var/lib/mock/epel-6-x86_64/result/*.{noarch,x86_64}.rpm ~/rpmbuild/RPMS/repo/el6/x86_64
+cp -va /var/lib/mock/epel-6-x86_64/result/*.src.rpm ~/rpmbuild/RPMS/repo/el6/SRPMS
+createrepo -v -d ~/rpmbuild/RPMS/repo/el6/x86_64
+</code></pre></li>
+</ul>
+
+
+<h3>Mock</h3>
+
+<p>These steps are nearly identical are for php53, but using php52 instead. As mentioned previously, if you need to repeat something for CentOS 5, use the CentOS 6 and change 6 to 5, el5 to el6, etc.</p>
+
+<ul>
+<li><p>Change to the mock configuration directory:</p>
+
+<pre><code>cd /etc/mock
+</code></pre></li>
+<li><p>Copy the default EPEL files to new ones specific to our SCL:</p>
+
+<pre><code>cp -a epel-6-x86_64.cfg epel-6-x86_64-scl-php52.cfg
+</code></pre></li>
+<li><p>Edit <em>epel-6-x86_64-scl-php52.cfg</em> and:</p>
+
+<ul>
+<li><p>Add <strong>-scl-php53</strong> to the existing value of <em>config_opts[&lsquo;root&rsquo;]</em>:</p>
+
+<pre><code>config_opts['root'] = 'epel-6-x86_64-scl-php52'
+</code></pre></li>
+<li><p>CentOS 5 and 6 have different options for <em>config_opts[&lsquo;chroot_setup_cmd&rsquo;]</em>:</p>
+
+<ul>
+<li><p>CentOS 5: Add <strong>scl-utils-build php52-build</strong> the following to the existing value:</p>
+
+<pre><code>config_opts['chroot_setup_cmd'] = 'install buildsys-build scl-utils-build php52-build'
+</code></pre></li>
+<li><p>CentOS 6: Change from &lsquo;groupinstall buildsys-build&rsquo; to <strong>install @buildsys-build scl-utils-build php52-build</strong>:</p>
+
+<pre><code>config_opts['chroot_setup_cmd'] = 'install @buildsys-build scl-utils-build php52-build'
+</code></pre></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>Add the local repo where you left the files from the section above as a new repo; I add mine above <em>[base]</em>. <strong>Change /home/alan to the appropriate path for your system!</strong></p>
+
+<pre><code>[localrepo-6-x86_64]
+name=localrepo-6-x86_64
+enabled=1
+baseurl=file:///home/alan/rpmbuild/RPMS/repo/el6/x86_64
+</code></pre></li>
+</ul>
+
+
+<h3>PHP</h3>
+
+<ul>
+<li><p>Use latest php-5.2.x SRPM from <a href="http://centos.alt.ru/pub/repository/centos/5/SRPMS/">http://centos.alt.ru/pub/repository/centos/5/SRPMS/</a></p></li>
+<li><p>Install the SRPM</p>
+
+<pre><code>rpm -ivh php-5.2.17-29.el5.src.rpm
+</code></pre></li>
+<li><p>Several changes are needed to add the SCL macros to the SPEC file; see the <a href="https://access.redhat.com/site/documentation/en-US/Red_Hat_Developer_Toolset/1/html/Software_Collections_Guide/sect-Converting_a_Conventional_Spec_File.html">Red Hat documentation</a>. Download my patch file for a full list of changes needed to convert the alt.ru PHP SPEC to one that can be used with and without SCL options: <a href="/files/php52_scl.diff">php52_scl.diff</a></p>
+
+<pre><code>curl --remote-name --location http://alanthing.com/files/php52_scl.diff
+</code></pre></li>
+<li><p>Apply the diff file as a patch to the alt.ru SPEC file:</p>
+
+<pre><code>patch -p0 --ignore-whitespace &lt; php52_scl.diff
+</code></pre></li>
+<li><p>Use <code>rpmbuild</code> to build the SRPM:</p>
+
+<ul>
+<li><p>CentOS 5:</p>
+
+<pre><code>rpmbuild --define "_source_filedigest_algorithm md5" --define "_binary_filedigest_algorithm md5" --define "scl php52" -bs --nodeps php.spec
+</code></pre></li>
+<li><p>CentOS 6:</p>
+
+<pre><code>rpmbuild --define "scl php52" -bs --nodeps php.spec
+</code></pre></li>
+</ul>
+</li>
+<li><p>Use <code>mock</code> with the new chroot configurations we created in <em>/etc/mock</em> earlier:</p>
+
+<pre><code>mock -v -r epel-6-x86_64-scl-php52 php52-php-5.2.17-29.el6.src.rpm
+</code></pre></li>
+<li><p>After <code>mock</code> is completed, copy the files to the local repo folder. Like before, we&rsquo;ll need some of these packages to build other packages:</p>
+
+<pre><code>mkdir -vp ~/rpmbuild/RPMS/repo/el6/{SRPMS,x86_64}
+cp -va /var/lib/mock/epel-6-x86_64-scl-php52/result/*.{noarch,x86_64}.rpm ~/rpmbuild/RPMS/repo/el6/x86_64
+cp -va /var/lib/mock/epel-6-x86_64-scl-php52/result/*.src.rpm ~/rpmbuild/RPMS/repo/el6/SRPMS
+createrepo -v -d ~/rpmbuild/RPMS/repo/el6/x86_64
+</code></pre></li>
+</ul>
+
+
+<h3>PEAR, APC, and Memcache</h3>
+
+<p>You can repeat the same steps for php-pear, php-pecl-apc, and php-pecl-memcache as above for PHP 5.3. The only difference would be to change the SCL name during the <code>rpmbuild</code> and <code>mock</code> steps. Here are all of the steps without explanation:</p>
+
+<h4>PEAR</h4>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">cd</span> ~/rpmbuild/SRPMS
+</span><span class='line'>curl --remote-name --location http://ftp.redhat.com/redhat/linux/enterprise/6Server/en/os/SRPMS/php-pear-1.9.4-4.el6.src.rpm
+</span><span class='line'>rpm -ivh php-pear-1.9.4-4.el6.src.rpm
+</span><span class='line'><span class="nb">cd</span> ~/rpmbuild/SPECS
+</span><span class='line'>curl --remote-name --location http://alanthing.com/files/php-pear_scl.diff
+</span><span class='line'>patch -p0 --ignore-whitespace &lt; php-pear_scl.diff
+</span><span class='line'>rpmbuild --define <span class="s2">&quot;scl php52&quot;</span> -bs --nodeps php-pear.spec
+</span><span class='line'>mock -v -r epel-6-x86_64-scl-php52 php52-php-pear-1.9.4-4.el6.src.rpm
+</span><span class='line'>cp -va /var/lib/mock/epel-6-x86_64-scl-php52/result/*.<span class="o">{</span>noarch,x86_64<span class="o">}</span>.rpm ~/rpmbuild/RPMS/repo/el6/x86_64
+</span><span class='line'>cp -va /var/lib/mock/epel-6-x86_64-scl-php52/result/*.src.rpm ~/rpmbuild/RPMS/repo/el6/SRPMS
+</span><span class='line'>createrepo -v -d ~/rpmbuild/RPMS/repo/el6/x86_64
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>APC</h4>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">cd</span> ~/rpmbuild/SRPMS
+</span><span class='line'>curl --remote-name --location http://ftp.redhat.com/redhat/linux/enterprise/6Server/en/os/SRPMS/php-pecl-apc-3.1.9-2.el6.src.rpm
+</span><span class='line'>rpm -ivh php-pecl-apc-3.1.9-2.el6.src.rpm
+</span><span class='line'><span class="nb">cd</span> ~/rpmbuild/SPECS
+</span><span class='line'>curl --remote-name --location http://alanthing.com/files/php-pecl-apc_scl.diff
+</span><span class='line'>patch -p0 --ignore-whitespace &lt; php-pecl-apc_scl.diff
+</span><span class='line'>rpmbuild --define <span class="s2">&quot;scl php52&quot;</span> -bs --nodeps php-pecl-apc.spec
+</span><span class='line'>mock -v -r epel-6-x86_64-scl-php52 php52-php-pecl-apc-3.1.9-2.el6.src.rpm
+</span><span class='line'>cp -va /var/lib/mock/epel-6-x86_64-scl-php52/result/*.<span class="o">{</span>noarch,x86_64<span class="o">}</span>.rpm ~/rpmbuild/RPMS/repo/el6/x86_64
+</span><span class='line'>cp -va /var/lib/mock/epel-6-x86_64-scl-php52/result/*.src.rpm ~/rpmbuild/RPMS/repo/el6/SRPMS
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Memcache</h4>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">cd</span> ~/rpmbuild/SRPMS
+</span><span class='line'>curl --remote-name --location http://ftp.redhat.com/redhat/linux/enterprise/6Server/en/os/SRPMS/php-pecl-memcache-3.0.5-4.el6.src.rpm
+</span><span class='line'>rpm -ivh php-pecl-memcache-3.0.5-4.el6.src.rpm
+</span><span class='line'><span class="nb">cd</span> ~/rpmbuild/SPECS
+</span><span class='line'>curl --remote-name --location http://alanthing.com/files/php-pecl-memcache_scl.diff
+</span><span class='line'>curl --output ~/rpmbuild/SOURCES/memcache-3.0.8.tgz --location http://pecl.php.net/get/memcache-3.0.8.tgz
+</span><span class='line'>patch -p0 --ignore-whitespace &lt; php-pecl-memcache_scl.diff
+</span><span class='line'>rpmbuild --define <span class="s2">&quot;scl php52&quot;</span> -bs --nodeps php-pecl-memcache.spec
+</span><span class='line'>mock -v -r epel-6-x86_64-scl-php52 php52-php-pecl-memcache-3.0.8-1.el6.src.rpm
+</span><span class='line'>cp -va /var/lib/mock/epel-6-x86_64-scl-php52/result/*.<span class="o">{</span>noarch,x86_64<span class="o">}</span>.rpm ~/rpmbuild/RPMS/repo/el6/x86_64
+</span><span class='line'>cp -va /var/lib/mock/epel-6-x86_64-scl-php52/result/*.src.rpm ~/rpmbuild/RPMS/repo/el6/SRPMS
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Conclusion</h2>
+
+<p>It does seem like a little bit of work to convert a SPEC file for SCL compatibility, but once the work is done, incremental updates are easy, and you can use the same SPEC to build a non-SCL package as well. I wouldn&rsquo;t be surprised if Red Hat begins to create SCL-compatible SPEC files for major applications in RHEL 7 and beyond because of the flexibility it offers, just see their <a href="http://www.redhat.com/about/news/archive/2013/6/red-hat-software-collections-1.0-beta-now-available">Red Hat Software Collections 1.0 Beta</a>. Unfortunately, it&rsquo;s difficult to fully grasp how to build one, so hopefully this guide has been helpful.</p>
+
+<p>Personally, after having some trouble quickly switching from MySQL to MariaDB or Percona, I&rsquo;ll probably look to rebuild those as Software Collections instead of replacing the default packages, but that&rsquo;s another blog post!</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1254,58 +2034,6 @@ Reference 2: <a href="http://jsdelfino.blogspot.com/2012/08/autoconf-and-automak
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2012/02/29/can-i-get-your-number-dns-made-simple/">Can I Get Your Number? DNS Made Simple</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-02-29T09:51:00-05:00" pubdate data-updated="true">Feb 29<span>th</span>, 2012</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>At <a href="http://www.echoditto.com">EchoDitto</a>, we get a lot of questions about how hosting works, and in particular about changing DNS records for new websites or websites who are moving to new hosting providers. Here&rsquo;s an old but true analogy to make understanding DNS easier: the IP address of your website is like your phone number (it changes if you move houses &ndash; at least, your landline does), and DNS is like the phonebook. If someone wants to call you at your new house they might look you up by name in the phonebook, but if their phonebook hasn&rsquo;t been updated since you moved they&rsquo;re going to call your old house.</p>
-
-<p>Here&rsquo;s how it works in more detail:</p>
-
-<p>When visitors want to access your website their computers take the domain name that they type in (echoditto.com, for example) and look up the IP address for that domain by way of Domain Name Service, or DNS.</p>
-
-<p>To get your DNS records for users to get to your website, first you need a domain name. Go Daddy and Network Solutions are examples of registrars where you can buy domain names.</p>
-
-<p>Continuing the analogy, the first thing a visitor&rsquo;s computer needs to know is which &ldquo;phonebook&rdquo; your website&rsquo;s IP address is listed in. The registrar will set something called the &ldquo;name server&rdquo; for your domain, which is akin to telling the user which &ldquo;phonebook&rdquo; (name server) to look you up in. The name server contains the details about how your domain name, example.com, will get to the computer that actually contains (or &ldquo;hosts&rdquo;) your website.</p>
-
-<p>In a phonebook, you look up a name and get a phone number. It&rsquo;s similar with DNS &ndash; the user&rsquo;s computer will look up your domain in the name server and get an IP address, which is a numerical address of a computer on the internet. The name server gives the user&rsquo;s computer the exact IP address of the computer that hosts your website. Once it has that information the user&rsquo;s computer can &ldquo;call&rdquo; the number,  which takes them directly to your website.</p>
-
-<p>DNS contains another field along with the IP address, called a TTL, or time-to-live. This time, in seconds, is how long your computer should remember the number in the phonebook before it looks it up again. Computers check in with DNS name servers before visiting a site again to make sure the IP address of a website hasn&rsquo;t changed, and the TTL tells them how often to do that. TTL times can vary, but often you may find it initially set for 1 to 4 hours on average websites. The higher the setting is, the less often the DNS name server will be asked about the IP address and other DNS records.</p>
-
-<p>When launching a website on a new server, or moving web hosts, you want to temporarily change the TTL to be really low. That makes website visitors check their &ldquo;phonebook&rdquo; more frequently, which means they will stop going to the old IP address as soon as possible after a change is made. It can take a while for a new TTL to take effect for all users if using the typical defaults of 1 to 4 hours, so when we&rsquo;re launching a new site, or changing hosting, we do this ahead of time. Once visitors worldwide have the new lower TTL, we can change the DNS entry for the website to point to the new IP address, and then visitors will see your new website, or your current website on the new host, very quickly.</p>
-
-<p>Have other questions about DNS? Ask your computer to look up <a href="http://www.youtube.com/watch?v=oN7ripK5uGM">http://www.youtube.com/watch?v=oN7ripK5uGM</a> to watch a video that explains all of this in another way.</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/2/">&larr; Older</a>
@@ -1321,6 +2049,10 @@ Reference 2: <a href="http://jsdelfino.blogspot.com/2012/08/autoconf-and-automak
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2013/07/11/creating-php-packages-software-collection/">Creating PHP Packages as a Software Collection</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2013/05/09/speed-up-php-on-nfs-with-turbo-realpath/">Speed Up PHP on NFS With Turbo_realpath</a>
       </li>
     
@@ -1334,10 +2066,6 @@ Reference 2: <a href="http://jsdelfino.blogspot.com/2012/08/autoconf-and-automak
     
       <li class="post">
         <a href="/blog/2012/12/19/usable-mamp-os-x-108-mountain-lion/">Usable MAMP on OS X 10.8 Mountain Lion</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2012/09/04/apache-modules-on-os-x-with-homebrew/">Apache Modules on OS X With Homebrew</a>
       </li>
     
   </ul>

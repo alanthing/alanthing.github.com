@@ -1,0 +1,87 @@
+--- php-pecl-memcache.spec	2012-03-05 08:27:02.000000000 -0500
++++ php-pecl-memcache.spec-scl	2013-05-22 12:25:11.000000000 -0400
+@@ -1,13 +1,16 @@
++%{?scl:%scl_package php-pecl-memcache}
++%{!?scl:%global pkg_name %{name}}
++
+ %{!?__pecl:     %{expand: %%global __pecl     %{_bindir}/pecl}}
+-%{!?php_extdir: %{expand: %%global php_extdir %(php-config --extension-dir)}}
+-%global php_apiver  %((echo 0; php -i 2>/dev/null | sed -n 's/^PHP API => //p') | tail -1)
++%{!?php_extdir: %{expand: %%global php_extdir %(%{_bindir}/php-config --extension-dir)}}
++%global php_apiver  %((echo 0; %{_bindir}/php -i 2>/dev/null | sed -n 's/^PHP API => //p') | tail -1)
+ 
+ %define pecl_name memcache
+ 
+ Summary:      Extension to work with the Memcached caching daemon
+-Name:         php-pecl-memcache
+-Version:      3.0.5
+-Release:      4%{?dist}
++Name:         %{?scl_prefix}php-pecl-memcache
++Version:      3.0.8
++Release:      1%{?dist}
+ License:      PHP
+ Group:        Development/Languages
+ URL:          http://pecl.php.net/package/%{pecl_name}
+@@ -15,21 +18,19 @@
+ Source:       http://pecl.php.net/get/%{pecl_name}-%{version}.tgz
+ Source1:      LICENSE
+ Source2:      xml2changelog
+-Patch0:       php-pecl-memcache-3.0.5-fdcast.patch
+-Patch1:       php-pecl-memcache-3.0.5-refcount.patch
+-Patch2:       php-pecl-memcache-3.0.5-get-mem-corrupt.patch
+ 
+-BuildRoot:    %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
+-BuildRequires: php-devel >= 4.3.11, php-pear, zlib-devel
++BuildRoot:    %{_tmppath}/%{pkg_name}-%{version}-%{release}-root-%(%{__id_u} -n)
++BuildRequires: %{?scl_prefix}php-devel >= 4.3.11, %{?scl_prefix}php-pear, zlib-devel
+ Requires(post): %{__pecl}
+ Requires(postun): %{__pecl}
+-Provides:     php-pecl(%{pecl_name}) = %{version}-%{release}
++Provides:     %{?scl_prefix}php-pecl(%{pecl_name}) = %{version}-%{release}
+ %if 0%{?php_zend_api:1}
+-Requires:     php(zend-abi) = %{php_zend_api}
+-Requires:     php(api) = %{php_core_api}
++Requires:     %{?scl_prefix}php(zend-abi) = %{php_zend_api}
++Requires:     %{?scl_prefix}php(api) = %{php_core_api}
+ %else
+-Requires:     php-api = %{php_apiver}
++Requires:     %{?scl_prefix}php-api = %{php_apiver}
+ %endif
++%{?scl:Requires: %scl_runtime}
+ 
+ %description
+ Memcached is a caching daemon designed especially for
+@@ -45,12 +46,6 @@
+ %prep 
+ %setup -c -q
+ 
+-pushd memcache-%{version}
+-%patch0 -p1 -b .fdcast
+-%patch1 -p1 -b .refcount
+-%patch2 -p1 -b .get-mem-corrupt
+-popd
+-
+ %{_bindir}/php -n %{SOURCE2} package.xml >CHANGELOG
+ 
+ # avoid spurious-executable-perm
+@@ -60,8 +55,8 @@
+ 
+ %build
+ cd %{pecl_name}-%{version}
+-phpize
+-%configure
++%{_bindir}/phpize
++%configure --with-php-config=%{_bindir}/php-config
+ %{__make} %{?_smp_mflags}
+ 
+ 
+@@ -143,6 +138,9 @@
+ 
+ 
+ %changelog
++* Fri May 17 2013 Alan Ivey <alan@echoditto.com> - 3.0.8-1
++- Update to 3.0.8
++
+ * Wed Oct 12 2011 Vojtech Vitek (V-Teq) <vvitek@redhat.com> - 3.0.5-4
+ - fix get/unserialize memory corruption in memcache_pool.c (#722418)
+ 

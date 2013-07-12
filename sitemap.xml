@@ -127,12 +127,36 @@
         <lastmod>2013-06-28T23:04:41-04:00</lastmod>
     </url>
     <url>
+        <loc>http://alanthing.com/blog/2013/07/11/creating-php-packages-software-collection/</loc>
+        <lastmod>2013-07-11T22:33:35-04:00</lastmod>
+    </url>
+    <url>
         <loc>http://alanthing.com/blog/archives/</loc>
-        <lastmod>2013-07-09T21:06:35-04:00</lastmod>
+        <lastmod>2013-07-11T22:33:35-04:00</lastmod>
+    </url>
+    <url>
+        <loc>http://alanthing.com/files/php-pear_scl.diff</loc>
+        <lastmod>2013-07-11T11:01:09-04:00</lastmod>
+    </url>
+    <url>
+        <loc>http://alanthing.com/files/php-pecl-apc_scl.diff</loc>
+        <lastmod>2013-07-11T11:35:32-04:00</lastmod>
+    </url>
+    <url>
+        <loc>http://alanthing.com/files/php-pecl-memcache_scl.diff</loc>
+        <lastmod>2013-07-11T11:50:04-04:00</lastmod>
+    </url>
+    <url>
+        <loc>http://alanthing.com/files/php52_scl.diff</loc>
+        <lastmod>2013-07-11T12:20:36-04:00</lastmod>
+    </url>
+    <url>
+        <loc>http://alanthing.com/files/php_scl.diff</loc>
+        <lastmod>2013-07-10T20:34:07-04:00</lastmod>
     </url>
     <url>
         <loc>http://alanthing.com/</loc>
-        <lastmod>2013-07-09T21:06:35-04:00</lastmod>
+        <lastmod>2013-07-11T22:33:35-04:00</lastmod>
     </url>
     <url>
         <loc>http://alanthing.com/robots.txt</loc>
