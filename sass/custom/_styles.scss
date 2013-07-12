@@ -9,3 +9,9 @@ aside.sidebar .cw_badge img {
   -o-box-shadow: none;
   box-shadow: none;
 }
+
+// Fix color in code blocks under 'li code'
+// It was setting the color for use with `inline code`,
+// so code blocks under <li> were too dark with the
+// black background
+pre code { color: #93a1a1; }
