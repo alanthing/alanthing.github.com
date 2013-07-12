@@ -1,0 +1,65 @@
+--- php-pecl-apc.spec	2012-03-14 20:11:31.000000000 -0400
++++ php-pecl-apc.spec-scl	2013-05-22 12:23:49.000000000 -0400
+@@ -1,11 +1,14 @@
++%{?scl:%scl_package php-pecl-apc}
++%{!?scl:%global pkg_name %{name}}
++
+ %{!?__pecl: %{expand: %%global __pecl %{_bindir}/pecl}}
+ %global php_extdir %(%{_bindir}/php-config --extension-dir 2>/dev/null || echo %{_libdir}/php4)
+-%global php_zendabiver %((echo 0; php -i 2>/dev/null | sed -n 's/^PHP Extension => //p') | tail -1)
+-%global php_version %((echo 0; php-config --version 2>/dev/null) | tail -1)
++%global php_zendabiver %((echo 0; %{_bindir}/php -i 2>/dev/null | sed -n 's/^PHP Extension => //p') | tail -1)
++%global php_version %((echo 0; %{_bindir}/php-config --version 2>/dev/null) | tail -1)
+ %global pecl_name APC
+ 
+ Summary:       APC caches and optimizes PHP intermediate code
+-Name:          php-pecl-apc
++Name:          %{?scl_prefix}php-pecl-apc
+ Version:       3.1.9
+ Release:       2%{?dist}
+ License:       PHP
+@@ -14,24 +17,25 @@
+ Source:        http://pecl.php.net/get/APC-%{version}.tgz
+ 
+ BuildRoot:     %{_tmppath}/%{name}-%{version}-%{release}-root
+-Conflicts:     php-mmcache php-eaccelerator
+-BuildRequires: php-devel >= 5.1.0, httpd-devel, php-pear, pcre-devel
++Conflicts:     %{?scl_prefix}php-mmcache %{?scl_prefix}php-eaccelerator
++BuildRequires: %{?scl_prefix}php-devel >= 5.1.0, httpd-devel, %{?scl_prefix}php-pear, pcre-devel
+ Requires(post): %{__pecl}
+ Requires(postun): %{__pecl}
+ %if 0%{?php_zend_api:1}
+ # Require clean ABI/API versions if available (Fedora)
+-Requires:      php(zend-abi) = %{php_zend_api}
+-Requires:      php(api) = %{php_core_api}
++Requires:      %{?scl_prefix}php(zend-abi) = %{php_zend_api}
++Requires:      %{?scl_prefix}php(api) = %{php_core_api}
+ %else
+-%if "%{rhel}" == "5"
++%if "%{rhel}" >= "5"
+ # RHEL5 where we have php-common providing the Zend ABI the "old way"
+-Requires:      php-zend-abi = %{php_zendabiver}
++Requires:      %{?scl_prefix}php-zend-abi = %{php_zendabiver}
+ %else
+ # RHEL4 where we have no php-common and nothing providing the Zend ABI...
+-Requires:      php = %{php_version}
++Requires:      %{?scl_prefix}php = %{php_version}
+ %endif
+ %endif
+-Provides:      php-pecl(%{pecl_name}) = %{version}
++Provides:      %{?scl_prefix}php-pecl(%{pecl_name}) = %{version}
++%{?scl:Requires: %scl_runtime}
+ 
+ Requires(post): %{__pecl}
+ Requires(postun): %{__pecl}
+@@ -44,8 +48,8 @@
+ %package devel
+ Summary:       APC developer files (header)
+ Group:         Development/Libraries
+-Requires:      php-pecl-apc = %{version}-%{release}
+-Requires:      php-devel
++Requires:      %{?scl_prefix}php-pecl-apc = %{version}-%{release}
++Requires:      %{?scl_prefix}php-devel
+ 
+ %description devel
+ These are the files needed to compile programs using APC serializer.
