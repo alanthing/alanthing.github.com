@@ -4,7 +4,7 @@
   <title><![CDATA[alanthing]]></title>
   <link href="http://alanthing.com/atom.xml" rel="self"/>
   <link href="http://alanthing.com/"/>
-  <updated>2013-07-12T14:08:03-04:00</updated>
+  <updated>2013-07-15T14:43:40-04:00</updated>
   <id>http://alanthing.com/</id>
   <author>
     <name><![CDATA[Alan Ivey]]></name>
@@ -19,6 +19,14 @@
     <updated>2013-07-11T22:33:00-04:00</updated>
     <id>http://alanthing.com/blog/2013/07/11/creating-php-packages-software-collection</id>
     <content type="html"><![CDATA[<p>Maintaining multiple versions of software can be tricky. Most of the explanations I have come across suggest using the version provided by your Linux distribution and installing others from source using a custom path, like <code>./configure --prefix=/opt/php-5.3.26; make; make install</code>, but it&rsquo;s not pleasant to update, manage small sub-packages, or make init.d scripts. The ideal option is to use packages that install to another location alongside the defaults, but hacking up spec files to override the default RPM macros like <code>%configure</code> (for CentOS and RHEL anyway) is not fun. This is where <a href="https://access.redhat.com/site/documentation/en-US/Red_Hat_Developer_Toolset/1/html/Software_Collections_Guide/">Red Hat Software Collections</a> come in to play. While Red Hat recently announced the <a href="http://www.redhat.com/about/news/archive/2013/6/red-hat-software-collections-1.0-beta-now-available">Red Hat Software Collections 1.0 Beta</a> for alternate versions of PHP, Perl, MySQL, and more, let&rsquo;s step through how to create your own Software Collection, or SCL. I&rsquo;ll show how to create PHP 5.3.26 to be installed in /opt/rh/ by converting existing SPEC files, and I&rsquo;ll also include diff files for how I built PHP 5.2.17 as an SCL.</p>
+
+<p>If you&rsquo;re just here to get RPMs and don&rsquo;t much care for how they were made, or if you&rsquo;d like to get the source RPMs and learn for yourself, you can visit our repository and get whatever you&rsquo;d like, including Yum repos:</p>
+
+<ul>
+<li><a href="http://yum.echoditto.com/php53/">http://yum.echoditto.com/php53/</a></li>
+<li><a href="http://yum.echoditto.com/php52/">http://yum.echoditto.com/php52/</a></li>
+</ul>
+
 
 <p>Before I get too deep into the instructions, I&rsquo;d like to share the resources I used:</p>
 
