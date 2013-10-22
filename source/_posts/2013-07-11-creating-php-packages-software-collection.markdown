@@ -8,6 +8,11 @@ categories:
 
 Maintaining multiple versions of software can be tricky. Most of the explanations I have come across suggest using the version provided by your Linux distribution and installing others from source using a custom path, like `./configure --prefix=/opt/php-5.3.26; make; make install`, but it's not pleasant to update, manage small sub-packages, or make init.d scripts. The ideal option is to use packages that install to another location alongside the defaults, but hacking up spec files to override the default RPM macros like `%configure` (for CentOS and RHEL anyway) is not fun. This is where [Red Hat Software Collections](https://access.redhat.com/site/documentation/en-US/Red_Hat_Developer_Toolset/1/html/Software_Collections_Guide/) come in to play. While Red Hat recently announced the [Red Hat Software Collections 1.0 Beta](http://www.redhat.com/about/news/archive/2013/6/red-hat-software-collections-1.0-beta-now-available) for alternate versions of PHP, Perl, MySQL, and more, let's step through how to create your own Software Collection, or SCL. I'll show how to create PHP 5.3.26 to be installed in /opt/rh/ by converting existing SPEC files, and I'll also include diff files for how I built PHP 5.2.17 as an SCL.
 
+If you're just here to get RPMs and don't much care for how they were made, or if you'd like to get the source RPMs and learn for yourself, you can visit our repository and get whatever you'd like, including Yum repos:
+
+* [http://yum.echoditto.com/php53/](http://yum.echoditto.com/php53/)
+* [http://yum.echoditto.com/php52/](http://yum.echoditto.com/php52/)
+
 Before I get too deep into the instructions, I'd like to share the resources I used:
 
 *   [Red Hat's documentation on converting SPEC files to SCLs](https://access.redhat.com/site/documentation/en-US/Red_Hat_Developer_Toolset/1/html/Software_Collections_Guide/sect-Converting_a_Conventional_Spec_File.html)
