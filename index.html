@@ -9,7 +9,7 @@
   <meta name="author" content="Alan Ivey">
 
   
-  <meta name="description" content="Maintaining multiple versions of software can be tricky. Most of the explanations I have come across suggest using the version provided by your Linux &hellip;">
+  <meta name="description" content="Anyone who used Drupal 6 at scale knew that Pressflow 6 was pretty great. It forked Drupal and added several performance enhancements, including the &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -77,6 +77,85 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/10/18/whats-the-deal-with-pressflow-7/">What&#8217;s the Deal With Pressflow 7?</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-10-18T09:39:00-04:00" pubdate data-updated="true">Oct 18<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Anyone who used Drupal 6 at scale knew that <a href="http://fourkitchens.com/pressflow-makes-drupal-scale">Pressflow 6</a> was pretty great. It forked Drupal and added several performance enhancements, including the ability to use external caches. Since <a href="https://pressflow.atlassian.net/wiki/display/PF/Comparison+-+Pressflow+versus+Drupal">Drupal 7 incorporated lots of the Pressflow 6 features</a>, what&rsquo;s the deal with Pressflow 7?</p>
+
+<p>After Drupal 7 launched, <a href="http://developmentseed.org/blog/2010/jan/07/pressflow-7-continuing-push-performance-and-scalability-drupal/">it seemed like Pressflow 7 would continue the momentum from Pressflow 6 and greatly enhance Drupal 7</a>. But, here we are in 2013, and you don&rsquo;t hear about Pressflow 7 very often, and searching for differences does not yield much more than some diffs between baseline Drupal core 7 and <a href="https://github.com/pressflow/7">the Pressflow 7 repository on GitHub</a>. Since there are clearly some differences, let&rsquo;s dive in and see what they are exactly.</p>
+
+<ul>
+<li><em>Pressflow Smart Start</em> will forward you to the install page if the database is set up in settings.php but the database is empty, disabled by default.
+
+<ul>
+<li>Files: <a href="https://github.com/pressflow/7/blob/d1e3c87ab8edc207b1adbf88c6484218bcc0fa70/includes/bootstrap.inc#L2428-L2437">includes/bootstrap.inc</a> and <a href="https://github.com/pressflow/7/blob/d1e3c87ab8edc207b1adbf88c6484218bcc0fa70/sites/default/default.settings.php#L555-L562">sites/default/default.settings.php</a></li>
+<li>Commit: <a href="https://github.com/pressflow/7/commit/fa91b2fc80741cb8c42c2db618f0ef0ad890f4cc">https://github.com/pressflow/7/commit/fa91b2fc80741cb8c42c2db618f0ef0ad890f4cc</a></li>
+</ul>
+</li>
+<li>Allow for environmental PRESSFLOW_SETTINGS to override settings.php; settings must be entered as a JSON array.
+
+<ul>
+<li>File: <a href="https://github.com/pressflow/7/blob/d1e3c87ab8edc207b1adbf88c6484218bcc0fa70/includes/bootstrap.inc#L716-L730">includes/bootstrap.inc</a></li>
+<li>Commits: <a href="https://github.com/pressflow/7/commit/673fb0bdab618f8989365012149c76b8397f95d6">https://github.com/pressflow/7/commit/673fb0bdab618f8989365012149c76b8397f95d6</a> (Pull request: <a href="https://github.com/pressflow/7/pull/7">https://github.com/pressflow/7/pull/7</a>), and <a href="https://github.com/pressflow/7/commit/953e6608b34975eaa0c8abed8a90f80d22f1b967">https://github.com/pressflow/7/commit/953e6608b34975eaa0c8abed8a90f80d22f1b967</a></li>
+</ul>
+</li>
+<li>APC CSS and JS check; to prevent Drupal from constantly checking the file system for core-aggregated CSS and JS files, use APC as a key:value store instead. This is very helpful improving performance for networked file systems by reducing the frequency Drupal hits the file system.
+
+<ul>
+<li>File: <a href="https://github.com/pressflow/7/blob/d1e3c87ab8edc207b1adbf88c6484218bcc0fa70/includes/common.inc#L4896-L4908">includes/common.inc</a> (also see lines <a href="https://github.com/pressflow/7/blob/d1e3c87ab8edc207b1adbf88c6484218bcc0fa70/includes/common.inc#L3558">3558</a> and <a href="https://github.com/pressflow/7/blob/d1e3c87ab8edc207b1adbf88c6484218bcc0fa70/includes/common.inc#L4949">4949</a>)</li>
+<li>Commit: <a href="https://github.com/pressflow/7/commit/e2f9d2b10b4f0c5f61f120be145621913c6794a4">https://github.com/pressflow/7/commit/e2f9d2b10b4f0c5f61f120be145621913c6794a4</a> (Pull request: <a href="https://github.com/pressflow/7/pull/16/files,">https://github.com/pressflow/7/pull/16/files,</a> original pull request: <a href="https://github.com/pantheon-systems/drops-7/pull/4">https://github.com/pantheon-systems/drops-7/pull/4</a>)</li>
+</ul>
+</li>
+<li>Allow modules to act on the js_cache before writing to disk, and add a note to the aggregated JavaScript that it was built with PressFlow. This won&rsquo;t yield an immediate impact on anything, but adds additional functionality to modules.
+
+<ul>
+<li>Files: <a href="https://github.com/pressflow/7/blob/d1e3c87ab8edc207b1adbf88c6484218bcc0fa70/includes/common.inc#L4958-L4959">includes/common.inc</a> and <a href="https://github.com/pressflow/7/blob/d1e3c87ab8edc207b1adbf88c6484218bcc0fa70/modules/system/system.api.php#L750-L768">modules/system/system.api.php</a></li>
+<li>Commit: <a href="https://github.com/pressflow/7/commit/53098cf059236110716ca97c18565a178c458b43">https://github.com/pressflow/7/commit/53098cf059236110716ca97c18565a178c458b43</a></li>
+</ul>
+</li>
+<li>Allow sub-second delays for lock_wait(). The calculation Drupal currently does will allow a value of 0 for the lock wait time, effectively skipping it. When PHP converts to an integer, a float will always round down. For example, as Drupal performs the operation: <code>php -r "echo (int) 0.25 * 20;"</code> would return <code>0</code>. The Pressflow change corrects the order of operations and returns the correct value, for example: <code>php -r "echo (int) (0.25 * 20);"</code> would return <code>5</code>, allowing for sub-second delays to be used as an input to the function.
+
+<ul>
+<li>File: <a href="https://github.com/pressflow/7/blob/2cd4323946987608a660694df2c02f3cb4cce6c3/includes/lock.inc#L217">includes/lock.inc</a></li>
+<li>Commit: <a href="https://github.com/pressflow/7/commit/2cd4323946987608a660694df2c02f3cb4cce6c3">https://github.com/pressflow/7/commit/2cd4323946987608a660694df2c02f3cb4cce6c3</a></li>
+</ul>
+</li>
+</ul>
+
+
+<p>A full diff as of October 2013 can be found at <a href="https://gist.github.com/alanthing/6064500">https://gist.github.com/alanthing/6064500</a> for further reading. Original post at <a href="http://drupal.stackexchange.com/a/80138/10865">drupal.stackexchange.com</a>.</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1783,265 +1862,6 @@ Reference 2: <a href="http://jsdelfino.blogspot.com/2012/08/autoconf-and-automak
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2012/04/22/os-x-107-lion-development-nginx-php-mariadb-homebrew/">OS X 10.7 Lion Development: Nginx, PHP, MariaDB With Homebrew</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-04-22T20:41:00-04:00" pubdate data-updated="true">Apr 22<span>nd</span>, 2012</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p><a href="http://wiki.nginx.org">Nginx</a> is quickly becoming a popular, low resource alternative to Apache for many websites. This doesn&rsquo;t come without challenges, such as using PHP as CGI due to not having mod_php available. Nginx also does not use any Apache configuration rules, nor does it use .htaccess or anything like it, so it requires additional configuration regardless of the web application being deployed. A big help in getting Nginx started with Drupal is <a href="https://github.com/perusio">António P. P. Almeida&rsquo;s</a> <a href="https://github.com/perusio/drupal-with-nginx/">drupal-with-nginx configuration</a>, which makes it fairly simple to deploy in Linux. But what about local development on OS X? Read on to learn get all of the required components set up for your system, as well as the modifications necessary to get drupal-with-nginx set up on OS X.</p>
-
-<h2>Prerequisites</h2>
-
-<p>We&rsquo;ll be building all of our packages with <a href="http://mxcl.github.com/homebrew/">Homebrew</a>, which is, in my opinion, one of the best ways to easily add lot&rsquo;s of great open-source software on OS X. Homebrew requires that you have a compiler, so you can either install the huge <a href="http://itunes.apple.com/us/app/xcode/id448457090">Xcode package</a>, or I would recommend Apple&rsquo;s <a href="http://kennethreitz.com/xcode-gcc-and-homebrew.html">Xcode Command Line Tools</a> which is a much smaller download and officially supported by Homebrew.</p>
-
-<p>Once you have either Xcode or Xcode Command Line Tools installed, <a href="https://github.com/mxcl/homebrew/wiki/installation">install Homebrew</a>.</p>
-
-<p>Note that for all commands below that are starting with a <strong>$</strong>, the dollar sign is showing a command-line prompt in <a href="http://www.apple.com/macosx/apps/all.html#terminal">Terminal</a>, and you should not actually type it as part of the commands. I also make heavy use of <code>$(brew --prefix)</code> to make these instructions persist passed current Homebrew formula versions, and hopefully also for an installation with Homebrew in a path other than /usr/local, though I have not tested it.</p>
-
-<p>Also note that many times in this post you will see <strong>/n</strong>; make sure you type those or include them with your copy and paste, they are not CMS errors :)</p>
-
-<h2>Database: MariaDB</h2>
-
-<p>I&rsquo;ve <a href="http://echodittolabs.org/blog/2011/09/os-x-107-lion-development-native-apache-php-homebrew-mysql-or-mariadb">covered before why I like MariaDB</a>, but you could easily swap this out with MySQL if you would rather. We&rsquo;ll start by installing MariaDB with Homebrew.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>brew install mariadb pidof <span class="o">(</span>note: OS X may ask you <span class="k">if </span>you want to install <span class="s1">&#39;javac&#39;</span><span class="o">)</span>
-</span><span class='line'><span class="nb">unset </span>TMPDIR
-</span><span class='line'>mysql_install_db --verbose --user<span class="o">=</span><span class="sb">`</span>whoami<span class="sb">`</span> --basedir<span class="o">=</span><span class="s2">&quot;$(brew --prefix mariadb)&quot;</span> --datadir<span class="o">=</span><span class="k">$(</span>brew --prefix<span class="k">)</span>/var/mysql --tmpdir<span class="o">=</span>/tmp
-</span><span class='line'>cp <span class="k">$(</span>brew --prefix mariadb<span class="k">)</span>/share/mysql/my-small.cnf <span class="k">$(</span>brew --prefix mariadb<span class="k">)</span>/my.cnf
-</span><span class='line'>sed -i <span class="s2">&quot;&quot;</span> <span class="s1">&#39;s/max_allowed_packet = 1.*M/max_allowed_packet = 2G/g&#39;</span> <span class="k">$(</span>brew --prefix mariadb<span class="k">)</span>/my.cnf
-</span><span class='line'><span class="o">[</span> ! -d ~/Library/LaunchAgents <span class="o">]</span> <span class="o">&amp;&amp;</span> mkdir ~/Library/LaunchAgents
-</span><span class='line'><span class="o">[</span> -f <span class="k">$(</span>brew --prefix mariadb<span class="k">)</span>/homebrew.mxcl.mariadb.plist <span class="o">]</span> <span class="o">&amp;&amp;</span> cp -v <span class="k">$(</span>brew --prefix mariadb<span class="k">)</span>/homebrew.mxcl.mariadb.plist ~/Library/LaunchAgents/
-</span><span class='line'><span class="o">[</span> -f ~/Library/LaunchAgents/homebrew.mxcl.mariadb.plist <span class="o">]</span> <span class="o">&amp;&amp;</span> launchctl load -w ~/Library/LaunchAgents/homebrew.mxcl.mariadb.plist
-</span><span class='line'><span class="k">$(</span>brew --prefix mariadb<span class="k">)</span>/bin/mysql_secure_installation
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Note: you could alternatively run: <code>$(brew --prefix mariadb)/bin/mysqladmin -u root password 'new-password'</code> instead of <code>mysql_secure_installation</code></p>
-
-<h2>PHP</h2>
-
-<p>OS X comes with PHP installed, but it doesn&rsquo;t come with PHP-FPM. While it&rsquo;s likely possible to run PHP as FastCGI with the built-in OS X, I prefer to install PHP with Homebrew since we&rsquo;re using Homebrew for everything else, and it keeps everything self-contained in Homebrew&rsquo;s root (defaults to /usr/local). Note that the <code>brew tap</code> command requires <a href="https://github.com/mxcl/homebrew/wiki/Homebrew-0.9">Homebrew 0.9 or greater</a>.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>brew tap josegonzalez/php
-</span><span class='line'>brew install php --with-mariadb --with-suhosin --with-fpm
-</span><span class='line'>mkdir -v <span class="k">$(</span>brew --prefix php<span class="k">)</span>/var/log
-</span><span class='line'>cp -v <span class="k">$(</span>brew --prefix<span class="k">)</span>/etc/php-fpm.conf.default <span class="k">$(</span>brew --prefix<span class="k">)</span>/etc/php-fpm.conf
-</span><span class='line'>sed -i <span class="s1">&#39;&#39;</span> <span class="s1">&#39;s|;\(daemonize[[:space:]]*=[[:space:]]*\)yes|\1no|g&#39;</span> <span class="k">$(</span>brew --prefix<span class="k">)</span>/etc/php-fpm.conf
-</span><span class='line'><span class="o">[</span> ! -d ~/Library/LaunchAgents <span class="o">]</span> <span class="o">&amp;&amp;</span> mkdir ~/Library/LaunchAgents
-</span><span class='line'><span class="o">[</span> -f <span class="k">$(</span>brew --prefix php<span class="k">)</span>/org.php-fpm.plist <span class="o">]</span> <span class="o">&amp;&amp;</span> cp -v <span class="k">$(</span>brew --prefix php<span class="k">)</span>/org.php-fpm.plist ~/Library/LaunchAgents/
-</span><span class='line'><span class="o">[</span> -f ~/Library/LaunchAgents/org.php-fpm.plist <span class="o">]</span> <span class="o">&amp;&amp;</span> launchctl load -w ~/Library/LaunchAgents/org.php-fpm.plist
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>I would recommend the following settings for full compatibility with drupal-with-nginx, and to set the time zone to silence a lot of PHP warnings:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>sed -i <span class="s1">&#39;&#39;</span> <span class="s1">&#39;s|;\(pm.status_path[[:space:]]*=[[:space:]]*/\)\(status\)|\1fpm-\2|g&#39;</span> <span class="k">$(</span>brew --prefix<span class="k">)</span>/etc/php-fpm.conf
-</span><span class='line'>sed -i <span class="s1">&#39;&#39;</span> <span class="s1">&#39;s|;\(ping.path[[:space:]]*=[[:space:]]*/ping\)|\1|g&#39;</span> <span class="k">$(</span>brew --prefix<span class="k">)</span>/etc/php-fpm.conf
-</span><span class='line'>sed -i <span class="s1">&#39;&#39;</span> <span class="s1">&#39;s|;\(ping.response[[:space:]]*=[[:space:]]*pong\)|\1|g&#39;</span> <span class="k">$(</span>brew --prefix<span class="k">)</span>/etc/php-fpm.conf
-</span><span class='line'>sed -i <span class="s1">&#39;&#39;</span> <span class="s2">&quot;s|;\(date\.timezone[[:space:]]*=\).*|\1 $(php -d &#39;error_reporting=&#39; -r &#39;echo date(&quot;</span>e<span class="s2">&quot;, time());&#39;)|g&quot;</span> <span class="k">$(</span>brew --prefix<span class="k">)</span>/etc/php.ini
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>By default, PHP-FPM runs on a socket, which means that connections to PHP-FPM will require using TCP. You also have the option to use Unix sockets, which means slightly less overhead in PHP-FPM connections. Note that the drupal-with-nginx repository is set up for TCP by default, though if you choose to run the following command I will tell you how to use Unix sockets with Nginx.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>sed -i <span class="s1">&#39;&#39;</span> <span class="s1">&#39;s|\(listen[[:space:]]*=[[:space:]]*\)127.0.0.1:9000|\1var/www.sock|g&#39;</span> <span class="k">$(</span>brew --prefix<span class="k">)</span>/etc/php-fpm.conf
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>Optional: PHP Extensions</h3>
-
-<p>The <a href="https://github.com/josegonzalez/homebrew-php">third-party Homebrew keg that we &ldquo;tapped&rdquo; into</a> also provides easy formulas for PHP extensions. None of these are required to run Nginx and Drupal locally. You may also note that <em>uploadprogress</em> does not work with anything but mod_php, but by installing it now you could theoretically use the same PHP installation with Apache if you wanted and already have it ready to go. Feel free to omit it, or any of these below, though I would at least recommend APC for performance reasons.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>brew install uploadprogress-php
-</span><span class='line'><span class="nb">echo</span> -e <span class="s2">&quot;\n[uploadprogress]\nextension=\&quot;$(brew --prefix uploadprogress-php)/uploadprogress.so\&quot;&quot;</span> &gt;&gt; <span class="k">$(</span>brew --prefix<span class="k">)</span>/etc/php.ini
-</span><span class='line'>brew install apc-php
-</span><span class='line'><span class="nb">echo</span> -e <span class="s2">&quot;\n[apc]\nextension=\&quot;$(brew --prefix apc-php)/apc.so\&quot;\napc.enabled=1 \napc.shm_segments=1 \napc.shm_size=64M \napc.ttl=7200 \napc.user_ttl=7200 \napc.num_files_hint=1024 \napc.mmap_file_mask=/tmp/apc.XXXXXX \napc.enable_cli=1&quot;</span> &gt;&gt; <span class="k">$(</span>brew --prefix<span class="k">)</span>/php.ini
-</span><span class='line'>brew install memcache-php
-</span><span class='line'><span class="nb">echo</span> -e <span class="s2">&quot;\n[memcache]\nextension=\&quot;$(brew --prefix memcache-php)/memcache.so\&quot;&quot;</span> &gt;&gt; <span class="k">$(</span>brew --prefix<span class="k">)</span>/etc/php.ini
-</span><span class='line'><span class="nb">echo</span> -e <span class="s2">&quot;memcache.hash_strategy=\&quot;consistent\&quot;&quot;</span> &gt;&gt; <span class="k">$(</span>brew --prefix<span class="k">)</span>/etc/php.ini
-</span><span class='line'>brew install xdebug-php
-</span><span class='line'><span class="nb">echo</span> -e <span class="s2">&quot;\n[xdebug]\nzend_extension=\&quot;$(brew --prefix xdebug-php)/xdebug.so\&quot;&quot;</span> &gt;&gt; <span class="k">$(</span>brew --prefix<span class="k">)</span>/etc/php.ini
-</span><span class='line'>brew install xhprof-php
-</span><span class='line'><span class="nb">echo</span> -e <span class="s2">&quot;\n[xhprof]\nextension=\&quot;$(brew --prefix xhprof-php)/xhprof.so\&quot;&quot;</span> &gt;&gt; <span class="k">$(</span>brew --prefix<span class="k">)</span>/etc/php.ini
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Once you&rsquo;ve finished configuring PHP, you can reload the settings for PHP-FPM (or, you could find the pid of the first php-fpm process and send it the SIGUSR2 signal; this is easier):</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span> -f ~/Library/LaunchAgents/org.php-fpm.plist <span class="o">]</span> <span class="o">&amp;&amp;</span> launchctl unload -w ~/Library/LaunchAgents/org.php-fpm.plist <span class="o">&amp;&amp;</span> launchctl load -w ~/Library/LaunchAgents/org.php-fpm.plist
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>Nginx</h2>
-
-<p>After compiling MariaDB and PHP, you&rsquo;re probably not too excited about compiling another application. Luckily, Nginx is a faily quick build, at least compared to MariaDB and PHP. We&rsquo;ll include some build options not on by default since they add features references in drupal-with-nginx, and we&rsquo;ll also add some 3rd party extensions as well. We&rsquo;ll start by grabbing those extensions:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>curl -s -L -o /tmp/nginx-upload-progress.tar.gz https://github.com/masterzen/nginx-upload-progress-module/tarball/v0.9.0 <span class="o">&amp;&amp;</span> mkdir /tmp/nginx-upload-progress <span class="o">&amp;&amp;</span> tar zxpf /tmp/nginx-upload-progress.tar.gz --strip-components 1 -C /tmp/nginx-upload-progress <span class="o">&amp;&amp;</span> rm /tmp/nginx-upload-progress.tar.gz
-</span><span class='line'>curl -s -L -o /tmp/nginx-fair.tar.gz http://github.com/gnosek/nginx-upstream-fair/tarball/master <span class="o">&amp;&amp;</span> mkdir /tmp/nginx-fair <span class="o">&amp;&amp;</span> tar zxpf /tmp/nginx-fair.tar.gz --strip-components 1 -C /tmp/nginx-fair <span class="o">&amp;&amp;</span> rm /tmp/nginx-fair.tar.gz
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>The next section is one giant line of sed regex that will edit the Homebrew formula for nginx to add the additional compile options that we need. Make sure it all gets entered as one line (yes, you should use copy and paste here)!</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>sed -i <span class="s1">&#39;-default&#39;</span> <span class="s1">&#39;s/\([[:space:]]*\[&#39;</span><span class="se">\&#39;</span><span class="s1">&#39;--\)\(with-webdav\)\(&#39;</span><span class="se">\&#39;</span><span class="s1">&#39;,[[:space:]]*&quot;\)\(Compile with support for WebDAV module\)\(&quot;\]\)/\1\2\3\4\5,%\1with-realip\3Compile with support for RealIP module\5,%\1with-gzip_static\3Compile with support for Gzip Static module\5,%\1with-uploadprogress\3Compile with support for Upload Progress module\5,%\1with-fair\3Compile with support for Fair module\5,%\1with-mp4\3Compile with support for MP4 module\5,%\1with-flv\3Compile with support for FLV module\5,%\1with-stub_status\3Compile with support for Stub Status module\5/; s/\([[:space:]]* args &lt;&lt; &quot;--\)\(with-http_dav_module\)\(&quot; if ARGV.include? &#39;</span><span class="se">\&#39;</span><span class="s1">&#39;--with-\)\(webdav\)\(&#39;</span><span class="se">\&#39;</span><span class="s1">&#39;.*\)/\1\2\3\4\5%\1with-http_realip_module\3realip\5%\1with-http_gzip_static_module\3gzip_static\5%\1add-module=\/tmp\/nginx-upload-progress\3uploadprogress\5%\1add-module=\/tmp\/nginx-fair\3fair\5%\1with-http_mp4_module\3mp4\5%\1with-http_flv_module\3flv\5%\1with-http_stub_status_module\3stub_status\5/; y/%/\n/&#39;</span> <span class="k">$(</span>brew --prefix<span class="k">)</span>/Library/Formula/nginx.rb
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Now we&rsquo;ll install Nginx with our new build options and extensions and start it.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>brew install nginx --with-realip --with-gzip_static --with-mp4 --with-flv --with-stub_status --with-uploadprogress --with-fair
-</span><span class='line'><span class="o">[</span> <span class="nv">$?</span> -eq 0 <span class="o">]</span> <span class="o">&amp;&amp;</span> rm -rf /tmp/nginx-upload-progress /tmp/nginx-fair
-</span><span class='line'>mkdir -vp <span class="k">$(</span>brew --prefix nginx<span class="k">)</span>/var/<span class="o">{</span>microcache,log,run<span class="o">}</span>
-</span><span class='line'><span class="o">[</span> ! -d ~/Library/LaunchAgents <span class="o">]</span> <span class="o">&amp;&amp;</span> mkdir ~/Library/LaunchAgents
-</span><span class='line'><span class="o">[</span> -f <span class="k">$(</span>brew --prefix nginx<span class="k">)</span>/homebrew.mxcl.nginx.plist <span class="o">]</span> <span class="o">&amp;&amp;</span> cp -v <span class="k">$(</span>brew --prefix nginx<span class="k">)</span>/homebrew.mxcl.nginx.plist ~/Library/LaunchAgents/
-</span><span class='line'><span class="o">[</span> -f ~/Library/LaunchAgents/homebrew.mxcl.nginx.plist <span class="o">]</span> <span class="o">&amp;&amp;</span> launchctl load -w ~/Library/LaunchAgents/homebrew.mxcl.nginx.plist
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>Nginx-With-Drupal</h2>
-
-<p>We&rsquo;re now ready to set up Nginx to work with Drupal. <a href="https://github.com/alanthing/drupal-with-nginx/tree/osx-1.0.x">I&rsquo;ve created a fork of the original repository</a> to make some necessary changes for OS X. I also make several changes for the stable 1.0.x branch of Nginx, which we&rsquo;ve just installed, rather than the unstable 1.1.x branch that is in the original configuration.</p>
-
-<p>If you want to stick with the original project, <a href="https://github.com/alanthing/drupal-with-nginx/commit/f13f7d8ce9af0853a5601dcbb90c5e0c2ed8dadd">check out the changes I made for OS X and 1.0.x</a> and you can apply them yourself and skip the git steps below.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span> -d <span class="k">$(</span>brew --prefix<span class="k">)</span>/etc/nginx <span class="o">]</span> <span class="o">&amp;&amp;</span> mv -v <span class="k">$(</span>brew --prefix<span class="k">)</span>/etc/nginx <span class="k">$(</span>brew --prefix<span class="k">)</span>/etc/nginx-default
-</span><span class='line'>git clone https://github.com/alanthing/drupal-with-nginx.git <span class="k">$(</span>brew --prefix<span class="k">)</span>/etc/nginx
-</span><span class='line'><span class="nb">cd</span> <span class="k">$(</span>brew --prefix<span class="k">)</span>/etc/nginx
-</span><span class='line'>git checkout osx-1.0.x
-</span><span class='line'>mkdir sites-enabled
-</span><span class='line'><span class="nb">cd </span>sites-enabled
-</span><span class='line'>ln -s ../sites-available/000-default
-</span><span class='line'>cp -a ../sites-available/example.com.conf yournewsite.conf
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>That&rsquo;s about as much as I can automate for you with copy+paste-able commands! You&rsquo;ll want to do the following to <em>yournewsite</em>.conf, which you can rename to be anything, to configure Nginx for your website:</p>
-
-<ul>
-<li>Change <code>server_name</code>, <code>access_log</code>, and <code>error_log</code> to use your local domain name for your virtual host</li>
-<li>Change root to the path of your Drupal installation. On my system, this may be <em>/Users/alan/Sites/drupal-7.14</em>. Note that you cannot use <em>~</em> in place of <em>/Users/name</em></li>
-<li>Unless you have a valid SSL certificate, you&rsquo;ll probably want to completely delete the second half of the file. So find the line containing <code>} HTTP server</code> and remove all following lines</li>
-<li>If you&rsquo;re using Boost with Drupal 7, or Drupal 6 with/without Boost, note that you&rsquo;ll want to comment out the <code>include sites-available/drupal.conf</code> line and uncomment the other relevant one for your site</li>
-<li>If you want to get additional status messages from PHP-FPM, uncomment <code>include php_fpm_status_vhost.conf</code> in this file, and also <code>include php_fpm_status_allowed_hosts.conf</code> in <code>$(brew --prefix)/etc/nginx/nginx.conf</code></li>
-<li>If you configured PHP-FPM earlier to use Unix sockets instead of TCP, open nginx.conf and comment out <code>include upstream_phpcgi_tcp.conf</code> and uncomment <code>include upstream_phpcgi_unix.conf</code></li>
-<li>Depending on the location of your files directory, you may need to edit the <code>sites-available/drupal.conf</code> (or other drupal*.conf) file and change the relevant sites/default/files paths appropriately</li>
-</ul>
-
-
-<p>Once you&rsquo;re finished editing your virtual host conf file (and possibly nginx.conf), you can reload nginx easily:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="k">$(</span>brew --prefix<span class="k">)</span>/sbin/nginx -s reload
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>Bonus: Drush</h2>
-
-<p>You&rsquo;ll need Drush to install a new Drupal site, as install.php is blocked for security reasons by default. Also, you&rsquo;ll find cron.php is inaccessible as well. There&rsquo;s a weird little hack required to get Drush installed with Homebrew without requiring sudo, so below is an example of how to both get around the sudo requirement and set up a blank Drupal 7 website (note that using the root MySQL user is bad form, but this is meant more as a quick demo of using drush with this setup than a recommended setup).</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>touch <span class="k">$(</span>brew --prefix php<span class="k">)</span>/lib/php/.lock
-</span><span class='line'>chmod 0644 <span class="k">$(</span>brew --prefix php<span class="k">)</span>/lib/php/.lock
-</span><span class='line'><span class="k">$(</span>brew --prefix<span class="k">)</span>/bin/pear channel-discover pear.drush.org
-</span><span class='line'><span class="k">$(</span>brew --prefix<span class="k">)</span>/bin/pear install drush/drush
-</span><span class='line'>brew unlink php <span class="o">&amp;&amp;</span> brew link php
-</span><span class='line'><span class="nb">cd</span> ~/Sites 2&gt;/dev/null <span class="o">||</span> mkdir ~/Sites <span class="o">&amp;&amp;</span> <span class="nb">cd</span> ~/Sites
-</span><span class='line'>drush dl
-</span><span class='line'>mysql -uroot -p<span class="s1">&#39;yourpassword&#39;</span> -e<span class="s1">&#39;create database drupal;&#39;</span>
-</span><span class='line'><span class="nb">cd </span>drupal-7.14
-</span><span class='line'>drush si --db-url<span class="o">=</span>mysql://root:yourpassword@localhost/drupal
-</span></code></pre></td></tr></table></div></figure>
-
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/2/">&larr; Older</a>
@@ -2057,6 +1877,10 @@ Reference 2: <a href="http://jsdelfino.blogspot.com/2012/08/autoconf-and-automak
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2013/10/18/whats-the-deal-with-pressflow-7/">What&#8217;s the Deal With Pressflow 7?</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2013/07/11/creating-php-packages-software-collection/">Creating PHP Packages as a Software Collection</a>
       </li>
     
@@ -2070,10 +1894,6 @@ Reference 2: <a href="http://jsdelfino.blogspot.com/2012/08/autoconf-and-automak
     
       <li class="post">
         <a href="/blog/2013/02/21/real-time-ruby-gem-development/">&#8220;Real-time&#8221; Ruby Gem Development</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2012/12/19/usable-mamp-os-x-108-mountain-lion/">Usable MAMP on OS X 10.8 Mountain Lion</a>
       </li>
     
   </ul>

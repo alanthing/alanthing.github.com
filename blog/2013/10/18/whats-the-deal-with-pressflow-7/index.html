@@ -5,11 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Apache modules on OS X with Homebrew - alanthing</title>
+  <title>What's the deal with Pressflow 7? - alanthing</title>
   <meta name="author" content="Alan Ivey">
 
   
-  <meta name="description" content="I have long been a big fan of Homebrew, a way of adding open-source software to OS X without much of the overhead and systems link MacPorts and Fink &hellip;">
+  <meta name="description" content="Anyone who used Drupal 6 at scale knew that Pressflow 6 was pretty great. It forked Drupal and added several performance enhancements, including the &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://alanthing.com/blog/2012/09/04/apache-modules-on-os-x-with-homebrew">
+  <link rel="canonical" href="http://alanthing.com/blog/2013/10/18/whats-the-deal-with-pressflow-7">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="alanthing" type="application/atom+xml">
@@ -80,7 +80,7 @@
   
   <header>
     
-      <h1 class="entry-title">Apache Modules on OS X With Homebrew</h1>
+      <h1 class="entry-title">What's the Deal With Pressflow 7?</h1>
     
     
       <p class="meta">
@@ -96,31 +96,57 @@
   
 
 
-<time datetime="2012-09-04T11:27:00-04:00" pubdate data-updated="true">Sep 4<span>th</span>, 2012</time>
+<time datetime="2013-10-18T09:39:00-04:00" pubdate data-updated="true">Oct 18<span>th</span>, 2013</time>
         
       </p>
     
   </header>
 
 
-<div class="entry-content"><p>I have long been a big fan of <a href="http://mxcl.github.com/homebrew">Homebrew</a>, a way of adding open-source software to OS X without much of the overhead and systems link <a href="http://www.macports.org">MacPorts</a> and <a href="http://www.finkproject.org">Fink</a> introduce. It&rsquo;s quickly become my favorite way to do PHP-based development on a Mac, and I&rsquo;ve <a href="http://echodittolabs.org/blog/2012/04/os-x-107-lion-development-nginx-php-mariadb-homebrew">blogged</a> <a href="http://echodittolabs.org/blog/2011/09/os-x-107-lion-development-native-apache-php-homebrew-mysql-or-mariadb">before</a> about various ways to integrate Homebrew-based software into your workflow.</p>
+<div class="entry-content"><p>Anyone who used Drupal 6 at scale knew that <a href="http://fourkitchens.com/pressflow-makes-drupal-scale">Pressflow 6</a> was pretty great. It forked Drupal and added several performance enhancements, including the ability to use external caches. Since <a href="https://pressflow.atlassian.net/wiki/display/PF/Comparison+-+Pressflow+versus+Drupal">Drupal 7 incorporated lots of the Pressflow 6 features</a>, what&rsquo;s the deal with Pressflow 7?</p>
 
-<p>In preparing new documentation for using Homebrew on 10.7 and 10.8 (coming soon to <a href="http://echodittolabs.org/blogs/alan-ivey">my EchoDitto blog</a>), I wanted to find a way to run either <a href="http://httpd.apache.org/docs/2.2/mod/mod_suexec.html">mod_suexec</a> or <a href="http://www.fastcgi.com/mod_fastcgi/docs/mod_fastcgi.html">mod_fastcgi</a> so I could use the built-in version of Apache without having to change folder ownership in random places where the web server needed to modify files. Homebrew did not have any formulas, but I found that <a href="http://github.com/lifepillar">Lifepillar</a> had written formulas <a href="https://github.com/mxcl/homebrew/pull/12093/files">(mod_fastcgi)</a> <a href="https://github.com/mxcl/homebrew/pull/12091">(mod_suexec)</a> for them both and was hoping to get them into Homebrew.</p>
-
-<p>Driven solely by my desire to have my documentation easier to follow, I set up a <a href="https://github.com/mxcl/homebrew/wiki/Homebrew-0.9">brew tap</a> for these two Apache modules. Shortly after adding it to the list of <a href="https://github.com/mxcl/homebrew/wiki/Interesting-Taps-&amp;-Branches">interesting taps and branches</a>, the decision was made to <a href="https://github.com/mxcl/homebrew/issues/14622">incorporate the repository under the Homebrew organization</a> and have a place just for Apache modules.</p>
-
-<p>As of today, here are the modules available in the tap:</p>
+<p>After Drupal 7 launched, <a href="http://developmentseed.org/blog/2010/jan/07/pressflow-7-continuing-push-performance-and-scalability-drupal/">it seemed like Pressflow 7 would continue the momentum from Pressflow 6 and greatly enhance Drupal 7</a>. But, here we are in 2013, and you don&rsquo;t hear about Pressflow 7 very often, and searching for differences does not yield much more than some diffs between baseline Drupal core 7 and <a href="https://github.com/pressflow/7">the Pressflow 7 repository on GitHub</a>. Since there are clearly some differences, let&rsquo;s dive in and see what they are exactly.</p>
 
 <ul>
-<li><a href="https://github.com/Homebrew/homebrew-apache/blob/master/mod_fastcgi.rb">mod_fastcgi</a> &ndash; written by <a href="https://github.com/lifepillar">lifepillar</a></li>
-<li><a href="https://github.com/Homebrew/homebrew-apache/blob/master/mod_suexec.rb">mod_suexec</a> &ndash; written by <a href="https://github.com/lifepillar">lifepillar</a>, 10.8 work by <a href="https://github.com/alanthing">me</a></li>
-<li><a href="https://github.com/Homebrew/homebrew-apache/blob/master/mod_fcgid.rb">mod_fcgid</a> &ndash; written by <a href="https://github.com/rjocoleman">rjocoleman</a></li>
-<li><a href="https://github.com/Homebrew/homebrew-apache/blob/master/mod_bonjour.rb">mod_bonjour</a> &ndash; written by <a href="https://github.com/joemaller">joemaller</a></li>
-<li><a href="https://github.com/Homebrew/homebrew-apache/blob/master/mod_python.rb">mod_python</a> and <a href="https://github.com/Homebrew/homebrew-apache/blob/master/mod_wsgi.rb">mod_wsgi</a> &ndash; copied from main Homebrew formulas</li>
+<li><em>Pressflow Smart Start</em> will forward you to the install page if the database is set up in settings.php but the database is empty, disabled by default.
+
+<ul>
+<li>Files: <a href="https://github.com/pressflow/7/blob/d1e3c87ab8edc207b1adbf88c6484218bcc0fa70/includes/bootstrap.inc#L2428-L2437">includes/bootstrap.inc</a> and <a href="https://github.com/pressflow/7/blob/d1e3c87ab8edc207b1adbf88c6484218bcc0fa70/sites/default/default.settings.php#L555-L562">sites/default/default.settings.php</a></li>
+<li>Commit: <a href="https://github.com/pressflow/7/commit/fa91b2fc80741cb8c42c2db618f0ef0ad890f4cc">https://github.com/pressflow/7/commit/fa91b2fc80741cb8c42c2db618f0ef0ad890f4cc</a></li>
+</ul>
+</li>
+<li>Allow for environmental PRESSFLOW_SETTINGS to override settings.php; settings must be entered as a JSON array.
+
+<ul>
+<li>File: <a href="https://github.com/pressflow/7/blob/d1e3c87ab8edc207b1adbf88c6484218bcc0fa70/includes/bootstrap.inc#L716-L730">includes/bootstrap.inc</a></li>
+<li>Commits: <a href="https://github.com/pressflow/7/commit/673fb0bdab618f8989365012149c76b8397f95d6">https://github.com/pressflow/7/commit/673fb0bdab618f8989365012149c76b8397f95d6</a> (Pull request: <a href="https://github.com/pressflow/7/pull/7">https://github.com/pressflow/7/pull/7</a>), and <a href="https://github.com/pressflow/7/commit/953e6608b34975eaa0c8abed8a90f80d22f1b967">https://github.com/pressflow/7/commit/953e6608b34975eaa0c8abed8a90f80d22f1b967</a></li>
+</ul>
+</li>
+<li>APC CSS and JS check; to prevent Drupal from constantly checking the file system for core-aggregated CSS and JS files, use APC as a key:value store instead. This is very helpful improving performance for networked file systems by reducing the frequency Drupal hits the file system.
+
+<ul>
+<li>File: <a href="https://github.com/pressflow/7/blob/d1e3c87ab8edc207b1adbf88c6484218bcc0fa70/includes/common.inc#L4896-L4908">includes/common.inc</a> (also see lines <a href="https://github.com/pressflow/7/blob/d1e3c87ab8edc207b1adbf88c6484218bcc0fa70/includes/common.inc#L3558">3558</a> and <a href="https://github.com/pressflow/7/blob/d1e3c87ab8edc207b1adbf88c6484218bcc0fa70/includes/common.inc#L4949">4949</a>)</li>
+<li>Commit: <a href="https://github.com/pressflow/7/commit/e2f9d2b10b4f0c5f61f120be145621913c6794a4">https://github.com/pressflow/7/commit/e2f9d2b10b4f0c5f61f120be145621913c6794a4</a> (Pull request: <a href="https://github.com/pressflow/7/pull/16/files,">https://github.com/pressflow/7/pull/16/files,</a> original pull request: <a href="https://github.com/pantheon-systems/drops-7/pull/4">https://github.com/pantheon-systems/drops-7/pull/4</a>)</li>
+</ul>
+</li>
+<li>Allow modules to act on the js_cache before writing to disk, and add a note to the aggregated JavaScript that it was built with PressFlow. This won&rsquo;t yield an immediate impact on anything, but adds additional functionality to modules.
+
+<ul>
+<li>Files: <a href="https://github.com/pressflow/7/blob/d1e3c87ab8edc207b1adbf88c6484218bcc0fa70/includes/common.inc#L4958-L4959">includes/common.inc</a> and <a href="https://github.com/pressflow/7/blob/d1e3c87ab8edc207b1adbf88c6484218bcc0fa70/modules/system/system.api.php#L750-L768">modules/system/system.api.php</a></li>
+<li>Commit: <a href="https://github.com/pressflow/7/commit/53098cf059236110716ca97c18565a178c458b43">https://github.com/pressflow/7/commit/53098cf059236110716ca97c18565a178c458b43</a></li>
+</ul>
+</li>
+<li>Allow sub-second delays for lock_wait(). The calculation Drupal currently does will allow a value of 0 for the lock wait time, effectively skipping it. When PHP converts to an integer, a float will always round down. For example, as Drupal performs the operation: <code>php -r "echo (int) 0.25 * 20;"</code> would return <code>0</code>. The Pressflow change corrects the order of operations and returns the correct value, for example: <code>php -r "echo (int) (0.25 * 20);"</code> would return <code>5</code>, allowing for sub-second delays to be used as an input to the function.
+
+<ul>
+<li>File: <a href="https://github.com/pressflow/7/blob/2cd4323946987608a660694df2c02f3cb4cce6c3/includes/lock.inc#L217">includes/lock.inc</a></li>
+<li>Commit: <a href="https://github.com/pressflow/7/commit/2cd4323946987608a660694df2c02f3cb4cce6c3">https://github.com/pressflow/7/commit/2cd4323946987608a660694df2c02f3cb4cce6c3</a></li>
+</ul>
+</li>
 </ul>
 
 
-<p>If you have any problems or questions, let me know in the issue queue! Or write a formula and submit a pull request!</p>
+<p>A full diff as of October 2013 can be found at <a href="https://gist.github.com/alanthing/6064500">https://gist.github.com/alanthing/6064500</a> for further reading. Original post at <a href="http://drupal.stackexchange.com/a/80138/10865">drupal.stackexchange.com</a>.</p>
 </div>
 
 
@@ -143,7 +169,7 @@
   
 
 
-<time datetime="2012-09-04T11:27:00-04:00" pubdate data-updated="true">Sep 4<span>th</span>, 2012</time>
+<time datetime="2013-10-18T09:39:00-04:00" pubdate data-updated="true">Oct 18<span>th</span>, 2013</time>
       
 
 
@@ -151,7 +177,7 @@
     
       <div class="sharing">
   
-  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://alanthing.com/blog/2012/09/04/apache-modules-on-os-x-with-homebrew/" data-via="alanthing" data-counturl="http://alanthing.com/blog/2012/09/04/apache-modules-on-os-x-with-homebrew/" >Tweet</a>
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://alanthing.com/blog/2013/10/18/whats-the-deal-with-pressflow-7/" data-via="alanthing" data-counturl="http://alanthing.com/blog/2013/10/18/whats-the-deal-with-pressflow-7/" >Tweet</a>
   
   
   <div class="g-plusone" data-size="medium"></div>
@@ -164,10 +190,8 @@
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/blog/2012/08/29/three-ways-get-drush-os-x/" title="Previous Post: Three ways to get Drush on OS X">&laquo; Three ways to get Drush on OS X</a>
+        <a class="basic-alignment left" href="/blog/2013/07/11/creating-php-packages-software-collection/" title="Previous Post: Creating PHP packages as a Software Collection">&laquo; Creating PHP packages as a Software Collection</a>
       
-      
-        <a class="basic-alignment right" href="/blog/2012/12/19/usable-mamp-os-x-108-mountain-lion/" title="Next Post: Usable MAMP on OS X 10.8 Mountain Lion">Usable MAMP on OS X 10.8 Mountain Lion &raquo;</a>
       
     </p>
   </footer>
@@ -316,8 +340,8 @@
       
         
         // var disqus_developer = 1;
-        var disqus_identifier = 'http://alanthing.com/blog/2012/09/04/apache-modules-on-os-x-with-homebrew/';
-        var disqus_url = 'http://alanthing.com/blog/2012/09/04/apache-modules-on-os-x-with-homebrew/';
+        var disqus_identifier = 'http://alanthing.com/blog/2013/10/18/whats-the-deal-with-pressflow-7/';
+        var disqus_url = 'http://alanthing.com/blog/2013/10/18/whats-the-deal-with-pressflow-7/';
         var disqus_script = 'embed.js';
       
     (function () {
