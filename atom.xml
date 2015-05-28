@@ -4,7 +4,7 @@
   <title><![CDATA[alanthing]]></title>
   <link href="http://alanthing.com/atom.xml" rel="self"/>
   <link href="http://alanthing.com/"/>
-  <updated>2015-05-28T15:06:26-04:00</updated>
+  <updated>2015-05-28T15:35:17-04:00</updated>
   <id>http://alanthing.com/</id>
   <author>
     <name><![CDATA[Alan Ivey]]></name>
@@ -26,7 +26,7 @@
 
 <p>The following steps are intended for use on a Yosemite system without any previous attempts to use Homebrew for Apache, PHP, or MySQL. If you have attempted to install a similar stack and run into conflicts, or you&rsquo;ve upgraded your operating system from 10.9 and things broke, the final section has some troubleshooting pointers. If that fails, leave a comment and I&rsquo;ll try my best to help you out.</p>
 
-<p>At the conclusion of this guide, you&rsquo;ll be able to create a directory like <em>~/Sites/project</em> and access it immediately at <em><a href="http://project.dev*">http://project.dev*</a> without editing your </em>/etc/hosts* file or editing any Apache configuration. We&rsquo;ll configure PHP and MySQL to allow for enough flexibility for development.</p>
+<p>At the conclusion of this guide, you&rsquo;ll be able to create a directory like <em>~/Sites/project</em> and access it immediately at <em><a href="http://project.dev">http://project.dev</a></em> without editing your <em>/etc/hosts</em> file or editing any Apache configuration. We&rsquo;ll configure PHP and MySQL to allow for enough flexibility for development.</p>
 
 <p>Because some of the commands span several lines, each command will be in a separate code block. This means you should copy and paste each code block in its entirety as a single command.</p>
 
@@ -36,11 +36,11 @@
 
 <p>If you&rsquo;ve not already installed Homebrew, you can follow the instructions at <a href="http://brew.sh/">http://brew.sh</a>. I used to include the command in previous walkthrough blogs, but it could change after posting, so definitely check their website to install it properly.</p>
 
-<p>If you do not have <strong>git</strong> available on your system, either from Homebrew, Xcode, or another source, you can install it with Homebrew now (if you already have it installed, feel free to skip this step to keep the version of <strong>git</strong> you already have):</p>
+<p>If you do not have <code>git</code> available on your system, either from Homebrew, Xcode, or another source, you can install it with Homebrew now (if you already have it installed, feel free to skip this step to keep the version of <code>git</code> you already have):</p>
 
-<pre language="bash">
-brew install -v git
-</pre>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>brew install -v git
+</span></code></pre></td></tr></table></div></figure>
 
 
 <h1>PATH Variable</h1>
@@ -51,290 +51,434 @@ brew install -v git
 
 <p>Install MySQL with Homebrew:</p>
 
-<pre language="bash">
-brew install -v mysql
-</pre>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>brew install -v mysql
+</span></code></pre></td></tr></table></div></figure>
 
 
 <p>Copy the default <em>my-default.cnf</em> file to the MySQL Homebrew Cellar directory where it will be loaded on application start:</p>
 
-<pre language="bash">
-cp -v $(brew --prefix mysql)/support-files/my-default.cnf $(brew --prefix)/etc/my.cnf
-</pre>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>cp -v <span class="k">$(</span>brew --prefix mysql<span class="k">)</span>/support-files/my-default.cnf <span class="k">$(</span>brew --prefix<span class="k">)</span>/etc/my.cnf
+</span></code></pre></td></tr></table></div></figure>
 
 
 <p>This will configure MySQL to allow for the maximum packet size, only appropriate for a local or development server. Also, we&rsquo;ll keep each InnoDB table in separate files to keep <em>ibdataN</em>-type file sizes low and make file-based backups, like Time Machine, easier to manage multiple small files instead of a few large InnoDB data files. This is the first of many multi-line single commands. The following is a single, multi-line command; copy and paste the entire block at once:</p>
 
-<pre language="bash">
-cat >> $(brew --prefix)/etc/my.cnf <<'EOF'
-
-# Echo & Co. changes
-max_allowed_packet = 1073741824
-innodb_file_per_table = 1
-EOF
-</pre>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>cat &gt;&gt; <span class="k">$(</span>brew --prefix<span class="k">)</span>/etc/my.cnf <span class="s">&lt;&lt;&#39;EOF&#39;</span>
+</span><span class='line'>
+</span><span class='line'><span class="s"># Echo &amp; Co. changes</span>
+</span><span class='line'><span class="s">max_allowed_packet = 1073741824</span>
+</span><span class='line'><span class="s">innodb_file_per_table = 1</span>
+</span><span class='line'><span class="s">EOF</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
 <p>Uncomment the sample option for <strong>innodb_buffer_pool_size</strong> to improve performance:</p>
 
-<pre language="bash">
-sed -i '' 's/^#[[:space:]]*\(innodb_buffer_pool_size\)/\1/' $(brew --prefix)/etc/my.cnf
-</pre>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>sed -i <span class="s1">&#39;&#39;</span> <span class="s1">&#39;s/^#[[:space:]]*\(innodb_buffer_pool_size\)/\1/&#39;</span> <span class="k">$(</span>brew --prefix<span class="k">)</span>/etc/my.cnf
+</span></code></pre></td></tr></table></div></figure>
 
 
-<p>Now we need to start MySQL using OS X&rsquo;s launchd. This used to be an involved process with <strong>launchctl</strong> commands, but now we can leverage the excellent <strong><a href="https://github.com/Homebrew/homebrew-services">brew services</a></strong> command:</p>
+<p>Now we need to start MySQL using OS X&rsquo;s launchd. This used to be an involved process with <code>launchctl</code> commands, but now we can leverage the excellent <strong><a href="https://github.com/Homebrew/homebrew-services">brew services</a></strong> command:</p>
 
-<pre language="bash">
-brew tap homebrew/services
-</pre>
-
-
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>brew tap homebrew/services
+</span></code></pre></td></tr></table></div></figure>
 
 
-<pre language="bash">
-brew services start mysql
-</pre>
 
 
-<p>By default, MySQL&rsquo;s root user has an empty password from any connection. You are advised to run <strong>mysql_secure_installation</strong> and at least set a password for the root user:</p>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>brew services start mysql
+</span></code></pre></td></tr></table></div></figure>
 
-<pre language="bash">
-$(brew --prefix mysql)/bin/mysql_secure_installation
-</pre>
+
+<p>By default, MySQL&rsquo;s root user has an empty password from any connection. You are advised to run <code>mysql_secure_installation</code> and at least set a password for the root user:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="k">$(</span>brew --prefix mysql<span class="k">)</span>/bin/mysql_secure_installation
+</span></code></pre></td></tr></table></div></figure>
 
 
 <h1>Apache</h1>
 
-<p>Start by stopping the built-in Apache, if it&rsquo;s running, and prevent it from starting on boot. This is one of very few times you&rsquo;ll need to use <strong>sudo</strong>:</p>
+<p>Start by stopping the built-in Apache, if it&rsquo;s running, and prevent it from starting on boot. This is one of very few times you&rsquo;ll need to use <code>sudo</code>:</p>
 
-<pre language="bash">
-sudo launchctl unload /System/Library/LaunchDaemons/org.apache.httpd.plist 2>/dev/null
-</pre>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>sudo launchctl unload /System/Library/LaunchDaemons/org.apache.httpd.plist 2&gt;/dev/null
+</span></code></pre></td></tr></table></div></figure>
 
 
-<p>The formula for building Apache is not in the default Homebrew repository that you get by installing Homebrew. While we can use the format of <strong>brew install external-repo/formula</strong>, if an external formula relies on another external formula, you have to use the <strong>brew tap</strong> command first. I know, it&rsquo;s weird. So, we need to tap homebrew-dupes because &ldquo;homebrew-apache/httpd22&rdquo; relies on &ldquo;homebrew-dupes/zlib&rdquo;. Whew:</p>
+<p>The formula for building Apache is not in the default Homebrew repository that you get by installing Homebrew. While we can use the format of <code>brew install external-repo/formula</code>, if an external formula relies on another external formula, you have to use the <code>brew tap</code> command first. I know, it&rsquo;s weird. So, we need to tap homebrew-dupes because &ldquo;homebrew-apache/httpd22&rdquo; relies on &ldquo;homebrew-dupes/zlib&rdquo;. Whew:</p>
 
-<pre language="bash">
-brew tap homebrew/dupes
-</pre>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>brew tap homebrew/dupes
+</span></code></pre></td></tr></table></div></figure>
 
 
 <p>A slight deviation from my prior walkthroughs: we&rsquo;ll install Apache 2.2 with the event MPM and set up PHP-FPM instead of mod_php. If those terms mean anything to you and you&rsquo;re curious as to why I decided to go this route; it&rsquo;s because: 1) switching PHP versions is far easier with PHP-FPM and the default 9000 port instead of also editing the Apache configuration to switch the mod_php module location, and 2) if we&rsquo;re therefore not using mod_php, we don&rsquo;t have to use the prefork MPM and can get better performance with event or worker. As to why I&rsquo;m using 2.2 instead of 2.4, popular FOSS projects like Drupal and WordPress still ship with 2.2-style .htaccess files. Using 2.4 sometimes means you have to set up &ldquo;compat&rdquo; modules, and that&rsquo;s above the requirement for a local environment, in my opinion.</p>
 
 <p>Onward! Let&rsquo;s install Apache 2.2 with the event MPM, and we&rsquo;ll use Homebrew&rsquo;s OpenSSL library since it&rsquo;s more up-to-date than OS X&rsquo;s:</p>
 
-<pre language="bash">
-brew install -v homebrew/apache/httpd22 --with-brewed-openssl --with-mpm-event
-</pre>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>brew install -v homebrew/apache/httpd22 --with-brewed-openssl --with-mpm-event
+</span></code></pre></td></tr></table></div></figure>
 
 
 <p>In order to get Apache and PHP to communicate via PHP-FPM, we&rsquo;ll install the mod_fastcgi module:</p>
 
-<pre language="bash">
-brew install -v homebrew/apache/mod_fastcgi --with-brewed-httpd22
-</pre>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>brew install -v homebrew/apache/mod_fastcgi --with-brewed-httpd22
+</span></code></pre></td></tr></table></div></figure>
 
 
 <p>To prevent any potential problems with previous mod_fastcgi setups, let&rsquo;s remove all references to the mod_fastcgi module (we&rsquo;ll re-add the new version later):</p>
 
-<pre language="bash">
-sed -i '' '/fastcgi_module/d' $(brew --prefix)/etc/apache2/2.2/httpd.conf
-</pre>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>sed -i <span class="s1">&#39;&#39;</span> <span class="s1">&#39;/fastcgi_module/d&#39;</span> <span class="k">$(</span>brew --prefix<span class="k">)</span>/etc/apache2/2.2/httpd.conf
+</span></code></pre></td></tr></table></div></figure>
 
 
-<p>Add the logic for Apache to send PHP to PHP-FPM with mod_fastcgi, and reference that we&rsquo;ll want to use the file <em>~/Sites/httpd-vhosts.conf</em> to configure our VirtualHosts. The parenthesis are used to <a href="http://stackoverflow.com/a/10856211/534275">run the command in a subprocess</a>, so that the <strong>export</strong>ed variables don&rsquo;t persist in your terminal session afterwards. Also, you&rsquo;ll see <strong>export USERHOME</strong> a few times in this guide; I look up the full path for your user home directory from the operating system wherever a full path is needed in a configuration file and &ldquo;<em>~</em>&rdquo; or a literal &ldquo;<em>$HOME</em>&rdquo; would not work.</p>
+<p>Add the logic for Apache to send PHP to PHP-FPM with mod_fastcgi, and reference that we&rsquo;ll want to use the file <em>~/Sites/httpd-vhosts.conf</em> to configure our VirtualHosts. The parenthesis are used to <a href="http://stackoverflow.com/a/10856211/534275">run the command in a subprocess</a>, so that the <code>export</code>ed variables don&rsquo;t persist in your terminal session afterwards. Also, you&rsquo;ll see <code>export USERHOME</code> a few times in this guide; I look up the full path for your user home directory from the operating system wherever a full path is needed in a configuration file and &ldquo;<em>~</em>&rdquo; or a literal &ldquo;<em>$HOME</em>&rdquo; would not work.</p>
 
 <p>This is all one command, so copy and paste the entire code block at once:</p>
 
-<pre language="bash">
-(export USERHOME=$(dscl . -read /Users/`whoami` NFSHomeDirectory | awk -F"\: " '{print $2}') ; export MODFASTCGIPREFIX=$(brew --prefix mod_fastcgi) ; cat >> $(brew --prefix)/etc/apache2/2.2/httpd.conf <<EOF
-
-# Echo & Co. changes
-
-# Load PHP-FPM via mod_fastcgi
-LoadModule fastcgi_module    ${MODFASTCGIPREFIX}/libexec/mod_fastcgi.so
-
-<IfModule fastcgi_module>
-  FastCgiConfig -maxClassProcesses 1 -idle-timeout 1500
-
-  # Prevent accessing FastCGI alias paths directly
-  <LocationMatch "^/fastcgi">
-    <IfModule mod_authz_core.c>
-      Require env REDIRECT_STATUS
-    </IfModule>
-    <IfModule !mod_authz_core.c>
-      Order Deny,Allow
-      Deny from All
-      Allow from env=REDIRECT_STATUS
-    </IfModule>
-  </LocationMatch>
-
-  FastCgiExternalServer /php-fpm -host 127.0.0.1:9000 -pass-header Authorization -idle-timeout 1500
-  ScriptAlias /fastcgiphp /php-fpm
-  Action php-fastcgi /fastcgiphp
-  
-  # Send PHP extensions to PHP-FPM
-  AddHandler php-fastcgi .php
-  
-  # PHP options
-  AddType text/html .php
-  AddType application/x-httpd-php .php
-  DirectoryIndex index.php index.html
-</IfModule>
-
-# Include our VirtualHosts
-Include ${USERHOME}/Sites/httpd-vhosts.conf
-EOF
-)
-</pre>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">(</span><span class="nb">export </span><span class="nv">USERHOME</span><span class="o">=</span><span class="k">$(</span>dscl . -read /Users/<span class="sb">`</span>whoami<span class="sb">`</span> NFSHomeDirectory | awk -F<span class="s2">&quot;\: &quot;</span> <span class="s1">&#39;{print $2}&#39;</span><span class="k">)</span> ; <span class="nb">export </span><span class="nv">MODFASTCGIPREFIX</span><span class="o">=</span><span class="k">$(</span>brew --prefix mod_fastcgi<span class="k">)</span> ; cat &gt;&gt; <span class="k">$(</span>brew --prefix<span class="k">)</span>/etc/apache2/2.2/httpd.conf <span class="s">&lt;&lt;EOF</span>
+</span><span class='line'>
+</span><span class='line'><span class="s"># Echo &amp; Co. changes</span>
+</span><span class='line'>
+</span><span class='line'><span class="s"># Load PHP-FPM via mod_fastcgi</span>
+</span><span class='line'><span class="s">LoadModule fastcgi_module    ${MODFASTCGIPREFIX}/libexec/mod_fastcgi.so</span>
+</span><span class='line'>
+</span><span class='line'><span class="s">&lt;IfModule fastcgi_module&gt;</span>
+</span><span class='line'><span class="s">  FastCgiConfig -maxClassProcesses 1 -idle-timeout 1500</span>
+</span><span class='line'>
+</span><span class='line'><span class="s">  # Prevent accessing FastCGI alias paths directly</span>
+</span><span class='line'><span class="s">  &lt;LocationMatch &quot;^/fastcgi&quot;&gt;</span>
+</span><span class='line'><span class="s">    &lt;IfModule mod_authz_core.c&gt;</span>
+</span><span class='line'><span class="s">      Require env REDIRECT_STATUS</span>
+</span><span class='line'><span class="s">    &lt;/IfModule&gt;</span>
+</span><span class='line'><span class="s">    &lt;IfModule !mod_authz_core.c&gt;</span>
+</span><span class='line'><span class="s">      Order Deny,Allow</span>
+</span><span class='line'><span class="s">      Deny from All</span>
+</span><span class='line'><span class="s">      Allow from env=REDIRECT_STATUS</span>
+</span><span class='line'><span class="s">    &lt;/IfModule&gt;</span>
+</span><span class='line'><span class="s">  &lt;/LocationMatch&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="s">  FastCgiExternalServer /php-fpm -host 127.0.0.1:9000 -pass-header Authorization -idle-timeout 1500</span>
+</span><span class='line'><span class="s">  ScriptAlias /fastcgiphp /php-fpm</span>
+</span><span class='line'><span class="s">  Action php-fastcgi /fastcgiphp</span>
+</span><span class='line'><span class="s">  </span>
+</span><span class='line'><span class="s">  # Send PHP extensions to PHP-FPM</span>
+</span><span class='line'><span class="s">  AddHandler php-fastcgi .php</span>
+</span><span class='line'><span class="s">  </span>
+</span><span class='line'><span class="s">  # PHP options</span>
+</span><span class='line'><span class="s">  AddType text/html .php</span>
+</span><span class='line'><span class="s">  AddType application/x-httpd-php .php</span>
+</span><span class='line'><span class="s">  DirectoryIndex index.php index.html</span>
+</span><span class='line'><span class="s">&lt;/IfModule&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="s"># Include our VirtualHosts</span>
+</span><span class='line'><span class="s">Include ${USERHOME}/Sites/httpd-vhosts.conf</span>
+</span><span class='line'><span class="s">EOF</span>
+</span><span class='line'><span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
 <p>We&rsquo;ll be using the file <em>~/Sites/httpd-vhosts.conf</em> to configure our VirtualHosts, but the <em>~/Sites</em> folder doesn&rsquo;t exist by default in newer versions of OS X. We&rsquo;ll also create folders for logs and SSL files:</p>
 
-<pre language="bash">
-mkdir -pv ~/Sites/{logs,ssl}
-</pre>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>mkdir -pv ~/Sites/<span class="o">{</span>logs,ssl<span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
-<p>Let&rsquo;s populate the <em>~/Sites/httpd-vhosts.conf</em> file. The biggest difference from my previous guides are that you&rsquo;ll see the port numbers are 8080/8443 instead of 80/443. OS X 10.9 and earlier had the <strong>ipfw</strong> firewall which allowed for port redirecting, so we would send port 80 traffic &ldquo;directly&rdquo; to our Apache. But <strong>ipfw</strong> is now removed and replaced by <strong>pf</strong> which &ldquo;forwards&rdquo; traffic to another port. We&rsquo;ll get to that later, but know that &ldquo;8080&rdquo; and &ldquo;8443&rdquo; are not typos but are acceptable because of later port forwarding. Also, I&rsquo;ve now added a basic SSL configuration (though you&rsquo;ll need to acknowledge warnings in your browser about self-signed certificates):</p>
+<p>Let&rsquo;s populate the <em>~/Sites/httpd-vhosts.conf</em> file. The biggest difference from my previous guides are that you&rsquo;ll see the port numbers are 8080/8443 instead of 80/443. OS X 10.9 and earlier had the <code>ipfw</code> firewall which allowed for port redirecting, so we would send port 80 traffic &ldquo;directly&rdquo; to our Apache. But <code>ipfw</code> is now removed and replaced by <code>pf</code> which &ldquo;forwards&rdquo; traffic to another port. We&rsquo;ll get to that later, but know that &ldquo;8080&rdquo; and &ldquo;8443&rdquo; are not typos but are acceptable because of later port forwarding. Also, I&rsquo;ve now added a basic SSL configuration (though you&rsquo;ll need to acknowledge warnings in your browser about self-signed certificates):</p>
 
-<pre language="bash">
-touch ~/Sites/httpd-vhosts.conf
-</pre>
-
-
-
-
-<pre language="bash">
-(export USERHOME=$(dscl . -read /Users/`whoami` NFSHomeDirectory | awk -F"\: " '{print $2}') ; cat > ~/Sites/httpd-vhosts.conf <<EOF
-#
-# Listening ports.
-#
-#Listen 8080  # defined in main httpd.conf
-Listen 8443
-
-#
-# Use name-based virtual hosting.
-#
-NameVirtualHost *:8080
-NameVirtualHost *:8443
-
-#
-# Set up permissions for VirtualHosts in ~/Sites
-#
-<Directory "${USERHOME}/Sites">
-    Options Indexes FollowSymLinks MultiViews
-    AllowOverride All
-    <IfModule mod_authz_core.c>
-        Require all granted
-    </IfModule>
-    <IfModule !mod_authz_core.c>
-        Order allow,deny
-        Allow from all
-    </IfModule>
-</Directory>
-
-# For http://localhost in the users' Sites folder
-<VirtualHost _default_:8080>
-    ServerName localhost
-    DocumentRoot "${USERHOME}/Sites"
-</VirtualHost>
-<VirtualHost _default_:8443>
-    ServerName localhost
-    Include "${USERHOME}/Sites/ssl/ssl-shared-cert.inc"
-    DocumentRoot "${USERHOME}/Sites"
-</VirtualHost>
-
-#
-# VirtualHosts
-#
-
-## Manual VirtualHost template for HTTP and HTTPS
-#<VirtualHost *:8080>
-#  ServerName project.dev
-#  CustomLog "${USERHOME}/Sites/logs/project.dev-access_log" combined
-#  ErrorLog "${USERHOME}/Sites/logs/project.dev-error_log"
-#  DocumentRoot "${USERHOME}/Sites/project.dev"
-#</VirtualHost>
-#<VirtualHost *:8443>
-#  ServerName project.dev
-#  Include "${USERHOME}/Sites/ssl/ssl-shared-cert.inc"
-#  CustomLog "${USERHOME}/Sites/logs/project.dev-access_log" combined
-#  ErrorLog "${USERHOME}/Sites/logs/project.dev-error_log"
-#  DocumentRoot "${USERHOME}/Sites/project.dev"
-#</VirtualHost>
-
-#
-# Automatic VirtualHosts
-#
-# A directory at ${USERHOME}/Sites/webroot can be accessed at http://webroot.dev
-# In Drupal, uncomment the line with: RewriteBase /
-#
-
-# This log format will display the per-virtual-host as the first field followed by a typical log line
-LogFormat "%V %h %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\"" combinedmassvhost
-
-# Auto-VirtualHosts with .dev
-<VirtualHost *:8080>
-  ServerName dev
-  ServerAlias *.dev
-
-  CustomLog "${USERHOME}/Sites/logs/dev-access_log" combinedmassvhost
-  ErrorLog "${USERHOME}/Sites/logs/dev-error_log"
-
-  VirtualDocumentRoot ${USERHOME}/Sites/%-2+
-</VirtualHost>
-<VirtualHost *:8443>
-  ServerName dev
-  ServerAlias *.dev
-  Include "${USERHOME}/Sites/ssl/ssl-shared-cert.inc"
-
-  CustomLog "${USERHOME}/Sites/logs/dev-access_log" combinedmassvhost
-  ErrorLog "${USERHOME}/Sites/logs/dev-error_log"
-
-  VirtualDocumentRoot ${USERHOME}/Sites/%-2+
-</VirtualHost>
-EOF
-)
-</pre>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+<span class='line-number'>82</span>
+<span class='line-number'>83</span>
+<span class='line-number'>84</span>
+<span class='line-number'>85</span>
+<span class='line-number'>86</span>
+<span class='line-number'>87</span>
+<span class='line-number'>88</span>
+<span class='line-number'>89</span>
+<span class='line-number'>90</span>
+<span class='line-number'>91</span>
+<span class='line-number'>92</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>touch ~/Sites/httpd-vhosts.conf
+</span><span class='line'>
+</span><span class='line'><span class="o">(</span><span class="nb">export </span><span class="nv">USERHOME</span><span class="o">=</span><span class="k">$(</span>dscl . -read /Users/<span class="sb">`</span>whoami<span class="sb">`</span> NFSHomeDirectory | awk -F<span class="s2">&quot;\: &quot;</span> <span class="s1">&#39;{print $2}&#39;</span><span class="k">)</span> ; cat &gt; ~/Sites/httpd-vhosts.conf <span class="s">&lt;&lt;EOF</span>
+</span><span class='line'><span class="s">#</span>
+</span><span class='line'><span class="s"># Listening ports.</span>
+</span><span class='line'><span class="s">#</span>
+</span><span class='line'><span class="s">#Listen 8080  # defined in main httpd.conf</span>
+</span><span class='line'><span class="s">Listen 8443</span>
+</span><span class='line'>
+</span><span class='line'><span class="s">#</span>
+</span><span class='line'><span class="s"># Use name-based virtual hosting.</span>
+</span><span class='line'><span class="s">#</span>
+</span><span class='line'><span class="s">NameVirtualHost *:8080</span>
+</span><span class='line'><span class="s">NameVirtualHost *:8443</span>
+</span><span class='line'>
+</span><span class='line'><span class="s">#</span>
+</span><span class='line'><span class="s"># Set up permissions for VirtualHosts in ~/Sites</span>
+</span><span class='line'><span class="s">#</span>
+</span><span class='line'><span class="s">&lt;Directory &quot;${USERHOME}/Sites&quot;&gt;</span>
+</span><span class='line'><span class="s">    Options Indexes FollowSymLinks MultiViews</span>
+</span><span class='line'><span class="s">    AllowOverride All</span>
+</span><span class='line'><span class="s">    &lt;IfModule mod_authz_core.c&gt;</span>
+</span><span class='line'><span class="s">        Require all granted</span>
+</span><span class='line'><span class="s">    &lt;/IfModule&gt;</span>
+</span><span class='line'><span class="s">    &lt;IfModule !mod_authz_core.c&gt;</span>
+</span><span class='line'><span class="s">        Order allow,deny</span>
+</span><span class='line'><span class="s">        Allow from all</span>
+</span><span class='line'><span class="s">    &lt;/IfModule&gt;</span>
+</span><span class='line'><span class="s">&lt;/Directory&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="s"># For http://localhost in the users&#39; Sites folder</span>
+</span><span class='line'><span class="s">&lt;VirtualHost _default_:8080&gt;</span>
+</span><span class='line'><span class="s">    ServerName localhost</span>
+</span><span class='line'><span class="s">    DocumentRoot &quot;${USERHOME}/Sites&quot;</span>
+</span><span class='line'><span class="s">&lt;/VirtualHost&gt;</span>
+</span><span class='line'><span class="s">&lt;VirtualHost _default_:8443&gt;</span>
+</span><span class='line'><span class="s">    ServerName localhost</span>
+</span><span class='line'><span class="s">    Include &quot;${USERHOME}/Sites/ssl/ssl-shared-cert.inc&quot;</span>
+</span><span class='line'><span class="s">    DocumentRoot &quot;${USERHOME}/Sites&quot;</span>
+</span><span class='line'><span class="s">&lt;/VirtualHost&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="s">#</span>
+</span><span class='line'><span class="s"># VirtualHosts</span>
+</span><span class='line'><span class="s">#</span>
+</span><span class='line'>
+</span><span class='line'><span class="s">## Manual VirtualHost template for HTTP and HTTPS</span>
+</span><span class='line'><span class="s">#&lt;VirtualHost *:8080&gt;</span>
+</span><span class='line'><span class="s">#  ServerName project.dev</span>
+</span><span class='line'><span class="s">#  CustomLog &quot;${USERHOME}/Sites/logs/project.dev-access_log&quot; combined</span>
+</span><span class='line'><span class="s">#  ErrorLog &quot;${USERHOME}/Sites/logs/project.dev-error_log&quot;</span>
+</span><span class='line'><span class="s">#  DocumentRoot &quot;${USERHOME}/Sites/project.dev&quot;</span>
+</span><span class='line'><span class="s">#&lt;/VirtualHost&gt;</span>
+</span><span class='line'><span class="s">#&lt;VirtualHost *:8443&gt;</span>
+</span><span class='line'><span class="s">#  ServerName project.dev</span>
+</span><span class='line'><span class="s">#  Include &quot;${USERHOME}/Sites/ssl/ssl-shared-cert.inc&quot;</span>
+</span><span class='line'><span class="s">#  CustomLog &quot;${USERHOME}/Sites/logs/project.dev-access_log&quot; combined</span>
+</span><span class='line'><span class="s">#  ErrorLog &quot;${USERHOME}/Sites/logs/project.dev-error_log&quot;</span>
+</span><span class='line'><span class="s">#  DocumentRoot &quot;${USERHOME}/Sites/project.dev&quot;</span>
+</span><span class='line'><span class="s">#&lt;/VirtualHost&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="s">#</span>
+</span><span class='line'><span class="s"># Automatic VirtualHosts</span>
+</span><span class='line'><span class="s">#</span>
+</span><span class='line'><span class="s"># A directory at ${USERHOME}/Sites/webroot can be accessed at http://webroot.dev</span>
+</span><span class='line'><span class="s"># In Drupal, uncomment the line with: RewriteBase /</span>
+</span><span class='line'><span class="s">#</span>
+</span><span class='line'>
+</span><span class='line'><span class="s"># This log format will display the per-virtual-host as the first field followed by a typical log line</span>
+</span><span class='line'><span class="s">LogFormat &quot;%V %h %l %u %t \&quot;%r\&quot; %&gt;s %b \&quot;%{Referer}i\&quot; \&quot;%{User-Agent}i\&quot;&quot; combinedmassvhost</span>
+</span><span class='line'>
+</span><span class='line'><span class="s"># Auto-VirtualHosts with .dev</span>
+</span><span class='line'><span class="s">&lt;VirtualHost *:8080&gt;</span>
+</span><span class='line'><span class="s">  ServerName dev</span>
+</span><span class='line'><span class="s">  ServerAlias *.dev</span>
+</span><span class='line'>
+</span><span class='line'><span class="s">  CustomLog &quot;${USERHOME}/Sites/logs/dev-access_log&quot; combinedmassvhost</span>
+</span><span class='line'><span class="s">  ErrorLog &quot;${USERHOME}/Sites/logs/dev-error_log&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="s">  VirtualDocumentRoot ${USERHOME}/Sites/%-2+</span>
+</span><span class='line'><span class="s">&lt;/VirtualHost&gt;</span>
+</span><span class='line'><span class="s">&lt;VirtualHost *:8443&gt;</span>
+</span><span class='line'><span class="s">  ServerName dev</span>
+</span><span class='line'><span class="s">  ServerAlias *.dev</span>
+</span><span class='line'><span class="s">  Include &quot;${USERHOME}/Sites/ssl/ssl-shared-cert.inc&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="s">  CustomLog &quot;${USERHOME}/Sites/logs/dev-access_log&quot; combinedmassvhost</span>
+</span><span class='line'><span class="s">  ErrorLog &quot;${USERHOME}/Sites/logs/dev-error_log&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="s">  VirtualDocumentRoot ${USERHOME}/Sites/%-2+</span>
+</span><span class='line'><span class="s">&lt;/VirtualHost&gt;</span>
+</span><span class='line'><span class="s">EOF</span>
+</span><span class='line'><span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
 <p>You may have noticed that <em>~/Sites/ssl/ssl-shared-cert.inc</em> is included multiple times; create that file and the SSL files it needs:</p>
 
-<pre language="bash">
-(export USERHOME=$(dscl . -read /Users/`whoami` NFSHomeDirectory | awk -F"\: " '{print $2}') ; cat > ~/Sites/ssl/ssl-shared-cert.inc <<EOF
-SSLEngine On
-SSLProtocol all -SSLv2 -SSLv3
-SSLCipherSuite ALL:!ADH:!EXPORT:!SSLv2:RC4+RSA:+HIGH:+MEDIUM:+LOW
-SSLCertificateFile "${USERHOME}/Sites/ssl/selfsigned.crt"
-SSLCertificateKeyFile "${USERHOME}/Sites/ssl/private.key"
-EOF
-)
-</pre>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">(</span><span class="nb">export </span><span class="nv">USERHOME</span><span class="o">=</span><span class="k">$(</span>dscl . -read /Users/<span class="sb">`</span>whoami<span class="sb">`</span> NFSHomeDirectory | awk -F<span class="s2">&quot;\: &quot;</span> <span class="s1">&#39;{print $2}&#39;</span><span class="k">)</span> ; cat &gt; ~/Sites/ssl/ssl-shared-cert.inc <span class="s">&lt;&lt;EOF</span>
+</span><span class='line'><span class="s">SSLEngine On</span>
+</span><span class='line'><span class="s">SSLProtocol all -SSLv2 -SSLv3</span>
+</span><span class='line'><span class="s">SSLCipherSuite ALL:!ADH:!EXPORT:!SSLv2:RC4+RSA:+HIGH:+MEDIUM:+LOW</span>
+</span><span class='line'><span class="s">SSLCertificateFile &quot;${USERHOME}/Sites/ssl/selfsigned.crt&quot;</span>
+</span><span class='line'><span class="s">SSLCertificateKeyFile &quot;${USERHOME}/Sites/ssl/private.key&quot;</span>
+</span><span class='line'><span class="s">EOF</span>
+</span><span class='line'><span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
 
 
-<pre language="bash">
-openssl req \
-  -new \
-  -newkey rsa:2048 \
-  -days 3650 \
-  -nodes \
-  -x509 \
-  -subj "/C=US/ST=State/L=City/O=Organization/OU=$(whoami)/CN=*.dev" \
-  -keyout ~/Sites/ssl/private.key \
-  -out ~/Sites/ssl/selfsigned.crt
-</pre>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>openssl req <span class="se">\</span>
+</span><span class='line'>  -new <span class="se">\</span>
+</span><span class='line'>  -newkey rsa:2048 <span class="se">\</span>
+</span><span class='line'>  -days 3650 <span class="se">\</span>
+</span><span class='line'>  -nodes <span class="se">\</span>
+</span><span class='line'>  -x509 <span class="se">\</span>
+</span><span class='line'>  -subj <span class="s2">&quot;/C=US/ST=State/L=City/O=Organization/OU=$(whoami)/CN=*.dev&quot;</span> <span class="se">\</span>
+</span><span class='line'>  -keyout ~/Sites/ssl/private.key <span class="se">\</span>
+</span><span class='line'>  -out ~/Sites/ssl/selfsigned.crt
+</span></code></pre></td></tr></table></div></figure>
 
 
 <h2>Start Apache</h2>
 
 <p>Start Homebrew&rsquo;s Apache and set to start on login:</p>
 
-<pre language="bash">
-brew services start httpd22
-</pre>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>brew services start httpd22
+</span></code></pre></td></tr></table></div></figure>
 
 
 <h2>Run with port 80</h2>
@@ -343,143 +487,163 @@ brew services start httpd22
 
 <p>The following command will create the file <em>/Library/LaunchDaemons/co.echo.httpdfwd.plist</em> as root, and owned by root, since it needs elevated privileges:</p>
 
-<pre language="bash">
-sudo bash -c 'export TAB=$'"'"'\t'"'"'
-cat > /Library/LaunchDaemons/co.echo.httpdfwd.plist <<EOF
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict>
-${TAB}<key>Label</key>
-${TAB}<string>co.echo.httpdfwd</string>
-${TAB}<key>ProgramArguments</key>
-${TAB}<array>
-${TAB}${TAB}<string>sh</string>
-${TAB}${TAB}<string>-c</string>
-${TAB}${TAB}<string>echo "rdr pass proto tcp from any to any port {80,8080} -> 127.0.0.1 port 8080" | pfctl -a "com.apple/260.HttpFwdFirewall" -Ef - &amp;&amp; echo "rdr pass proto tcp from any to any port {443,8443} -> 127.0.0.1 port 8443" | pfctl -a "com.apple/261.HttpFwdFirewall" -Ef - &amp;&amp; sysctl -w net.inet.ip.forwarding=1</string>
-${TAB}</array>
-${TAB}<key>RunAtLoad</key>
-${TAB}<true/>
-${TAB}<key>UserName</key>
-${TAB}<string>root</string>
-</dict>
-</plist>
-EOF'
-</pre>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>sudo bash -c <span class="s1">&#39;export TAB=$&#39;</span><span class="s2">&quot;&#39;&quot;</span><span class="s1">&#39;\t&#39;</span><span class="s2">&quot;&#39;&quot;</span><span class="s1">&#39;</span>
+</span><span class='line'><span class="s1">cat &gt; /Library/LaunchDaemons/co.echo.httpdfwd.plist &lt;&lt;EOF</span>
+</span><span class='line'><span class="s1">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span>
+</span><span class='line'><span class="s1">&lt;!DOCTYPE plist PUBLIC &quot;-//Apple//DTD PLIST 1.0//EN&quot; &quot;http://www.apple.com/DTDs/PropertyList-1.0.dtd&quot;&gt;</span>
+</span><span class='line'><span class="s1">&lt;plist version=&quot;1.0&quot;&gt;</span>
+</span><span class='line'><span class="s1">&lt;dict&gt;</span>
+</span><span class='line'><span class="s1">${TAB}&lt;key&gt;Label&lt;/key&gt;</span>
+</span><span class='line'><span class="s1">${TAB}&lt;string&gt;co.echo.httpdfwd&lt;/string&gt;</span>
+</span><span class='line'><span class="s1">${TAB}&lt;key&gt;ProgramArguments&lt;/key&gt;</span>
+</span><span class='line'><span class="s1">${TAB}&lt;array&gt;</span>
+</span><span class='line'><span class="s1">${TAB}${TAB}&lt;string&gt;sh&lt;/string&gt;</span>
+</span><span class='line'><span class="s1">${TAB}${TAB}&lt;string&gt;-c&lt;/string&gt;</span>
+</span><span class='line'><span class="s1">${TAB}${TAB}&lt;string&gt;echo &quot;rdr pass proto tcp from any to any port {80,8080} -&gt; 127.0.0.1 port 8080&quot; | pfctl -a &quot;com.apple/260.HttpFwdFirewall&quot; -Ef - &amp;amp;&amp;amp; echo &quot;rdr pass proto tcp from any to any port {443,8443} -&gt; 127.0.0.1 port 8443&quot; | pfctl -a &quot;com.apple/261.HttpFwdFirewall&quot; -Ef - &amp;amp;&amp;amp; sysctl -w net.inet.ip.forwarding=1&lt;/string&gt;</span>
+</span><span class='line'><span class="s1">${TAB}&lt;/array&gt;</span>
+</span><span class='line'><span class="s1">${TAB}&lt;key&gt;RunAtLoad&lt;/key&gt;</span>
+</span><span class='line'><span class="s1">${TAB}&lt;true/&gt;</span>
+</span><span class='line'><span class="s1">${TAB}&lt;key&gt;UserName&lt;/key&gt;</span>
+</span><span class='line'><span class="s1">${TAB}&lt;string&gt;root&lt;/string&gt;</span>
+</span><span class='line'><span class="s1">&lt;/dict&gt;</span>
+</span><span class='line'><span class="s1">&lt;/plist&gt;</span>
+</span><span class='line'><span class="s1">EOF&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
 <p>This file will be loaded on login and set up the 80->8080 and 443->8443 port forwards, but we can load it manually now so we don&rsquo;t need to log out and back in:</p>
 
-<pre language="bash">
-sudo launchctl load -Fw /Library/LaunchDaemons/co.echo.httpdfwd.plist
-</pre>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>sudo launchctl load -Fw /Library/LaunchDaemons/co.echo.httpdfwd.plist
+</span></code></pre></td></tr></table></div></figure>
 
 
 <h1>PHP</h1>
 
 <p>The following is for the latest release of PHP, version 5.6. If you&rsquo;d like to use 5.3, 5.4 or 5.5, simply change the &ldquo;5.6&rdquo; and &ldquo;php56&rdquo; values below appropriately.</p>
 
-<pre language="bash">
-brew install -v homebrew/php/php56
-</pre>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>brew install -v homebrew/php/php56
+</span></code></pre></td></tr></table></div></figure>
 
 
-<p>Set timezone and change other PHP settings (<strong>sudo</strong> is needed here to get the current timezone on OS X) to be more developer-friendly, and add a PHP error log (without this, you may get Internal Server Errors if PHP has errors to write and no logs to write to):</p>
+<p>Set timezone and change other PHP settings (<code>sudo</code> is needed here to get the current timezone on OS X) to be more developer-friendly, and add a PHP error log (without this, you may get Internal Server Errors if PHP has errors to write and no logs to write to):</p>
 
-<pre language="bash">
-(export USERHOME=$(dscl . -read /Users/`whoami` NFSHomeDirectory | awk -F"\: " '{print $2}') ; sed -i '-default' -e 's|^;\(date\.timezone[[:space:]]*=\).*|\1 \"'$(sudo systemsetup -gettimezone|awk -F"\: " '{print $2}')'\"|; s|^\(memory_limit[[:space:]]*=\).*|\1 512M|; s|^\(post_max_size[[:space:]]*=\).*|\1 200M|; s|^\(upload_max_filesize[[:space:]]*=\).*|\1 100M|; s|^\(default_socket_timeout[[:space:]]*=\).*|\1 600|; s|^\(max_execution_time[[:space:]]*=\).*|\1 300|; s|^\(max_input_time[[:space:]]*=\).*|\1 600|; $a\'$'\n''\'$'\n''; PHP Error log\'$'\n''error_log = '$USERHOME'/Sites/logs/php-error_log'$'\n' $(brew --prefix)/etc/php/5.6/php.ini)
-</pre>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">(</span><span class="nb">export </span><span class="nv">USERHOME</span><span class="o">=</span><span class="k">$(</span>dscl . -read /Users/<span class="sb">`</span>whoami<span class="sb">`</span> NFSHomeDirectory | awk -F<span class="s2">&quot;\: &quot;</span> <span class="s1">&#39;{print $2}&#39;</span><span class="k">)</span> ; sed -i <span class="s1">&#39;-default&#39;</span> -e <span class="s1">&#39;s|^;\(date\.timezone[[:space:]]*=\).*|\1 \&quot;&#39;</span><span class="k">$(</span>sudo systemsetup -gettimezone|awk -F<span class="s2">&quot;\: &quot;</span> <span class="s1">&#39;{print $2}&#39;</span><span class="k">)</span><span class="s1">&#39;\&quot;|; s|^\(memory_limit[[:space:]]*=\).*|\1 512M|; s|^\(post_max_size[[:space:]]*=\).*|\1 200M|; s|^\(upload_max_filesize[[:space:]]*=\).*|\1 100M|; s|^\(default_socket_timeout[[:space:]]*=\).*|\1 600|; s|^\(max_execution_time[[:space:]]*=\).*|\1 300|; s|^\(max_input_time[[:space:]]*=\).*|\1 600|; $a\&#39;$&#39;</span><span class="se">\n</span><span class="s1">&#39;&#39;</span><span class="se">\&#39;</span><span class="s1">$&#39;\n&#39;&#39;; PHP Error log\&#39;$&#39;</span><span class="se">\n</span><span class="s1">&#39;&#39;</span><span class="nv">error_log</span> <span class="o">=</span> <span class="s1">&#39;$USERHOME&#39;</span>/Sites/logs/php-error_log<span class="s1">&#39;$&#39;</span><span class="se">\n</span><span class="err">&#39;</span> <span class="k">$(</span>brew --prefix<span class="k">)</span>/etc/php/5.6/php.ini<span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
-<p>Fix a <strong>pear</strong> and <strong>pecl</strong> <a href="https://github.com/Homebrew/homebrew-php/issues/1039#issuecomment-41307694">permissions problem</a>:</p>
+<p>Fix a <code>pear</code> and <code>pecl</code> <a href="https://github.com/Homebrew/homebrew-php/issues/1039#issuecomment-41307694">permissions problem</a>:</p>
 
-<pre language="bash">
-chmod -R ug+w $(brew --prefix php56)/lib/php
-</pre>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>chmod -R ug+w <span class="k">$(</span>brew --prefix php56<span class="k">)</span>/lib/php
+</span></code></pre></td></tr></table></div></figure>
 
 
 <p>The optional Opcache extension will speed up your PHP environment dramatically, so let&rsquo;s install it. Then, we&rsquo;ll bump up the opcache memory limit:</p>
 
-<pre language="bash">
-brew install -v php56-opcache
-</pre>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>brew install -v php56-opcache
+</span></code></pre></td></tr></table></div></figure>
 
 
 
 
-<pre language="bash">
-/usr/bin/sed -i '' "s|^\(\;\)\{0,1\}[[:space:]]*\(opcache\.enable[[:space:]]*=[[:space:]]*\)0|\21|; s|^;\(opcache\.memory_consumption[[:space:]]*=[[:space:]]*\)[0-9]*|\1256|;" $(brew --prefix)/etc/php/5.6/php.ini
-</pre>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>/usr/bin/sed -i <span class="s1">&#39;&#39;</span> <span class="s2">&quot;s|^\(\;\)\{0,1\}[[:space:]]*\(opcache\.enable[[:space:]]*=[[:space:]]*\)0|\21|; s|^;\(opcache\.memory_consumption[[:space:]]*=[[:space:]]*\)[0-9]*|\1256|;&quot;</span> <span class="k">$(</span>brew --prefix<span class="k">)</span>/etc/php/5.6/php.ini
+</span></code></pre></td></tr></table></div></figure>
 
 
 <p>Finally, let&rsquo;s start PHP-FPM:</p>
 
-<pre language="bash">
-brew services start php56
-</pre>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>brew services start php56
+</span></code></pre></td></tr></table></div></figure>
 
 
-<p><strong>Optional:</strong> At this point, if you want to switch between PHP versions, you&rsquo;d want to: <strong>brew services stop php56 &amp;&amp; brew unlink php56 &amp;&amp; brew link php54 &amp;&amp; brew services start php54</strong>. No need to touch the Apache configuration at all!</p>
+<p><strong>Optional:</strong> At this point, if you want to switch between PHP versions, you&rsquo;d want to: <code>brew services stop php56 &amp;&amp; brew unlink php56 &amp;&amp; brew link php54 &amp;&amp; brew services start php54</code>. No need to touch the Apache configuration at all!</p>
 
 <h1>DNSMasq</h1>
 
-<p>A difference now between what <a href="http://alanthing.com/blog/never-touch-your-local-etchosts-file-os-x-again">I&rsquo;ve shown before</a>, is that we don&rsquo;t have to run on port 53 or run <strong>dnsmasq</strong> as root. The end result here is that any DNS request ending in <em>.dev</em> reply with the IP address <em>127.0.0.1</em>:</p>
+<p>A difference now between what <a href="http://echo.co/blog/never-touch-your-local-etchosts-file-os-x-again">I&rsquo;ve shown before</a>, is that we don&rsquo;t have to run on port 53 or run <code>dnsmasq</code> as root. The end result here is that any DNS request ending in <em>.dev</em> reply with the IP address <em>127.0.0.1</em>:</p>
 
-<pre language="bash">
-brew install -v dnsmasq
-</pre>
-
-
-
-
-<pre language="bash">
-echo 'address=/.dev/127.0.0.1' > $(brew --prefix)/etc/dnsmasq.conf
-</pre>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>brew install -v dnsmasq
+</span></code></pre></td></tr></table></div></figure>
 
 
 
 
-<pre language="bash">
-echo 'listen-address=127.0.0.1' >> $(brew --prefix)/etc/dnsmasq.conf
-</pre>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">echo</span> <span class="s1">&#39;address=/.dev/127.0.0.1&#39;</span> &gt; <span class="k">$(</span>brew --prefix<span class="k">)</span>/etc/dnsmasq.conf
+</span></code></pre></td></tr></table></div></figure>
 
 
 
 
-<pre language="bash">
-echo 'port=35353' >> $(brew --prefix)/etc/dnsmasq.conf
-</pre>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">echo</span> <span class="s1">&#39;listen-address=127.0.0.1&#39;</span> &gt;&gt; <span class="k">$(</span>brew --prefix<span class="k">)</span>/etc/dnsmasq.conf
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">echo</span> <span class="s1">&#39;port=35353&#39;</span> &gt;&gt; <span class="k">$(</span>brew --prefix<span class="k">)</span>/etc/dnsmasq.conf
+</span></code></pre></td></tr></table></div></figure>
 
 
 <p>Similar to how we run Apache and PHP-FPM, we&rsquo;ll start DNSMasq:</p>
 
-<pre language="bash">
-brew services start dnsmasq
-</pre>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>brew services start dnsmasq
+</span></code></pre></td></tr></table></div></figure>
 
 
 <p>With DNSMasq running, configure OS X to use your local host for DNS queries ending in <em>.dev</em>:</p>
 
-<pre language="bash">
-sudo mkdir -v /etc/resolver 
-</pre>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>sudo mkdir -v /etc/resolver
+</span></code></pre></td></tr></table></div></figure>
 
 
 
 
-<pre language="bash">
-sudo bash -c 'echo "nameserver 127.0.0.1" > /etc/resolver/dev'
-</pre>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>sudo bash -c <span class="s1">&#39;echo &quot;nameserver 127.0.0.1&quot; &gt; /etc/resolver/dev&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
 
 
-<pre language="bash">
-sudo bash -c 'echo "port 35353" >> /etc/resolver/dev'
-</pre>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>sudo bash -c <span class="s1">&#39;echo &quot;port 35353&quot; &gt;&gt; /etc/resolver/dev&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
-<p>To test, the command <strong>ping -c 3 fakedomainthatisntreal.dev</strong> should return results from 127.0.0.1. If it doesn&rsquo;t work right away, try turning WiFi off and on (or unplug/plug your ethernet cable), or reboot your system.</p>
+<p>To test, the command <code>ping -c 3 fakedomainthatisntreal.dev</code> should return results from 127.0.0.1. If it doesn&rsquo;t work right away, try turning WiFi off and on (or unplug/plug your ethernet cable), or reboot your system.</p>
 
 <h1>Great! So, what did I do?</h1>
 
@@ -497,15 +661,15 @@ sudo bash -c 'echo "port 35353" >> /etc/resolver/dev'
 
 <h1>Troubleshooting</h1>
 
-<p>The commands above can be run on a fresh Yosemite system without issue as I&rsquo;ve tested with fresh installs in VMware. Nearly every problem I&rsquo;ve heard about has been related to upgrading from 10.9 or earlier, or switching to this style of setup from another or similar setup. The easiest thing to do would be to <strong>brew uninstall</strong> each component referenced above, delete all related config files in <em>$(brew &mdash;prefix)/etc</em> and any Homebrew files in <em>~/Library/LaunchAgents</em>, and start over. If that&rsquo;s a bit heavy-handed, check each of the configuration files edited in this guide and look for duplicate entries or typos.</p>
+<p>The commands above can be run on a fresh Yosemite system without issue as I&rsquo;ve tested with fresh installs in VMware. Nearly every problem I&rsquo;ve heard about has been related to upgrading from 10.9 or earlier, or switching to this style of setup from another or similar setup. The easiest thing to do would be to <code>brew uninstall</code> each component referenced above, delete all related config files in <em>$(brew &mdash;prefix)/etc</em> and any Homebrew files in <em>~/Library/LaunchAgents</em>, and start over. If that&rsquo;s a bit heavy-handed, check each of the configuration files edited in this guide and look for duplicate entries or typos.</p>
 
 <p>You can also check log files for error output:</p>
 
 <ul>
-<li>Apache: <em>$(brew &mdash;prefix)/var/log/apache2/error_log</em>, or run <strong>httpd -DFOREGROUND</strong> and look for output</li>
+<li>Apache: <em>$(brew &mdash;prefix)/var/log/apache2/error_log</em>, or run <code>httpd -DFOREGROUND</code> and look for output</li>
 <li>PHP-FPM: <em>$(brew &mdash;prefix)/var/log/php-fpm.log</em></li>
 <li>MySQL: <em>$(brew &mdash;prefix)/var/mysql/$(hostname).err</em></li>
-<li>DNSMasq: no log file, run <strong>dnsmasq &mdash;keep-in-foreground</strong> and look for output</li>
+<li>DNSMasq: no log file, run <code>dnsmasq --keep-in-foreground</code> and look for output</li>
 </ul>
 
 
@@ -520,193 +684,278 @@ sudo bash -c 'echo "port 35353" >> /etc/resolver/dev'
     <id>http://alanthing.com/blog/2014/06/09/os-x-109-local-development-environment-apache-php-and-mysql-homebrew</id>
     <content type="html"><![CDATA[<p><em>This post originally featured on the <a href="http://echo.co/blog/os-x-109-local-development-environment-apache-php-and-mysql-homebrew">Echo &amp; Co. blog</a></em>.</p>
 
-
-
 <p>There&rsquo;s nothing quite like setting up everything on your Mac for Drupal (or other PHP) development in a way that things just work and don&rsquo;t need constant fiddling. This guide will walk you through using <a href="http://brew.sh/">Homebrew</a> to install Apache, PHP, and MySQL for a &ldquo;MAMP&rdquo; development environment. We&rsquo;ll also use DNSMasq and Apache&rsquo;s VirtualDocumentRoot to set up &ldquo;auto-VirtualHosts,&rdquo; and add a firewall rule to allow the default http port 80 to be used without running Apache as root.</p>
 
-<p>At the conclusion of this guide, you&rsquo;ll be able to create a directory like <em>~/Sites/project</em> and access it at <em><a href="http://project.dev*">http://project.dev*</a> without editing your </em>/etc/hosts* file or editing any Apache configuration. You&rsquo;ll also be able to use <a href="http://xip.io/">xip.io</a> with auto-VirtualHosts for accessing your sites on other devices in your local network.</p>
+<p>At the conclusion of this guide, you&rsquo;ll be able to create a directory like <em>~/Sites/project</em> and access it at <em><a href="http://project.dev">http://project.dev</a></em> without editing your <em>/etc/hosts</em> file or editing any Apache configuration. You&rsquo;ll also be able to use <a href="http://xip.io/">xip.io</a> with auto-VirtualHosts for accessing your sites on other devices in your local network.</p>
 
 <p>We also configure PHP and MySQL to allow for enough flexibility for complex operations generally only reserved for development and not production.</p>
 
-<p>The OS X operating system comes with Apache and PHP pre-installed, and I&rsquo;ve <a href="http://alanthing.com/blog/os-x-107-lion-development-native-apache-php-homebrew-mysql-or-mariadb">previously</a> <a href="http://alanthing.com/blog/os-x-107-lion-development-native-mamp-mysql-installer">recommended</a> utilizing them to some degree for getting a local PHP development environment on your Mac. Since then, the community around Homebrew has improved dramatically and I now recommend that our developers at Echo &amp; Co. use Homebrew exclusively for all components.</p>
+<p>The OS X operating system comes with Apache and PHP pre-installed, and I&rsquo;ve <a href="http://echo.co/blog/os-x-107-lion-development-native-apache-php-homebrew-mysql-or-mariadb">previously</a> <a href="http://echo.co/blog/os-x-107-lion-development-native-mamp-mysql-installer">recommended</a> utilizing them to some degree for getting a local PHP development environment on your Mac. Since then, the community around Homebrew has improved dramatically and I now recommend that our developers at Echo &amp; Co. use Homebrew exclusively for all components.</p>
 
 <h1>Homebrew Setup</h1>
 
 <p>If you&rsquo;ve not already install Homebrew, you can follow the instructions at <a href="http://brew.sh/">brew.sh</a>, or simply run the following command:</p>
 
-<pre language="bash">
-ruby -e "$(curl -fsSL https://raw.github.com/Homebrew/homebrew/go/install)"
-brew doctor
-brew update
-</pre>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>ruby -e <span class="s2">&quot;$(curl -fsSL https://raw.github.com/Homebrew/homebrew/go/install)&quot;</span>
+</span><span class='line'>brew doctor
+</span><span class='line'>brew update
+</span></code></pre></td></tr></table></div></figure>
 
 
 <p>Also of note, if you do not have <code>git</code> available on your system, either from Homebrew, Xcode, or another source, you can install it with Homebrew now (if you already have it installed, feel free to skip this step to keep the version of <code>git</code> you already have):</p>
 
-<pre language="bash">
-brew install -v git
-</pre>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>brew install -v git
+</span></code></pre></td></tr></table></div></figure>
 
 
 <h1>PATH Variable</h1>
 
 <p>Since OS X already comes with PHP and Apache, we&rsquo;ll want to make sure that our <code>brew</code>-installed versions appear in the shell path before the built-in ones. The following command adds logic to your <em>~/.bash_profile</em> to ensure the Homebrew directory is in the beginning of <strong>$PATH</strong>.</p>
 
-<pre language="bash">
-echo "export PATH=\$(echo \$PATH | sed 's|/usr/local/bin||; s|/usr/local/sbin||; s|::|:|; s|^:||; s|\(.*\)|/usr/local/bin:/usr/local/sbin:\1|')" >> ~/.bash_profile && source ~/.bash_profile
-</pre>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">echo</span> <span class="s2">&quot;export PATH=\$(echo \$PATH | sed &#39;s|/usr/local/bin||; s|/usr/local/sbin||; s|::|:|; s|^:||; s|\(.*\)|/usr/local/bin:/usr/local/sbin:\1|&#39;)&quot;</span> &gt;&gt; ~/.bash_profile <span class="o">&amp;&amp;</span> <span class="nb">source</span> ~/.bash_profile
+</span></code></pre></td></tr></table></div></figure>
 
 
 <h1>MySQL</h1>
 
 <p>The following commands will download and install the latest version of MySQL and do some basic configuration to allow for large imports and a couple other miscellaneous configuration changes.</p>
 
-<pre language="bash">
-brew install -v mysql
-
-cp -v $(brew --prefix mysql)/support-files/my-default.cnf $(brew --prefix mysql)/my.cnf
-
-cat >> $(brew --prefix mysql)/my.cnf <<'EOF'
-# Echo & Co. changes
-max_allowed_packet = 2G
-innodb_file_per_table = 1
-EOF
-
-sed -i '' 's/^# \(innodb_buffer_pool_size\)/\1/' $(brew --prefix mysql)/my.cnf
-</pre>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>brew install -v mysql
+</span><span class='line'>
+</span><span class='line'>cp -v <span class="k">$(</span>brew --prefix mysql<span class="k">)</span>/support-files/my-default.cnf <span class="k">$(</span>brew --prefix mysql<span class="k">)</span>/my.cnf
+</span><span class='line'>
+</span><span class='line'>cat &gt;&gt; <span class="k">$(</span>brew --prefix mysql<span class="k">)</span>/my.cnf <span class="s">&lt;&lt;&#39;EOF&#39;</span>
+</span><span class='line'><span class="s"># Echo &amp; Co. changes</span>
+</span><span class='line'><span class="s">max_allowed_packet = 2G</span>
+</span><span class='line'><span class="s">innodb_file_per_table = 1</span>
+</span><span class='line'><span class="s">EOF</span>
+</span><span class='line'>
+</span><span class='line'>sed -i <span class="s1">&#39;&#39;</span> <span class="s1">&#39;s/^# \(innodb_buffer_pool_size\)/\1/&#39;</span> <span class="k">$(</span>brew --prefix mysql<span class="k">)</span>/my.cnf
+</span></code></pre></td></tr></table></div></figure>
 
 
 <p>Now we need to start MySQL using OS X&rsquo;s launchd, and we&rsquo;ll set it to start when you login.</p>
 
-<pre language="bash">
-[ ! -d ~/Library/LaunchAgents ] && mkdir -v ~/Library/LaunchAgents
-
-[ -f $(brew --prefix mysql)/homebrew.mxcl.mysql.plist ] && ln -sfv $(brew --prefix mysql)/homebrew.mxcl.mysql.plist ~/Library/LaunchAgents/
-
-[ -e ~/Library/LaunchAgents/homebrew.mxcl.mysql.plist ] && launchctl load -w ~/Library/LaunchAgents/homebrew.mxcl.mysql.plist
-</pre>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span> ! -d ~/Library/LaunchAgents <span class="o">]</span> <span class="o">&amp;&amp;</span> mkdir -v ~/Library/LaunchAgents
+</span><span class='line'>
+</span><span class='line'><span class="o">[</span> -f <span class="k">$(</span>brew --prefix mysql<span class="k">)</span>/homebrew.mxcl.mysql.plist <span class="o">]</span> <span class="o">&amp;&amp;</span> ln -sfv <span class="k">$(</span>brew --prefix mysql<span class="k">)</span>/homebrew.mxcl.mysql.plist ~/Library/LaunchAgents/
+</span><span class='line'>
+</span><span class='line'><span class="o">[</span> -e ~/Library/LaunchAgents/homebrew.mxcl.mysql.plist <span class="o">]</span> <span class="o">&amp;&amp;</span> launchctl load -w ~/Library/LaunchAgents/homebrew.mxcl.mysql.plist
+</span></code></pre></td></tr></table></div></figure>
 
 
 <p>By default, MySQL&rsquo;s root user has an empty password from any connection. You are advised to run <code>mysql_secure_installation</code> and at least set a password for the root user.</p>
 
-<pre language="bash">
-$(brew --prefix mysql)/bin/mysql_secure_installation
-</pre>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="k">$(</span>brew --prefix mysql<span class="k">)</span>/bin/mysql_secure_installation
+</span></code></pre></td></tr></table></div></figure>
 
 
 <h1>Apache</h1>
 
 <p>Start by stopping the built-in Apache, if it&rsquo;s running, and prevent it from starting on boot. This is one of very few times you&rsquo;ll need to use <code>sudo</code>.</p>
 
-<pre language="bash">
-sudo launchctl unload -w /System/Library/LaunchDaemons/org.apache.httpd.plist 2>/dev/null
-</pre>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>sudo launchctl unload -w /System/Library/LaunchDaemons/org.apache.httpd.plist 2&gt;/dev/null
+</span></code></pre></td></tr></table></div></figure>
 
 
 <p>Apache is not in the default repository of Homebrew formulas, nor are some dependencies, so we use the <code>brew tap</code> command to add other formula repositories.</p>
 
-<pre language="bash">
-brew tap homebrew/dupes
-brew tap homebrew/apache
-</pre>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>brew tap homebrew/dupes
+</span><span class='line'>brew tap homebrew/apache
+</span></code></pre></td></tr></table></div></figure>
 
 
 <p>We&rsquo;ll install Apache 2.2 with Apr and OpenSSL from Homebrew as well instead of utilizing the built-in versions of those tools.</p>
 
-<pre language="bash">
-brew install -v httpd22 --with-brewed-openssl
-</pre>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>brew install -v httpd22 --with-brewed-openssl
+</span></code></pre></td></tr></table></div></figure>
 
 
 <p>We&rsquo;ll be using the file <em>~/Sites/httpd-vhosts.conf</em> to configure our VirtualHosts, so we create necessary directories and then include the file in <em>httpd.conf</em>.</p>
 
-<pre language="bash">
-[ ! -d ~/Sites ] && mkdir -pv ~/Sites
-
-touch ~/Sites/httpd-vhosts.conf
-
-USERHOME=$(dscl . -read /Users/`whoami` NFSHomeDirectory | awk -F": " '{print $2}') cat >> $(brew --prefix)/etc/apache2/2.2/httpd.conf <<EOF
-# Include our VirtualHosts
-Include ${USERHOME}/Sites/httpd-vhosts.conf
-EOF
-</pre>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span> ! -d ~/Sites <span class="o">]</span> <span class="o">&amp;&amp;</span> mkdir -pv ~/Sites
+</span><span class='line'>
+</span><span class='line'>touch ~/Sites/httpd-vhosts.conf
+</span><span class='line'>
+</span><span class='line'><span class="nv">USERHOME</span><span class="o">=</span><span class="k">$(</span>dscl . -read /Users/<span class="sb">`</span>whoami<span class="sb">`</span> NFSHomeDirectory | awk -F<span class="s2">&quot;: &quot;</span> <span class="s1">&#39;{print $2}&#39;</span><span class="k">)</span> cat &gt;&gt; <span class="k">$(</span>brew --prefix<span class="k">)</span>/etc/apache2/2.2/httpd.conf <span class="s">&lt;&lt;EOF</span>
+</span><span class='line'><span class="s"># Include our VirtualHosts</span>
+</span><span class='line'><span class="s">Include ${USERHOME}/Sites/httpd-vhosts.conf</span>
+</span><span class='line'><span class="s">EOF</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
 <p>We&rsquo;ll create a folder for our logs in <em>~/Sites</em> as well.</p>
 
-<pre language="bash">
-[ ! -d ~/Sites/logs ] && mkdir -pv ~/Sites/logs
-</pre>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span> ! -d ~/Sites/logs <span class="o">]</span> <span class="o">&amp;&amp;</span> mkdir -pv ~/Sites/logs
+</span></code></pre></td></tr></table></div></figure>
 
 
 <p>Now to fill in the contents of <em>~/Sites/httpd-vhosts.conf</em> that we included in <em>httpd.conf</em> earlier. Note that <strong>this is one command to copy and paste!</strong> Start with <code>USERHOME</code> through the second <code>EOF</code> has a single copy and paste block for the terminal.</p>
 
-<pre language="bash">
-USERHOME=$(dscl . -read /Users/`whoami` NFSHomeDirectory | awk -F": " '{print $2}') cat > ~/Sites/httpd-vhosts.conf <<EOF
-#
-# Use name-based virtual hosting.
-#
-NameVirtualHost *:80
-
-#
-# Set up permissions for VirtualHosts in ~/Sites
-#
-<Directory "${USERHOME}/Sites">
-    Options Indexes FollowSymLinks MultiViews
-    AllowOverride All
-    Order allow,deny
-    Allow from all
-</Directory>
-
-# For http://localhost in the users' Sites folder
-<VirtualHost _default_:80>
-    ServerName localhost
-    DocumentRoot "${USERHOME}/Sites"
-</VirtualHost>
-
-#
-# VirtualHosts
-#
-
-## Manual VirtualHost template
-#<VirtualHost *:80>
-#  ServerName project.dev
-#  CustomLog "${USERHOME}/Sites/logs/project.dev-access_log" combined
-#  ErrorLog "${USERHOME}/Sites/logs/project.dev-error_log"
-#  DocumentRoot "${USERHOME}/Sites/project.dev"
-#</VirtualHost>
-
-#
-# Automatic VirtualHosts
-# A directory at ${USERHOME}/Sites/webroot can be accessed at http://webroot.dev
-# In Drupal, uncomment the line with: RewriteBase /
-
-# This log format will display the per-virtual-host as the first field followed by a typical log line
-LogFormat "%V %h %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\"" combinedmassvhost
-
-# Auto-VirtualHosts with .dev
-<VirtualHost *:80>
-  ServerName dev
-  ServerAlias *.dev
-
-  CustomLog "${USERHOME}/Sites/logs/dev-access_log" combinedmassvhost
-  ErrorLog "${USERHOME}/Sites/logs/dev-error_log"
-
-  VirtualDocumentRoot ${USERHOME}/Sites/%-2+
-</VirtualHost>
-
-# Auto-VirtualHosts with xip.io
-<VirtualHost *:80>
-  ServerName xip
-  ServerAlias *.xip.io
-
-  CustomLog "${USERHOME}/Sites/logs/dev-access_log" combinedmassvhost
-  ErrorLog "${USERHOME}/Sites/logs/dev-error_log"
-
-  VirtualDocumentRoot ${USERHOME}/Sites/%-7+
-</VirtualHost>
-EOF
-</pre>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">USERHOME</span><span class="o">=</span><span class="k">$(</span>dscl . -read /Users/<span class="sb">`</span>whoami<span class="sb">`</span> NFSHomeDirectory | awk -F<span class="s2">&quot;: &quot;</span> <span class="s1">&#39;{print $2}&#39;</span><span class="k">)</span> cat &gt; ~/Sites/httpd-vhosts.conf <span class="s">&lt;&lt;EOF</span>
+</span><span class='line'><span class="s">#</span>
+</span><span class='line'><span class="s"># Use name-based virtual hosting.</span>
+</span><span class='line'><span class="s">#</span>
+</span><span class='line'><span class="s">NameVirtualHost *:80</span>
+</span><span class='line'>
+</span><span class='line'><span class="s">#</span>
+</span><span class='line'><span class="s"># Set up permissions for VirtualHosts in ~/Sites</span>
+</span><span class='line'><span class="s">#</span>
+</span><span class='line'><span class="s">&lt;Directory &quot;${USERHOME}/Sites&quot;&gt;</span>
+</span><span class='line'><span class="s">    Options Indexes FollowSymLinks MultiViews</span>
+</span><span class='line'><span class="s">    AllowOverride All</span>
+</span><span class='line'><span class="s">    Order allow,deny</span>
+</span><span class='line'><span class="s">    Allow from all</span>
+</span><span class='line'><span class="s">&lt;/Directory&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="s"># For http://localhost in the users&#39; Sites folder</span>
+</span><span class='line'><span class="s">&lt;VirtualHost _default_:80&gt;</span>
+</span><span class='line'><span class="s">    ServerName localhost</span>
+</span><span class='line'><span class="s">    DocumentRoot &quot;${USERHOME}/Sites&quot;</span>
+</span><span class='line'><span class="s">&lt;/VirtualHost&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="s">#</span>
+</span><span class='line'><span class="s"># VirtualHosts</span>
+</span><span class='line'><span class="s">#</span>
+</span><span class='line'>
+</span><span class='line'><span class="s">## Manual VirtualHost template</span>
+</span><span class='line'><span class="s">#&lt;VirtualHost *:80&gt;</span>
+</span><span class='line'><span class="s">#  ServerName project.dev</span>
+</span><span class='line'><span class="s">#  CustomLog &quot;${USERHOME}/Sites/logs/project.dev-access_log&quot; combined</span>
+</span><span class='line'><span class="s">#  ErrorLog &quot;${USERHOME}/Sites/logs/project.dev-error_log&quot;</span>
+</span><span class='line'><span class="s">#  DocumentRoot &quot;${USERHOME}/Sites/project.dev&quot;</span>
+</span><span class='line'><span class="s">#&lt;/VirtualHost&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="s">#</span>
+</span><span class='line'><span class="s"># Automatic VirtualHosts</span>
+</span><span class='line'><span class="s"># A directory at ${USERHOME}/Sites/webroot can be accessed at http://webroot.dev</span>
+</span><span class='line'><span class="s"># In Drupal, uncomment the line with: RewriteBase /</span>
+</span><span class='line'>
+</span><span class='line'><span class="s"># This log format will display the per-virtual-host as the first field followed by a typical log line</span>
+</span><span class='line'><span class="s">LogFormat &quot;%V %h %l %u %t \&quot;%r\&quot; %&gt;s %b \&quot;%{Referer}i\&quot; \&quot;%{User-Agent}i\&quot;&quot; combinedmassvhost</span>
+</span><span class='line'>
+</span><span class='line'><span class="s"># Auto-VirtualHosts with .dev</span>
+</span><span class='line'><span class="s">&lt;VirtualHost *:80&gt;</span>
+</span><span class='line'><span class="s">  ServerName dev</span>
+</span><span class='line'><span class="s">  ServerAlias *.dev</span>
+</span><span class='line'>
+</span><span class='line'><span class="s">  CustomLog &quot;${USERHOME}/Sites/logs/dev-access_log&quot; combinedmassvhost</span>
+</span><span class='line'><span class="s">  ErrorLog &quot;${USERHOME}/Sites/logs/dev-error_log&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="s">  VirtualDocumentRoot ${USERHOME}/Sites/%-2+</span>
+</span><span class='line'><span class="s">&lt;/VirtualHost&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="s"># Auto-VirtualHosts with xip.io</span>
+</span><span class='line'><span class="s">&lt;VirtualHost *:80&gt;</span>
+</span><span class='line'><span class="s">  ServerName xip</span>
+</span><span class='line'><span class="s">  ServerAlias *.xip.io</span>
+</span><span class='line'>
+</span><span class='line'><span class="s">  CustomLog &quot;${USERHOME}/Sites/logs/dev-access_log&quot; combinedmassvhost</span>
+</span><span class='line'><span class="s">  ErrorLog &quot;${USERHOME}/Sites/logs/dev-error_log&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="s">  VirtualDocumentRoot ${USERHOME}/Sites/%-7+</span>
+</span><span class='line'><span class="s">&lt;/VirtualHost&gt;</span>
+</span><span class='line'><span class="s">EOF</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
 <h2>Run with port 80</h2>
@@ -715,36 +964,56 @@ EOF
 
 <p>The following <strong>single</strong> command will create the file <em>/Library/LaunchDaemons/co.echo.httpdfwd.plist</em> as root, and owned by root, since it needs elevated privileges.</p>
 
-<pre language="bash">
-sudo bash -c 'export TAB=$'"'"'\t'"'"'
-cat > /Library/LaunchDaemons/co.echo.httpdfwd.plist <<EOF
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict>
-${TAB}<key>Label</key>
-${TAB}<string>co.echo.httpdfwd</string>
-${TAB}<key>ProgramArguments</key>
-${TAB}<array>
-${TAB}${TAB}<string>sh</string>
-${TAB}${TAB}<string>-c</string>
-${TAB}${TAB}<string>ipfw add fwd 127.0.0.1,8080 tcp from any to me dst-port 80 in &amp;&amp; sysctl -w net.inet.ip.forwarding=1</string>
-${TAB}</array>
-${TAB}<key>RunAtLoad</key>
-${TAB}<true/>
-${TAB}<key>UserName</key>
-${TAB}<string>root</string>
-</dict>
-</plist>
-EOF'
-</pre>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>sudo bash -c <span class="s1">&#39;export TAB=$&#39;</span><span class="s2">&quot;&#39;&quot;</span><span class="s1">&#39;\t&#39;</span><span class="s2">&quot;&#39;&quot;</span><span class="s1">&#39;</span>
+</span><span class='line'><span class="s1">cat &gt; /Library/LaunchDaemons/co.echo.httpdfwd.plist &lt;&lt;EOF</span>
+</span><span class='line'><span class="s1">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span>
+</span><span class='line'><span class="s1">&lt;!DOCTYPE plist PUBLIC &quot;-//Apple//DTD PLIST 1.0//EN&quot; &quot;http://www.apple.com/DTDs/PropertyList-1.0.dtd&quot;&gt;</span>
+</span><span class='line'><span class="s1">&lt;plist version=&quot;1.0&quot;&gt;</span>
+</span><span class='line'><span class="s1">&lt;dict&gt;</span>
+</span><span class='line'><span class="s1">${TAB}&lt;key&gt;Label&lt;/key&gt;</span>
+</span><span class='line'><span class="s1">${TAB}&lt;string&gt;co.echo.httpdfwd&lt;/string&gt;</span>
+</span><span class='line'><span class="s1">${TAB}&lt;key&gt;ProgramArguments&lt;/key&gt;</span>
+</span><span class='line'><span class="s1">${TAB}&lt;array&gt;</span>
+</span><span class='line'><span class="s1">${TAB}${TAB}&lt;string&gt;sh&lt;/string&gt;</span>
+</span><span class='line'><span class="s1">${TAB}${TAB}&lt;string&gt;-c&lt;/string&gt;</span>
+</span><span class='line'><span class="s1">${TAB}${TAB}&lt;string&gt;ipfw add fwd 127.0.0.1,8080 tcp from any to me dst-port 80 in &amp;amp;&amp;amp; sysctl -w net.inet.ip.forwarding=1&lt;/string&gt;</span>
+</span><span class='line'><span class="s1">${TAB}&lt;/array&gt;</span>
+</span><span class='line'><span class="s1">${TAB}&lt;key&gt;RunAtLoad&lt;/key&gt;</span>
+</span><span class='line'><span class="s1">${TAB}&lt;true/&gt;</span>
+</span><span class='line'><span class="s1">${TAB}&lt;key&gt;UserName&lt;/key&gt;</span>
+</span><span class='line'><span class="s1">${TAB}&lt;string&gt;root&lt;/string&gt;</span>
+</span><span class='line'><span class="s1">&lt;/dict&gt;</span>
+</span><span class='line'><span class="s1">&lt;/plist&gt;</span>
+</span><span class='line'><span class="s1">EOF&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
 <p>This file will be loaded on login and set up the 80->8080 port forward, but we can load it manually now so we don&rsquo;t need to log out and back in.</p>
 
-<pre language="bash">
-sudo launchctl load -w /Library/LaunchDaemons/co.echo.httpdfwd.plist
-</pre>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>sudo launchctl load -w /Library/LaunchDaemons/co.echo.httpdfwd.plist
+</span></code></pre></td></tr></table></div></figure>
 
 
 <h1>PHP</h1>
@@ -753,134 +1022,171 @@ sudo launchctl load -w /Library/LaunchDaemons/co.echo.httpdfwd.plist
 
 <p>Start by adding the PHP tap for Homebrew. PHP 5.3 needs an additional tap, so skip the second command if you are using 5.4 or higher.</p>
 
-<pre language="bash">
-brew tap homebrew/php
-
-# Skip this if using PHP 5.4 or higher
-brew tap homebrew/versions
-</pre>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>brew tap homebrew/php
+</span><span class='line'>
+</span><span class='line'><span class="c"># Skip this if using PHP 5.4 or higher</span>
+</span><span class='line'>brew tap homebrew/versions
+</span></code></pre></td></tr></table></div></figure>
 
 
 <p>Install PHP and mod_php. This command will also load the PHP module in the <em>httpd.conf</em> file for you.</p>
 
-<pre language="bash">
-brew install -v php55 --homebrew-apxs --with-apache
-</pre>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>brew install -v php55 --homebrew-apxs --with-apache
+</span></code></pre></td></tr></table></div></figure>
 
 
 <p>Add PHP configuration to Apache&rsquo;s <em>httpd.conf</em> file.</p>
 
-<pre language="bash">
-cat >> $(brew --prefix)/etc/apache2/2.2/httpd.conf <<EOF
-# Send PHP extensions to mod_php
-AddHandler php5-script .php
-AddType text/html .php
-DirectoryIndex index.php index.html
-EOF
-</pre>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>cat &gt;&gt; <span class="k">$(</span>brew --prefix<span class="k">)</span>/etc/apache2/2.2/httpd.conf <span class="s">&lt;&lt;EOF</span>
+</span><span class='line'><span class="s"># Send PHP extensions to mod_php</span>
+</span><span class='line'><span class="s">AddHandler php5-script .php</span>
+</span><span class='line'><span class="s">AddType text/html .php</span>
+</span><span class='line'><span class="s">DirectoryIndex index.php index.html</span>
+</span><span class='line'><span class="s">EOF</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
 <p>Set timezone and change other PHP settings (this is a <strong>single</strong> command). <code>sudo</code> is needed here to get the current timezone on OS X (in previous versions of OS X it wasn&rsquo;t needed, I&rsquo;m not sure why it is now).</p>
 
-<pre language="bash">
-sed -i '-default' "s|^;\(date\.timezone[[:space:]]*=\).*|\1 \"$(sudo systemsetup -gettimezone|awk -F": " '{print $2}')\"|; s|^\(memory_limit[[:space:]]*=\).*|\1 256M|; s|^\(post_max_size[[:space:]]*=\).*|\1 200M|; s|^\(upload_max_filesize[[:space:]]*=\).*|\1 100M|; s|^\(default_socket_timeout[[:space:]]*=\).*|\1 600|; s|^\(max_execution_time[[:space:]]*=\).*|\1 300|; s|^\(max_input_time[[:space:]]*=\).*|\1 600|;" $(brew --prefix)/etc/php/5.5/php.ini
-</pre>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>sed -i <span class="s1">&#39;-default&#39;</span> <span class="s2">&quot;s|^;\(date\.timezone[[:space:]]*=\).*|\1 \&quot;$(sudo systemsetup -gettimezone|awk -F&quot;</span>: <span class="s2">&quot; &#39;{print $2}&#39;)\&quot;|; s|^\(memory_limit[[:space:]]*=\).*|\1 256M|; s|^\(post_max_size[[:space:]]*=\).*|\1 200M|; s|^\(upload_max_filesize[[:space:]]*=\).*|\1 100M|; s|^\(default_socket_timeout[[:space:]]*=\).*|\1 600|; s|^\(max_execution_time[[:space:]]*=\).*|\1 300|; s|^\(max_input_time[[:space:]]*=\).*|\1 600|;&quot;</span> <span class="k">$(</span>brew --prefix<span class="k">)</span>/etc/php/5.5/php.ini
+</span></code></pre></td></tr></table></div></figure>
 
 
 <p>Add a PHP error log; without this, you may get Internal Server Errors if PHP has errors to write and no logs to write to (this is a <strong>single</strong> command; be sure to copy and paste the lines containing <code>USERHOME</code> through the last <code>EOF</code> as a <strong>single</strong> command).</p>
 
-<pre language="bash">
-USERHOME=$(dscl . -read /Users/`whoami` NFSHomeDirectory | awk -F": " '{print $2}') cat >> $(brew --prefix)/etc/php/5.5/php.ini <<EOF
-; PHP Error log
-error_log = ${USERHOME}/Sites/logs/php-error_log
-EOF
-</pre>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">USERHOME</span><span class="o">=</span><span class="k">$(</span>dscl . -read /Users/<span class="sb">`</span>whoami<span class="sb">`</span> NFSHomeDirectory | awk -F<span class="s2">&quot;: &quot;</span> <span class="s1">&#39;{print $2}&#39;</span><span class="k">)</span> cat &gt;&gt; <span class="k">$(</span>brew --prefix<span class="k">)</span>/etc/php/5.5/php.ini <span class="s">&lt;&lt;EOF</span>
+</span><span class='line'><span class="s">; PHP Error log</span>
+</span><span class='line'><span class="s">error_log = ${USERHOME}/Sites/logs/php-error_log</span>
+</span><span class='line'><span class="s">EOF</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
 <p>This weird little &ldquo;hack&rdquo; is needed to fix <a href="https://github.com/Homebrew/homebrew-php/issues/1039#issuecomment-41307694">a permissions problem</a> with using <code>pear</code> or <code>pecl</code>.</p>
 
-<pre language="bash">
-touch $(brew --prefix php55)/lib/php/.lock && chmod 0644 $(brew --prefix php55)/lib/php/.lock
-</pre>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>touch <span class="k">$(</span>brew --prefix php55<span class="k">)</span>/lib/php/.lock <span class="o">&amp;&amp;</span> chmod 0644 <span class="k">$(</span>brew --prefix php55<span class="k">)</span>/lib/php/.lock
+</span></code></pre></td></tr></table></div></figure>
 
 
 <p>The OpCache extension will speed up your PHP environment dramatically, and it&rsquo;s easy to install for 5.4 and higher. <strong>If you are looking to install PHP 5.3, skip this block.</strong></p>
 
-<pre language="bash">
-brew install -v php55-opcache
-</pre>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>brew install -v php55-opcache
+</span></code></pre></td></tr></table></div></figure>
 
 
 <p><strong>Skip this block unless you are using PHP 5.3</strong>. Because there is no <em>php53-opcache</em> Homebrew formula, we can install it with <code>pecl</code> and replicate the same configuration file.</p>
 
-<pre language="bash">
-pecl install zendopcache-beta
-
-sed -i '' "s|^\(zend_extension=\"\)\(opcache\.so\"\)|\1$(php -r 'print(ini_get("extension_dir")."/");')\2|" $(brew --prefix)/etc/php/5.3/php.ini
-
-[ ! -d $(brew --prefix)/etc/php/5.3/conf.d ] && mkdir -pv $(brew --prefix)/etc/php/5.3/conf.d
-
-echo "[opcache]" > $(brew --prefix)/etc/php/5.3/conf.d/ext-opcache.ini
-
-grep -E '^zend_extension.*opcache\.so' $(brew --prefix)/etc/php/5.3/php.ini >> $(brew --prefix)/etc/php/5.3/conf.d/ext-opcache.ini
-
-sed -i '' '/^zend_extension.*opcache\.so/d' $(brew --prefix)/etc/php/5.3/php.ini
-
-# "php54" is not a typo here- I'm using a sample config file from
-# another recipe for my config file in php53
-grep -E '^[[:space:]]*opcache\.' \
-  $(brew --prefix)/Library/Taps/homebrew/homebrew-php/Formula/php54-opcache.rb \
-  | sed 's/^[[:space:]]*//g' >> $(brew --prefix)/etc/php/5.3/conf.d/ext-opcache.ini
-</pre>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>pecl install zendopcache-beta
+</span><span class='line'>
+</span><span class='line'>sed -i <span class="s1">&#39;&#39;</span> <span class="s2">&quot;s|^\(zend_extension=\&quot;\)\(opcache\.so\&quot;\)|\1$(php -r &#39;print(ini_get(&quot;</span>extension_dir<span class="s2">&quot;).&quot;</span>/<span class="s2">&quot;);&#39;)\2|&quot;</span> <span class="k">$(</span>brew --prefix<span class="k">)</span>/etc/php/5.3/php.ini
+</span><span class='line'>
+</span><span class='line'><span class="o">[</span> ! -d <span class="k">$(</span>brew --prefix<span class="k">)</span>/etc/php/5.3/conf.d <span class="o">]</span> <span class="o">&amp;&amp;</span> mkdir -pv <span class="k">$(</span>brew --prefix<span class="k">)</span>/etc/php/5.3/conf.d
+</span><span class='line'>
+</span><span class='line'><span class="nb">echo</span> <span class="s2">&quot;[opcache]&quot;</span> &gt; <span class="k">$(</span>brew --prefix<span class="k">)</span>/etc/php/5.3/conf.d/ext-opcache.ini
+</span><span class='line'>
+</span><span class='line'>grep -E <span class="s1">&#39;^zend_extension.*opcache\.so&#39;</span> <span class="k">$(</span>brew --prefix<span class="k">)</span>/etc/php/5.3/php.ini &gt;&gt; <span class="k">$(</span>brew --prefix<span class="k">)</span>/etc/php/5.3/conf.d/ext-opcache.ini
+</span><span class='line'>
+</span><span class='line'>sed -i <span class="s1">&#39;&#39;</span> <span class="s1">&#39;/^zend_extension.*opcache\.so/d&#39;</span> <span class="k">$(</span>brew --prefix<span class="k">)</span>/etc/php/5.3/php.ini
+</span><span class='line'>
+</span><span class='line'><span class="c"># &quot;php54&quot; is not a typo here- I&#39;m using a sample config file from</span>
+</span><span class='line'><span class="c"># another recipe for my config file in php53</span>
+</span><span class='line'>grep -E <span class="s1">&#39;^[[:space:]]*opcache\.&#39;</span> <span class="se">\</span>
+</span><span class='line'>  <span class="k">$(</span>brew --prefix<span class="k">)</span>/Library/Taps/homebrew/homebrew-php/Formula/php54-opcache.rb <span class="se">\</span>
+</span><span class='line'>  | sed <span class="s1">&#39;s/^[[:space:]]*//g&#39;</span> &gt;&gt; <span class="k">$(</span>brew --prefix<span class="k">)</span>/etc/php/5.3/conf.d/ext-opcache.ini
+</span></code></pre></td></tr></table></div></figure>
 
 
 <p>And continue with steps for all PHP versions: give OpCache some more memory to keep more opcode caches.</p>
 
-<pre language="bash">
-sed -i '' "s|^\(opcache\.memory_consumption=\)[0-9]*|\1256|;" $(brew --prefix)/etc/php/5.5/conf.d/ext-opcache.ini
-</pre>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>sed -i <span class="s1">&#39;&#39;</span> <span class="s2">&quot;s|^\(opcache\.memory_consumption=\)[0-9]*|\1256|;&quot;</span> <span class="k">$(</span>brew --prefix<span class="k">)</span>/etc/php/5.5/conf.d/ext-opcache.ini
+</span></code></pre></td></tr></table></div></figure>
 
 
 <h1>Start Apache</h1>
 
 <p>Start Homebrew&rsquo;s Apache and set to start on boot.</p>
 
-<pre language="bash">
-ln -sfv $(brew --prefix httpd22)/homebrew.mxcl.httpd22.plist ~/Library/LaunchAgents
-
-launchctl load -w ~/Library/LaunchAgents/homebrew.mxcl.httpd22.plist
-</pre>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>ln -sfv <span class="k">$(</span>brew --prefix httpd22<span class="k">)</span>/homebrew.mxcl.httpd22.plist ~/Library/LaunchAgents
+</span><span class='line'>
+</span><span class='line'>launchctl load -w ~/Library/LaunchAgents/homebrew.mxcl.httpd22.plist
+</span></code></pre></td></tr></table></div></figure>
 
 
 <h1>DNSMasq</h1>
 
 <p><a href="http://alanthing.com/blog/never-touch-your-local-etchosts-file-os-x-again">I&rsquo;ve covered this before</a>, but we&rsquo;ll list the commands here again for completeness. This example will have any DNS request ending in <em>.dev</em> reply with the IP address <em>127.0.0.1</em>.</p>
 
-<pre language="bash">
-brew install -v dnsmasq
-
-echo 'address=/.dev/127.0.0.1' > $(brew --prefix)/etc/dnsmasq.conf
-
-echo 'listen-address=127.0.0.1' >> $(brew --prefix)/etc/dnsmasq.conf
-</pre>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>brew install -v dnsmasq
+</span><span class='line'>
+</span><span class='line'><span class="nb">echo</span> <span class="s1">&#39;address=/.dev/127.0.0.1&#39;</span> &gt; <span class="k">$(</span>brew --prefix<span class="k">)</span>/etc/dnsmasq.conf
+</span><span class='line'>
+</span><span class='line'><span class="nb">echo</span> <span class="s1">&#39;listen-address=127.0.0.1&#39;</span> &gt;&gt; <span class="k">$(</span>brew --prefix<span class="k">)</span>/etc/dnsmasq.conf
+</span></code></pre></td></tr></table></div></figure>
 
 
 <p>Because DNS services run on a lower port, we need to have this run out of <em>/Library/LaunchDaemons</em>, so we do need to use <code>sudo</code> for the initial setup.</p>
 
-<pre language="bash">
-sudo cp -v $(brew --prefix dnsmasq)/homebrew.mxcl.dnsmasq.plist /Library/LaunchDaemons 
-
-sudo launchctl load -w /Library/LaunchDaemons/homebrew.mxcl.dnsmasq.plist 
-</pre>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>sudo cp -v <span class="k">$(</span>brew --prefix dnsmasq<span class="k">)</span>/homebrew.mxcl.dnsmasq.plist /Library/LaunchDaemons
+</span><span class='line'>
+</span><span class='line'>sudo launchctl load -w /Library/LaunchDaemons/homebrew.mxcl.dnsmasq.plist
+</span></code></pre></td></tr></table></div></figure>
 
 
 <p>With DNSMasq running, configure OS X to use your local host for DNS queries ending in <em>.dev</em></p>
 
-<pre language="bash">
-sudo mkdir -v /etc/resolver 
-
-sudo bash -c 'echo "nameserver 127.0.0.1" > /etc/resolver/dev'
-</pre>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>sudo mkdir -v /etc/resolver
+</span><span class='line'>
+</span><span class='line'>sudo bash -c <span class="s1">&#39;echo &quot;nameserver 127.0.0.1&quot; &gt; /etc/resolver/dev&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
 <h1>Great! So, what did I do?</h1>
@@ -891,11 +1197,11 @@ sudo bash -c 'echo "nameserver 127.0.0.1" > /etc/resolver/dev'
 
 <p>You shouldn&rsquo;t need to edit the Apache configuration or edit /etc/hosts for new local development sites. Simply create a directory in <em>~/Sites</em> and then reference that foldername + .dev in your browser to access it.</p>
 
-<p>For example, use <code>drush</code> to download Drupal 7 to the directory <em>~/Sites/firstproject</em>, and it can then be accessed at *<a href="http://firstproject.dev/*">http://firstproject.dev/*</a> without any additional configuration. A caveat &ndash; you will need to uncomment the line in Drupal&rsquo;s .htaccess containing <strong>&ldquo;RewriteBase /&rdquo;</strong> to work with the auto-VirtualHosts configuration.</p>
+<p>For example, use <code>drush</code> to download Drupal 7 to the directory <em>~/Sites/firstproject</em>, and it can then be accessed at <em><a href="http://firstproject.dev/">http://firstproject.dev/</a></em> without any additional configuration. A caveat &ndash; you will need to uncomment the line in Drupal&rsquo;s .htaccess containing <strong>&ldquo;RewriteBase /&rdquo;</strong> to work with the auto-VirtualHosts configuration.</p>
 
 <h2>What about this xip.io thing?</h2>
 
-<p>If your Mac&rsquo;s LAN IP address is <em>192.168.0.10</em>, you can access sites from any other device on your local network using *<a href="http://firstproject.192.168.0.10.xip.io/*.">http://firstproject.192.168.0.10.xip.io/*.</a> You can test a websites on your Mac with your phone/tablet/etc. Pretty great, right?</p>
+<p>If your Mac&rsquo;s LAN IP address is <em>192.168.0.10</em>, you can access sites from any other device on your local network using <em><a href="http://firstproject.192.168.0.10.xip.io/">http://firstproject.192.168.0.10.xip.io/</a></em>. You can test a websites on your Mac with your phone/tablet/etc. Pretty great, right?</p>
 
 <h2>What if this &ldquo;auto-VirtualHost&rdquo; doesn&rsquo;t work for me?</h2>
 
