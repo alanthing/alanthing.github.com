@@ -6,6 +6,8 @@ comments: true
 categories: 
 ---
 
+*This post originally featured on the [Echo &amp; Co. blog](http://echo.co/blog/are-your-wordpress-sites-running-latest-core)*.
+
 In addition to hosting Drupal sites, we also host a number of WordPress sites. Similar to (checking all of our Drupal core versions)[http://echodittolabs.org/blog/2011/01/are-your-drupal-sites-running-latest-core], we needed an easy way to quickly see what versions we are running on all of our WordPress sites. Kudos to [Ethan](http://echodittolabs.org/users/ethan) for getting this one kicked off; here is a bash script to check your definable `$WEBHOME` (where you deposit all of your WordPress webroots) and scan for WordPress versions.
 
 Note: this requires bash, grep, wc, sed, awk, and tree. If your system doesn't have tree, it's usually pretty easy to get from EPEL/Homebrew/apt-get/[mac]ports/etc.

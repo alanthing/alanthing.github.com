@@ -6,6 +6,8 @@ comments: true
 categories:
 ---
 
+*This post originally featured on the [Echo &amp; Co. blog](http://echo.co/blog/os-x-107-lion-development-nginx-php-mariadb-homebrew)*.
+
 [Nginx](http://wiki.nginx.org) is quickly becoming a popular, low resource alternative to Apache for many websites. This doesn't come without challenges, such as using PHP as CGI due to not having mod_php available. Nginx also does not use any Apache configuration rules, nor does it use .htaccess or anything like it, so it requires additional configuration regardless of the web application being deployed. A big help in getting Nginx started with Drupal is [António P. P. Almeida's](https://github.com/perusio) [drupal-with-nginx configuration](https://github.com/perusio/drupal-with-nginx/), which makes it fairly simple to deploy in Linux. But what about local development on OS X? Read on to learn get all of the required components set up for your system, as well as the modifications necessary to get drupal-with-nginx set up on OS X.
 
 ## Prerequisites

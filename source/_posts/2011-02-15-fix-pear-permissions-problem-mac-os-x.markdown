@@ -6,6 +6,8 @@ comments: true
 categories:
 ---
 
+*This post originally featured on the [Echo &amp; Co. blog](http://echo.co/blog/fix-pear-permissions-problem-mac-os-x)*.
+
 On Snow Leopard, you can install drush without using sudo. A dependency for installing drush is downloading a Pear library. The following example should allow you to be able to use the following commands to install drush to /usr/local/drush with a symlink in /usr/local/bin/drush, but it fails on the 'pear download' step, even though it's writing to a user-writeable directory. Read on the figure out how to fix this annoying problem.
 
 ```

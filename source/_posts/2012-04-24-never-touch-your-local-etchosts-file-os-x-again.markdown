@@ -6,6 +6,8 @@ comments: true
 categories:
 ---
 
+*This post originally featured on the [Echo &amp; Co. blog](http://echo.co/blog/never-touch-your-local-etchosts-file-os-x-again)*.
+
 In each of my posts on setting up a [local](http://echodittolabs.org/blog/2012/04/os-x-107-lion-development-nginx-php-mariadb-homebrew) [development](http://echodittolabs.org/blog/2011/10/os-x-107-lion-development-macports) [environment](http://echodittolabs.org/blog/2011/09/os-x-107-lion-development-native-apache-php-homebrew-mysql-or-mariadb) [on OS X](http://echodittolabs.org/blog/2011/08/os-x-107-lion-development-native-mamp-mysql-installer), it's mentioned that you need to add your website's domain, even though it's local, in your /etc/hosts file. My preferred way to edit the hosts file on OS X is using [Gas Mask](http://code.google.com/p/gmask/). If you wanted to create the local virtual host **projectx.dev**, you would add the line `127.0.0.1 projectx.dev` in /etc/hosts or with Gas Mask, and then use that same value in either **ServerName** in Apache or **server_name** in Nginx. This can be tedious for adding new sites. Luckily there's a way to set this up once and then never have to edit your hosts file again for adding new local virtual hosts.
 
 You'll need a copy of dnsmasq, and I find this is most easily installed via Homebrew. If you haven't already, grab either [Xcode](http://itunes.apple.com/us/app/xcode/id448457090) or [Xcode Command Line Tools](http://kennethreitz.com/xcode-gcc-and-homebrew.html) and [install Homebrew](https://github.com/mxcl/homebrew/wiki/installation).

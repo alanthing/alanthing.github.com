@@ -6,6 +6,8 @@ comments: true
 categories: 
 ---
 
+*This post originally featured on the [Echo &amp; Co. blog](http://echo.co/blog/easy-php-52-rpms-centos)*.
+
 I had previously [written a post](http://echodittolabs.org/blog/2009/05/all-i-want-php-52-centosrhel) on one method of upgrading PHP from 5.1 to 5.2 on CentOS and Red Hat servers by creating new RPMs. Since then, I have found a much better way to create PHP 5.2.17 (or newer) RPMs to easily upgrade (and later remove, if you want) the older version available by default. I'll presume you have no prior experience building PHP RPMs.
 
 We start by adding the [Extra Packages for Enterprise Linux (EPEL) repository](http://fedoraproject.org/wiki/EPEL) to our server. EPEL is safe to add as an additional repository and leave enabled because it [provides complementary packages only](http://fedoraproject.org/wiki/EPEL/FAQ#How_is_EPEL_different_from_other_third_party_repositories_for_RHEL_and_derivatives.3F) and will not conflict with the CentOS or Red Hat repositories. Since their installation method may change, I won't reproduce it here; instead head over to the [installation portion of the FAQ](http://fedoraproject.org/wiki/EPEL/FAQ#howtouse) and it's just one line to get started with EPEL.

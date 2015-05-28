@@ -6,6 +6,8 @@ comments: true
 categories: 
 ---
 
+*This post originally featured on the [Echo &amp; Co. blog](http://echo.co/blog/are-your-drupal-sites-running-latest-core)*.
+
 At [EchoDitto](http://www.echoditto.com), we host a lot of Drupal sites. Just about all of our web servers contain more than one completely separate Drupal cores since we develop most of our websites independently. We also keep an eye out on [Drupal Security](http://drupal.org/security) and when to apply core updates. Since we're not using Aegir, nor do we run every site off of a single multi-site core install, we need a quick and easy way to see what versions we're running.
 
 Here's a shell script we recently developed to report the Drupal Core versions for all of our sites under a single parent folder. It works on Drupal 4 through 7. It's not been tested outside of our platform, or non-RHEL systems, but it should be universal as long as you have bash, find, awk, and grep. I decided not to use [Drush](http://drupal.org/project/drush) because it would involve bootstrapping every site and invoking PHP; this is just more lightweight. Drush also would not work for Drupal 4 sites, which we surprisingly still have a couple kicking around still.

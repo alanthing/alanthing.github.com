@@ -6,6 +6,8 @@ comments: true
 categories:
 ---
 
+*This post originally featured on the [Echo &amp; Co. blog](http://echo.co/blog/os-x-107-lion-development-macports)*.
+
 OS X Lion comes with most of the tools you would need to do "MAMP" (Mac OS X, Apache, MySQL/MariaDB, PHP) development, as outlined in my [previous](http://echodittolabs.org/blog/2011/08/os-x-107-lion-development-native-mamp-mysql-installer) [posts](http://echodittolabs.org/blog/2011/09/os-x-107-lion-development-native-apache-php-homebrew-mysql-or-mariadb) once you add a database. So then why would you want to use MacPorts? Setting your development environment up in MacPorts isolates the binaries, libraries, and configuration files, completely separate from the existing OS X install (with the exception of startup scripts). You can also tweak the configuration files on your own, apply your own patches, and apply updates that MacPorts may get before Apple pushes them. It will take more time because you'll be compiling everything, but you have all of the control. Read on for how to get things set up. 
 
 ## Prerequisites

@@ -6,6 +6,8 @@ comments: true
 categories:
 ---
 
+*This post originally featured on the [Echo &amp; Co. blog](http://echo.co/blog/2011/03/keep-drush-up-to-date)*.
+
 **UPDATE:** See [Three Ways to Get Drush on OS X](/blog/2012/08/29/three-ways-get-drush-os-x/) for a newer guide.
 
 At [EchoDitto](http://www.echoditto.com), we're big fans of [Drush](http://drupal.org/project/drush). It's installed on all of our servers and it's a great way to [perform maintenance tasks](http://drush.ws/#core-cron), [download core and modules](http://drush.ws/#pm-download), and [much much more](http://www.lullabot.com/articles/drush-make-and-pressflow). I'm not a big fan of installing from zip files though, so let's use git to easily keep our Drush install up to date.

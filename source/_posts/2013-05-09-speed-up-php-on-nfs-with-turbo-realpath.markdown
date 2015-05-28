@@ -6,6 +6,8 @@ comments: true
 categories: 
 ---
 
+*This post originally featured on the [Echo &amp; Co. blog](http://echo.co/blog/speed-php-nfs-turborealpath)*.
+
 If you run a website based on PHP, and have your source files on a network file system like NFS, OCFS2, or GlusterFS, and combine it with PHP's [open_basedir](http://www.php.net/manual/en/ini.core.php#ini.open-basedir) protection, you'll quickly notice that the performance will degrade substantially. Normally, PHP can cache various path locations it learns after processing [include_once](http://us2.php.net/manual/en/function.include-once.php) and [require_once](http://us2.php.net/manual/en/function.require-once.php) calls via the [realpath_cache](http://www.php.net/manual/en/ini.core.php#ini.realpath-cache-size). There's a [bug in PHP](https://bugs.php.net/bug.php?id=52312) that effectively disables the realpath_cache entirely when combined with open_basedir. Popular PHP applications with Drupal and WordPress make heavy use of these functions to include other files, so you would very quickly notice the drop in performance in this scenario. If you want to isolate your websites from each other (or from the rest of the operating system), how can you retain any shred of performance?
 
 This is where [Artur Graniszewski](http://php.webtutor.pl/)'s [turbo_realpath](http://php.webtutor.pl/en/2011/07/12/running-php-on-nfs-version-1-2-of-turbo_realpath-extension/) extension really comes in handy. I won't retype his installation instructions, so follow the previous link to get it installed manually. 

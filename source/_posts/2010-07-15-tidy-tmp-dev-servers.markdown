@@ -6,6 +6,8 @@ comments: true
 categories:
 ---
 
+*This post originally featured on the [Echo &amp; Co. blog](http://echo.co/blog/tidy-tmp-dev-servers)*.
+
 Today I was made aware of some strange MySQL errors on our development server that ended up being related to a lack of sufficient disk space. Upon inspection, the /tmp partition had completely filled up. A majority of the files were temporary files created by the [Drupal module devel](http://drupal.org/project/devel) with devel_themer enabled. Turns out [these temporary files are not deleted at the end of a session](http://drupal.org/node/327512). There were also CURLCOOKIE files related to cron jobs to hit cron.php on various dev and production sites, and some other temporary files that if left unattended could result in the same errors.
 
 My solution is to have these files deleted every night, but only if they're three days old, which should be adequate time for the developer to need access to these temporary files. I added this to root's cron.

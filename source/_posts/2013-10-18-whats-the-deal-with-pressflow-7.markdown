@@ -6,6 +6,8 @@ comments: true
 categories: 
 ---
 
+*This post originally featured on the [Echo &amp; Co. blog](http://echo.co/blog/whats-the-deal-with-pressflow-7)*.
+
 Anyone who used Drupal 6 at scale knew that [Pressflow 6](http://fourkitchens.com/pressflow-makes-drupal-scale) was pretty great. It forked Drupal and added several performance enhancements, including the ability to use external caches. Since [Drupal 7 incorporated lots of the Pressflow 6 features](https://pressflow.atlassian.net/wiki/display/PF/Comparison+-+Pressflow+versus+Drupal), what's the deal with Pressflow 7?
 
 After Drupal 7 launched, [it seemed like Pressflow 7 would continue the momentum from Pressflow 6 and greatly enhance Drupal 7](http://developmentseed.org/blog/2010/jan/07/pressflow-7-continuing-push-performance-and-scalability-drupal/). But, here we are in 2013, and you don't hear about Pressflow 7 very often, and searching for differences does not yield much more than some diffs between baseline Drupal core 7 and [the Pressflow 7 repository on GitHub](https://github.com/pressflow/7). Since there are clearly some differences, let's dive in and see what they are exactly.

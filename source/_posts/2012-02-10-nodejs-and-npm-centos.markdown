@@ -6,6 +6,8 @@ comments: true
 categories:
 ---
 
+*This post originally featured on the [Echo &amp; Co. blog](http://echo.co/blog/nodejs-and-npm-centos)*.
+
 ***Update:* This no longer appears to be necessary as of nodejs 0.8.0.** It may have been fixed earlier but I noticed neither of these changes are necessary anymore. Something new though, I had problems with node-gyp, and the solution was to install python26 with yum and then re-run the npm command with `PYTHON="/usr/bin/python26" npm install -deps` or similar.
 
 The preferred way to install node and NPM seems to be installing from source, but I'm a perennial fan of using packages to keep things tidy, especially if I need to uninstall something. I started by going to the [Node.js download page](http://nodejs.org/#download), and through to [Installing with a package manager](https://github.com/joyent/node/wiki/Installing-Node.js-via-package-manager). I installed the yum release RPM for the [tchol.org](http://nodejs.tchol.org/) repository as directed and installed **nodejs** and **npm** with yum. From there, I ran into two problems but thankfully they were fairly easy to resolve.

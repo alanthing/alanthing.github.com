@@ -6,6 +6,8 @@ comments: true
 categories:
 ---
 
+*This post originally featured on the [Echo &amp; Co. blog](http://echo.co/blog/alans-2011-favorites)*.
+
 ## Favorite Links of 2011
 
 [Google Reader](http://www.google.com/reader) - between the Android app, Reeder for iPad, and the website, keeps me up to date on the news.

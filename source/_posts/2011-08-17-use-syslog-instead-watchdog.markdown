@@ -6,6 +6,8 @@ comments: true
 categories:
 ---
 
+*This post originally featured on the [Echo &amp; Co. blog](http://echo.co/blog/use-syslog-instead-watchdog)*.
+
 In this example, we choose one of our servers to receive the Syslog traffic and the others will send traffic to it. In a large environment, you should use a non-public-facing server to act as a syslog server for your sites, ideally using a database to store data, but we'll just output everything to a file to keep things simple for this guide. If you decide to use a database like MySQL to store your data, this can still provide you with a starting point, but just know that using your same production database server defeats my intended purpose since I was ultimately trying to alleviate the amount of writes on the database. 
 
 Start by using yum to install **rsyslog**. If you're using another distro, rsyslog is likely included in the base repositories. Also, note that CentOS 6 uses rsyslog by default so you may skip this step if it's already installed on your system. You'll need this on all servers running Drupal or your rsyslog server:

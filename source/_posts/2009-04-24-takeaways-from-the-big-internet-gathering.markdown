@@ -6,6 +6,8 @@ comments: true
 categories:
 ---
 
+*This post originally featured on the [Echo &amp; Co. blog](http://echo.co/blog/takeaways-big-internet-gathering)*.
+
 In March I woke up before the sun and left Dulles Airport to make my way to Austin, TX for [South by Southwest Interactive](http://www.sxsw.com/interactive). Having not been to the fabled SXSW before, I was pretty excited. I had heard a lot about what SXSW was supposed to be, what was supposed to be awesome, what would suck, events that would be good and others that would disappoint. 
 
 I found the panels to be less than what I was generally expecting. I know that recently coming from [DrupalCon](http://dc2009.drupalcon.org), where they were extremely informative, that it's likely not a fair comparison. Generally I found that once things were open for questions it was no longer interesting to anyone except those asking questions. Worse was sometimes when one audience member would outright dominate the questions and the moderators didn't do a good enough job giving others a fair turn. 

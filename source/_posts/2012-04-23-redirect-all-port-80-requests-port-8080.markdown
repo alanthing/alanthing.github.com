@@ -6,6 +6,8 @@ comments: true
 categories:
 ---
 
+*This post originally featured on the [Echo &amp; Co. blog](http://echo.co/blog/redirect-all-port-80-requests-port-8080-mac-os-x)*.
+
 [In my previous post](http://echodittolabs.org/blog/2012/04/os-x-107-lion-development-nginx-php-mariadb-homebrew), I walked through how to set up a local environment using Nginx running on port 8080 so as to avoid running anything as root or with sudo. Something that I've found incredibly annoying is when I forget to specify the port I get an error in my browser, or Chrome might even suggest something based on a search term. It's fairly easy though to configure Apache to route everything to another port.
 
 Create the file */etc/apache2/other/port8080-redirect.conf* as root. It's probably easiest to hop into Terminal and use nano:

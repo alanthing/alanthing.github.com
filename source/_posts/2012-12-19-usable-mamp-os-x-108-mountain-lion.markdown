@@ -6,6 +6,8 @@ comments: true
 categories:
 ---
 
+*This post originally featured on the [Echo &amp; Co. blog](http://echo.co/blog/usable-mamp-os-x-108-mountain-lion)*.
+
 ## Install MAMP
 
 Download the latest MAMP from <http://mamp.info/en/downloads/index.html> and run the installer.

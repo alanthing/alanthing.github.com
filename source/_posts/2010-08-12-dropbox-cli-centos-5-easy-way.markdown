@@ -6,6 +6,8 @@ comments: true
 categories:
 ---
 
+*This post originally featured on the [Echo &amp; Co. blog](http://echo.co/blog/dropbox-cli-centos-5-easy-way)*.
+
 [Dropbox](http://www.dropbox.com/) hardly needs any introduction; put files in your Dropbox and they show up everywhere else you have Dropbox installed and dropbox.com. A feature about Dropbox that is probably not as widely known is that free accounts come with 30 days of undo history and Pro accounts can get "Pack Rat" that keeps unlimited history of changes. The history of files, including reverting deleted files, was particularly interesting to me, since I could hook in my latest daily MySQL dumps from [AutoMySQLBackup](http://sourceforge.net/projects/automysqlbackup/) to Dropbox and have 30 days of backups for free available from anywhere dropbox.com is accessible. 
 
 The problem is that we use [CentOS](http://centos.org/) for our servers and the Dropbox Linux builds are geared for distributions like Ubuntu and Debian that have updated versions of required software like Python, libc, and others, that I did not want to upgrade by hand on my systems and risk the integrity of the system packages. But, I got it to work anyway, read on for how I got Dropbox CLI installed on CentOS without replacing any system files.

@@ -6,6 +6,8 @@ comments: true
 categories:
 ---
 
+*This post originally featured on the [Echo &amp; Co. blog](http://echo.co/blog/native-local-development-environment-os-x)*.
+
 **UPDATE:** [A newer version of this has been posted here](/blog/2011/08/24/os-x-107-lion-development-native-mamp-mysql-installer/).
 
 Apple OS X comes with Apache and PHP built-in but need some tweaking to work. It also does not come with MySQL. Because of this, many developers have chosen to use MacPorts, Homebrew, or MAMP to install new binaries for Apache, PHP, and MySQL. However, doing this means your system would have multiple copies of Apache and PHP on your machine, and could create conflicts depending on how your built-in tools are configured. This tutorial will show you how to get the built-in versions of Apache and PHP running with an easy to install version of MySQL.

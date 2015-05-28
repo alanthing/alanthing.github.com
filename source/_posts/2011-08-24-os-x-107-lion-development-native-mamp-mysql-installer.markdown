@@ -6,6 +6,8 @@ comments: true
 categories:
 ---
 
+*This post originally featured on the [Echo &amp; Co. blog](http://echo.co/blog/os-x-107-lion-development-native-mamp-mysql-installer)*.
+
 With the release of Lion, there are some subtle differences to setting up a local MAMP (Mac OS X, Apache, MySQL, PHP) environment compared to Snow Leopard. In an effort to keep this from being overly wordy and just get to the good stuff, we'll dive right in, so read on to get started.
 
 Note that for all commands before that are starting with a $, the dollar sign is showing a command-line prompt in [Terminal](http://www.apple.com/macosx/apps/all.html#terminal), and you should not actually type it as part of the commands.

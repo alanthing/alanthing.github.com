@@ -6,6 +6,8 @@ comments: true
 categories:
 ---
 
+*This post originally featured on the [Echo &amp; Co. blog](http://echo.co/blog/dump-each-mysql-table-file)*.
+
 Here's a one-liner to dump each table in a database to it's own .sql file. Crack open your shell of choice and follow along.
 
 Replace the USER, PASSWORD, and DBNAME values with your own. If you're not running this to connect to a local database, add --host=domain.tld after each password to connect to your remote server.

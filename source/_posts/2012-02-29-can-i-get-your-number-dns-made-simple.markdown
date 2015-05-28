@@ -6,6 +6,8 @@ comments: true
 categories:
 ---
 
+*This post originally featured on the [Echo &amp; Co. blog](http://echo.co/blog/can-i-get-your-number-dns-made-simple)*.
+
 At [EchoDitto](http://www.echoditto.com), we get a lot of questions about how hosting works, and in particular about changing DNS records for new websites or websites who are moving to new hosting providers. Here's an old but true analogy to make understanding DNS easier: the IP address of your website is like your phone number (it changes if you move houses - at least, your landline does), and DNS is like the phonebook. If someone wants to call you at your new house they might look you up by name in the phonebook, but if their phonebook hasn't been updated since you moved they're going to call your old house.
 
 Here's how it works in more detail:

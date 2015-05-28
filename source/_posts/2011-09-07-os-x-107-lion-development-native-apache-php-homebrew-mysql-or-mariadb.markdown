@@ -6,6 +6,8 @@ comments: true
 categories:
 ---
 
+*This post originally featured on the [Echo &amp; Co. blog](http://echo.co/blog/os-x-107-lion-development-native-apache-php-homebrew-mysql-or-mariadb)*.
+
 OS X Lion ships with Apache and PHP, which both require a little bit of tweaking to get fully-functional for "MAMP" local development. The one thing Lion does not ship with is a database. This will be very similar to my [previous post on local development](http://echodittolabs.org/blog/2011/08/os-x-107-lion-development-native-mamp-mysql-installer) but this time we'll be using Homebrew to install either MySQL or MariaDB for the database. Since we'll be using a compiler for Homebrew, I'll also cover how to add APC and other PECL modules that you can add to OS X. 
 
 Note that for all commands before that are starting with a $, the dollar sign is showing a command-line prompt in [Terminal](http://www.apple.com/macosx/apps/all.html#terminal), and you should not actually type it as part of the commands.

@@ -6,6 +6,8 @@ comments: true
 categories:
 ---
 
+*This post originally featured on the [Echo &amp; Co. blog](http://echo.co/blog/three-ways-get-drush-os-x)*.
+
 [As I've said before](http://echodittolabs.org/blog/2011/03/keep-drush-up-to-date), we love [drush](http://drupal.org/project/drush). It's hard to imagine doing Drupal work without it. If OS X is your workstation, it's pretty simple to install with pear, as described on the project page. Let's review that method and cover two others, git and Homebrew, and how to keep them updated.
 
 All commands listed below are to be executed on the command line with the Terminal application. But if you use Drush regularly then you already knew that!

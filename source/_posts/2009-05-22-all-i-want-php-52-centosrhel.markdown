@@ -6,6 +6,8 @@ comments: true
 categories:
 ---
 
+*This post originally featured on the [Echo &amp; Co. blog](http://echo.co/blog/all-i-want-php-52-centosrhel)*.
+
 **[An updated, easier method can be found here.](/blog/2011/01/25/easy-php-5-dot-2-rpms-on-centos/)**
 
 At [EchoDitto](http://www.echoditto.com), most of our servers are running [CentOS Linux](http://www.centos.org/), which is a 100% binary-compatible version of the industry standard [Red Hat Enterprise Linux](http://www.redhat.com/rhel/server/) (RHEL) without any of the fees. The problem with RHEL/CentOS is that they shipped with PHP 5.1.6, and as of this writing PHP is at 5.2.9. That's not a big deal, being a minor point revision behind, until you come across an application or module that needs a minimum of version 5.2. The last thing I want to do is install packages from a third-party or build it from source and risk breaking other packages. So what's the answer? Building it from the source rpm. There's no better way to keep the system free of third-party packages but also up to date.
