@@ -1,0 +1,840 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>OS X 10.10 Yosemite Local Development Environment: Apache, PHP, and MySQL with Homebrew - alanthing</title>
+  <meta name="author" content="Alan Ivey">
+
+  
+  <meta name="description" content="This post originally featured on the Echo &amp; Co. blog. OS X 10.10 Yosemite comes with Apache and PHP pre-installed, but it&rsquo;s not in a great &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://alanthing.com/blog/2014/12/22/os-x-1010-yosemite-local-development-environment-apache-php-and-mysql-homebrew">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="alanthing" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-34327970-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">alanthing</a></h1>
+  
+    <h2>Linux and other things</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:alanthing.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">OS X 10.10 Yosemite Local Development Environment: Apache, PHP, and MySQL With Homebrew</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-12-22T16:38:00-05:00" pubdate data-updated="true">Dec 22<span>nd</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p><em>This post originally featured on the <a href="http://echo.co/blog/os-x-1010-yosemite-local-development-environment-apache-php-and-mysql-homebrew">Echo &amp; Co. blog</a></em>.</p>
+
+<p>OS X 10.10 Yosemite comes with Apache and PHP pre-installed, but it&rsquo;s not in a great configuration, requires root to make lots of changes, and can introduce issues with file ownership and permissions. We prefer to use Homebrew to avoid these problems and because it&rsquo;s easier to keep up to date with newer versions of each component and extend customization. We can also set things up to be fully automatic so you can create new websites locally without needing to edit any configuration files.</p>
+
+<p>With the arrival of Yosemite, some of the changes previously used in <a href="/blog/os-x-109-local-development-environment-apache-php-and-mysql-homebrew">10.9 for setting up Apache, PHP, and MySQL with Homebrew</a> don&rsquo;t work quite the same. This guide will walk you through using <a href="http://brew.sh/">Homebrew</a> to install Apache, PHP, and MySQL for a &ldquo;MAMP&rdquo; development environment. We&rsquo;ll also use DNSMasq and Apache&rsquo;s VirtualDocumentRoot to set up &ldquo;auto-VirtualHosts&rdquo; so you don&rsquo;t need to edit configuration files when starting new projects. Finally, we&rsquo;ll add a firewall rule to allow the default http port 80 to be used without running Apache as root.</p>
+
+<p>The following steps are intended for use on a Yosemite system without any previous attempts to use Homebrew for Apache, PHP, or MySQL. If you have attempted to install a similar stack and run into conflicts, or you&rsquo;ve upgraded your operating system from 10.9 and things broke, the final section has some troubleshooting pointers. If that fails, leave a comment and I&rsquo;ll try my best to help you out.</p>
+
+<p>At the conclusion of this guide, you&rsquo;ll be able to create a directory like <em>~/Sites/project</em> and access it immediately at <em><a href="http://project.dev*">http://project.dev*</a> without editing your </em>/etc/hosts* file or editing any Apache configuration. We&rsquo;ll configure PHP and MySQL to allow for enough flexibility for development.</p>
+
+<p>Because some of the commands span several lines, each command will be in a separate code block. This means you should copy and paste each code block in its entirety as a single command.</p>
+
+<p>Before diving in, yes, this is a lot of steps. You can do it faster and pay money for something like MAMP Pro, but this is more fun, and you may learn something along the way! And, while you can simplify things with <a href="http://www.vagrantup.com/">Vagrant</a> or other virtual machine format, some people prefer to run things on &ldquo;bare metal&rdquo; and not have the overhead of a virtual machine.</p>
+
+<h1>Homebrew Setup</h1>
+
+<p>If you&rsquo;ve not already installed Homebrew, you can follow the instructions at <a href="http://brew.sh/">http://brew.sh</a>. I used to include the command in previous walkthrough blogs, but it could change after posting, so definitely check their website to install it properly.</p>
+
+<p>If you do not have <strong>git</strong> available on your system, either from Homebrew, Xcode, or another source, you can install it with Homebrew now (if you already have it installed, feel free to skip this step to keep the version of <strong>git</strong> you already have):</p>
+
+<pre language="bash">
+brew install -v git
+</pre>
+
+
+<h1>PATH Variable</h1>
+
+<p>In previous guides on 10.9 and earlier, I added a change to <strong>$PATH</strong> in <em>~/.bash_profile</em> to ensure that Homebrew-installed applications would run by default over similar ones that were already installed on OS X. Thankfully, Yosemite&rsquo;s <strong>$PATH</strong> order is different than earlier OS versions and now includes the default Homebrew location of <em>/usr/local/bin</em> in front. If you installed Homebrew to a custom location, or are not seeing <em>/usr/local/bin</em> at the beginning of your shell&rsquo;s <strong>$PATH</strong>, check out the file <em>/etc/paths</em> or the directory <em>/etc/paths.d/</em>.</p>
+
+<h1>MySQL</h1>
+
+<p>Install MySQL with Homebrew:</p>
+
+<pre language="bash">
+brew install -v mysql
+</pre>
+
+
+<p>Copy the default <em>my-default.cnf</em> file to the MySQL Homebrew Cellar directory where it will be loaded on application start:</p>
+
+<pre language="bash">
+cp -v $(brew --prefix mysql)/support-files/my-default.cnf $(brew --prefix)/etc/my.cnf
+</pre>
+
+
+<p>This will configure MySQL to allow for the maximum packet size, only appropriate for a local or development server. Also, we&rsquo;ll keep each InnoDB table in separate files to keep <em>ibdataN</em>-type file sizes low and make file-based backups, like Time Machine, easier to manage multiple small files instead of a few large InnoDB data files. This is the first of many multi-line single commands. The following is a single, multi-line command; copy and paste the entire block at once:</p>
+
+<pre language="bash">
+cat >> $(brew --prefix)/etc/my.cnf <<'EOF'
+
+# Echo & Co. changes
+max_allowed_packet = 1073741824
+innodb_file_per_table = 1
+EOF
+</pre>
+
+
+<p>Uncomment the sample option for <strong>innodb_buffer_pool_size</strong> to improve performance:</p>
+
+<pre language="bash">
+sed -i '' 's/^#[[:space:]]*\(innodb_buffer_pool_size\)/\1/' $(brew --prefix)/etc/my.cnf
+</pre>
+
+
+<p>Now we need to start MySQL using OS X&rsquo;s launchd. This used to be an involved process with <strong>launchctl</strong> commands, but now we can leverage the excellent <strong><a href="https://github.com/Homebrew/homebrew-services">brew services</a></strong> command:</p>
+
+<pre language="bash">
+brew tap homebrew/services
+</pre>
+
+
+
+
+<pre language="bash">
+brew services start mysql
+</pre>
+
+
+<p>By default, MySQL&rsquo;s root user has an empty password from any connection. You are advised to run <strong>mysql_secure_installation</strong> and at least set a password for the root user:</p>
+
+<pre language="bash">
+$(brew --prefix mysql)/bin/mysql_secure_installation
+</pre>
+
+
+<h1>Apache</h1>
+
+<p>Start by stopping the built-in Apache, if it&rsquo;s running, and prevent it from starting on boot. This is one of very few times you&rsquo;ll need to use <strong>sudo</strong>:</p>
+
+<pre language="bash">
+sudo launchctl unload /System/Library/LaunchDaemons/org.apache.httpd.plist 2>/dev/null
+</pre>
+
+
+<p>The formula for building Apache is not in the default Homebrew repository that you get by installing Homebrew. While we can use the format of <strong>brew install external-repo/formula</strong>, if an external formula relies on another external formula, you have to use the <strong>brew tap</strong> command first. I know, it&rsquo;s weird. So, we need to tap homebrew-dupes because &ldquo;homebrew-apache/httpd22&rdquo; relies on &ldquo;homebrew-dupes/zlib&rdquo;. Whew:</p>
+
+<pre language="bash">
+brew tap homebrew/dupes
+</pre>
+
+
+<p>A slight deviation from my prior walkthroughs: we&rsquo;ll install Apache 2.2 with the event MPM and set up PHP-FPM instead of mod_php. If those terms mean anything to you and you&rsquo;re curious as to why I decided to go this route; it&rsquo;s because: 1) switching PHP versions is far easier with PHP-FPM and the default 9000 port instead of also editing the Apache configuration to switch the mod_php module location, and 2) if we&rsquo;re therefore not using mod_php, we don&rsquo;t have to use the prefork MPM and can get better performance with event or worker. As to why I&rsquo;m using 2.2 instead of 2.4, popular FOSS projects like Drupal and WordPress still ship with 2.2-style .htaccess files. Using 2.4 sometimes means you have to set up &ldquo;compat&rdquo; modules, and that&rsquo;s above the requirement for a local environment, in my opinion.</p>
+
+<p>Onward! Let&rsquo;s install Apache 2.2 with the event MPM, and we&rsquo;ll use Homebrew&rsquo;s OpenSSL library since it&rsquo;s more up-to-date than OS X&rsquo;s:</p>
+
+<pre language="bash">
+brew install -v homebrew/apache/httpd22 --with-brewed-openssl --with-mpm-event
+</pre>
+
+
+<p>In order to get Apache and PHP to communicate via PHP-FPM, we&rsquo;ll install the mod_fastcgi module:</p>
+
+<pre language="bash">
+brew install -v homebrew/apache/mod_fastcgi --with-brewed-httpd22
+</pre>
+
+
+<p>To prevent any potential problems with previous mod_fastcgi setups, let&rsquo;s remove all references to the mod_fastcgi module (we&rsquo;ll re-add the new version later):</p>
+
+<pre language="bash">
+sed -i '' '/fastcgi_module/d' $(brew --prefix)/etc/apache2/2.2/httpd.conf
+</pre>
+
+
+<p>Add the logic for Apache to send PHP to PHP-FPM with mod_fastcgi, and reference that we&rsquo;ll want to use the file <em>~/Sites/httpd-vhosts.conf</em> to configure our VirtualHosts. The parenthesis are used to <a href="http://stackoverflow.com/a/10856211/534275">run the command in a subprocess</a>, so that the <strong>export</strong>ed variables don&rsquo;t persist in your terminal session afterwards. Also, you&rsquo;ll see <strong>export USERHOME</strong> a few times in this guide; I look up the full path for your user home directory from the operating system wherever a full path is needed in a configuration file and &ldquo;<em>~</em>&rdquo; or a literal &ldquo;<em>$HOME</em>&rdquo; would not work.</p>
+
+<p>This is all one command, so copy and paste the entire code block at once:</p>
+
+<pre language="bash">
+(export USERHOME=$(dscl . -read /Users/`whoami` NFSHomeDirectory | awk -F"\: " '{print $2}') ; export MODFASTCGIPREFIX=$(brew --prefix mod_fastcgi) ; cat >> $(brew --prefix)/etc/apache2/2.2/httpd.conf <<EOF
+
+# Echo & Co. changes
+
+# Load PHP-FPM via mod_fastcgi
+LoadModule fastcgi_module    ${MODFASTCGIPREFIX}/libexec/mod_fastcgi.so
+
+<IfModule fastcgi_module>
+  FastCgiConfig -maxClassProcesses 1 -idle-timeout 1500
+
+  # Prevent accessing FastCGI alias paths directly
+  <LocationMatch "^/fastcgi">
+    <IfModule mod_authz_core.c>
+      Require env REDIRECT_STATUS
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+      Order Deny,Allow
+      Deny from All
+      Allow from env=REDIRECT_STATUS
+    </IfModule>
+  </LocationMatch>
+
+  FastCgiExternalServer /php-fpm -host 127.0.0.1:9000 -pass-header Authorization -idle-timeout 1500
+  ScriptAlias /fastcgiphp /php-fpm
+  Action php-fastcgi /fastcgiphp
+  
+  # Send PHP extensions to PHP-FPM
+  AddHandler php-fastcgi .php
+  
+  # PHP options
+  AddType text/html .php
+  AddType application/x-httpd-php .php
+  DirectoryIndex index.php index.html
+</IfModule>
+
+# Include our VirtualHosts
+Include ${USERHOME}/Sites/httpd-vhosts.conf
+EOF
+)
+</pre>
+
+
+<p>We&rsquo;ll be using the file <em>~/Sites/httpd-vhosts.conf</em> to configure our VirtualHosts, but the <em>~/Sites</em> folder doesn&rsquo;t exist by default in newer versions of OS X. We&rsquo;ll also create folders for logs and SSL files:</p>
+
+<pre language="bash">
+mkdir -pv ~/Sites/{logs,ssl}
+</pre>
+
+
+<p>Let&rsquo;s populate the <em>~/Sites/httpd-vhosts.conf</em> file. The biggest difference from my previous guides are that you&rsquo;ll see the port numbers are 8080/8443 instead of 80/443. OS X 10.9 and earlier had the <strong>ipfw</strong> firewall which allowed for port redirecting, so we would send port 80 traffic &ldquo;directly&rdquo; to our Apache. But <strong>ipfw</strong> is now removed and replaced by <strong>pf</strong> which &ldquo;forwards&rdquo; traffic to another port. We&rsquo;ll get to that later, but know that &ldquo;8080&rdquo; and &ldquo;8443&rdquo; are not typos but are acceptable because of later port forwarding. Also, I&rsquo;ve now added a basic SSL configuration (though you&rsquo;ll need to acknowledge warnings in your browser about self-signed certificates):</p>
+
+<pre language="bash">
+touch ~/Sites/httpd-vhosts.conf
+</pre>
+
+
+
+
+<pre language="bash">
+(export USERHOME=$(dscl . -read /Users/`whoami` NFSHomeDirectory | awk -F"\: " '{print $2}') ; cat > ~/Sites/httpd-vhosts.conf <<EOF
+#
+# Listening ports.
+#
+#Listen 8080  # defined in main httpd.conf
+Listen 8443
+
+#
+# Use name-based virtual hosting.
+#
+NameVirtualHost *:8080
+NameVirtualHost *:8443
+
+#
+# Set up permissions for VirtualHosts in ~/Sites
+#
+<Directory "${USERHOME}/Sites">
+    Options Indexes FollowSymLinks MultiViews
+    AllowOverride All
+    <IfModule mod_authz_core.c>
+        Require all granted
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Allow from all
+    </IfModule>
+</Directory>
+
+# For http://localhost in the users' Sites folder
+<VirtualHost _default_:8080>
+    ServerName localhost
+    DocumentRoot "${USERHOME}/Sites"
+</VirtualHost>
+<VirtualHost _default_:8443>
+    ServerName localhost
+    Include "${USERHOME}/Sites/ssl/ssl-shared-cert.inc"
+    DocumentRoot "${USERHOME}/Sites"
+</VirtualHost>
+
+#
+# VirtualHosts
+#
+
+## Manual VirtualHost template for HTTP and HTTPS
+#<VirtualHost *:8080>
+#  ServerName project.dev
+#  CustomLog "${USERHOME}/Sites/logs/project.dev-access_log" combined
+#  ErrorLog "${USERHOME}/Sites/logs/project.dev-error_log"
+#  DocumentRoot "${USERHOME}/Sites/project.dev"
+#</VirtualHost>
+#<VirtualHost *:8443>
+#  ServerName project.dev
+#  Include "${USERHOME}/Sites/ssl/ssl-shared-cert.inc"
+#  CustomLog "${USERHOME}/Sites/logs/project.dev-access_log" combined
+#  ErrorLog "${USERHOME}/Sites/logs/project.dev-error_log"
+#  DocumentRoot "${USERHOME}/Sites/project.dev"
+#</VirtualHost>
+
+#
+# Automatic VirtualHosts
+#
+# A directory at ${USERHOME}/Sites/webroot can be accessed at http://webroot.dev
+# In Drupal, uncomment the line with: RewriteBase /
+#
+
+# This log format will display the per-virtual-host as the first field followed by a typical log line
+LogFormat "%V %h %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\"" combinedmassvhost
+
+# Auto-VirtualHosts with .dev
+<VirtualHost *:8080>
+  ServerName dev
+  ServerAlias *.dev
+
+  CustomLog "${USERHOME}/Sites/logs/dev-access_log" combinedmassvhost
+  ErrorLog "${USERHOME}/Sites/logs/dev-error_log"
+
+  VirtualDocumentRoot ${USERHOME}/Sites/%-2+
+</VirtualHost>
+<VirtualHost *:8443>
+  ServerName dev
+  ServerAlias *.dev
+  Include "${USERHOME}/Sites/ssl/ssl-shared-cert.inc"
+
+  CustomLog "${USERHOME}/Sites/logs/dev-access_log" combinedmassvhost
+  ErrorLog "${USERHOME}/Sites/logs/dev-error_log"
+
+  VirtualDocumentRoot ${USERHOME}/Sites/%-2+
+</VirtualHost>
+EOF
+)
+</pre>
+
+
+<p>You may have noticed that <em>~/Sites/ssl/ssl-shared-cert.inc</em> is included multiple times; create that file and the SSL files it needs:</p>
+
+<pre language="bash">
+(export USERHOME=$(dscl . -read /Users/`whoami` NFSHomeDirectory | awk -F"\: " '{print $2}') ; cat > ~/Sites/ssl/ssl-shared-cert.inc <<EOF
+SSLEngine On
+SSLProtocol all -SSLv2 -SSLv3
+SSLCipherSuite ALL:!ADH:!EXPORT:!SSLv2:RC4+RSA:+HIGH:+MEDIUM:+LOW
+SSLCertificateFile "${USERHOME}/Sites/ssl/selfsigned.crt"
+SSLCertificateKeyFile "${USERHOME}/Sites/ssl/private.key"
+EOF
+)
+</pre>
+
+
+
+
+<pre language="bash">
+openssl req \
+  -new \
+  -newkey rsa:2048 \
+  -days 3650 \
+  -nodes \
+  -x509 \
+  -subj "/C=US/ST=State/L=City/O=Organization/OU=$(whoami)/CN=*.dev" \
+  -keyout ~/Sites/ssl/private.key \
+  -out ~/Sites/ssl/selfsigned.crt
+</pre>
+
+
+<h2>Start Apache</h2>
+
+<p>Start Homebrew&rsquo;s Apache and set to start on login:</p>
+
+<pre language="bash">
+brew services start httpd22
+</pre>
+
+
+<h2>Run with port 80</h2>
+
+<p>You may notice that <em>httpd.conf</em> is running Apache on ports <strong>8080</strong> and <strong>8443</strong>. Manually adding &ldquo;:8080&rdquo; each time you&rsquo;re referencing your dev sites is no fun, but running Apache on port 80 requires root. The next two commands will create and load a firewall rule to forward port 80 requests to 8080, and port 443 requests to 8443. The end result is that we don&rsquo;t need to add the port number when visiting a project dev site, like &ldquo;<a href="http://projectname.dev/">http://projectname.dev/</a>&rdquo; instead of &ldquo;<a href="http://projectname.dev:8080/">http://projectname.dev:8080/</a>&rdquo;.</p>
+
+<p>The following command will create the file <em>/Library/LaunchDaemons/co.echo.httpdfwd.plist</em> as root, and owned by root, since it needs elevated privileges:</p>
+
+<pre language="bash">
+sudo bash -c 'export TAB=$'"'"'\t'"'"'
+cat > /Library/LaunchDaemons/co.echo.httpdfwd.plist <<EOF
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+${TAB}<key>Label</key>
+${TAB}<string>co.echo.httpdfwd</string>
+${TAB}<key>ProgramArguments</key>
+${TAB}<array>
+${TAB}${TAB}<string>sh</string>
+${TAB}${TAB}<string>-c</string>
+${TAB}${TAB}<string>echo "rdr pass proto tcp from any to any port {80,8080} -> 127.0.0.1 port 8080" | pfctl -a "com.apple/260.HttpFwdFirewall" -Ef - &amp;&amp; echo "rdr pass proto tcp from any to any port {443,8443} -> 127.0.0.1 port 8443" | pfctl -a "com.apple/261.HttpFwdFirewall" -Ef - &amp;&amp; sysctl -w net.inet.ip.forwarding=1</string>
+${TAB}</array>
+${TAB}<key>RunAtLoad</key>
+${TAB}<true/>
+${TAB}<key>UserName</key>
+${TAB}<string>root</string>
+</dict>
+</plist>
+EOF'
+</pre>
+
+
+<p>This file will be loaded on login and set up the 80->8080 and 443->8443 port forwards, but we can load it manually now so we don&rsquo;t need to log out and back in:</p>
+
+<pre language="bash">
+sudo launchctl load -Fw /Library/LaunchDaemons/co.echo.httpdfwd.plist
+</pre>
+
+
+<h1>PHP</h1>
+
+<p>The following is for the latest release of PHP, version 5.6. If you&rsquo;d like to use 5.3, 5.4 or 5.5, simply change the &ldquo;5.6&rdquo; and &ldquo;php56&rdquo; values below appropriately.</p>
+
+<pre language="bash">
+brew install -v homebrew/php/php56
+</pre>
+
+
+<p>Set timezone and change other PHP settings (<strong>sudo</strong> is needed here to get the current timezone on OS X) to be more developer-friendly, and add a PHP error log (without this, you may get Internal Server Errors if PHP has errors to write and no logs to write to):</p>
+
+<pre language="bash">
+(export USERHOME=$(dscl . -read /Users/`whoami` NFSHomeDirectory | awk -F"\: " '{print $2}') ; sed -i '-default' -e 's|^;\(date\.timezone[[:space:]]*=\).*|\1 \"'$(sudo systemsetup -gettimezone|awk -F"\: " '{print $2}')'\"|; s|^\(memory_limit[[:space:]]*=\).*|\1 512M|; s|^\(post_max_size[[:space:]]*=\).*|\1 200M|; s|^\(upload_max_filesize[[:space:]]*=\).*|\1 100M|; s|^\(default_socket_timeout[[:space:]]*=\).*|\1 600|; s|^\(max_execution_time[[:space:]]*=\).*|\1 300|; s|^\(max_input_time[[:space:]]*=\).*|\1 600|; $a\'$'\n''\'$'\n''; PHP Error log\'$'\n''error_log = '$USERHOME'/Sites/logs/php-error_log'$'\n' $(brew --prefix)/etc/php/5.6/php.ini)
+</pre>
+
+
+<p>Fix a <strong>pear</strong> and <strong>pecl</strong> <a href="https://github.com/Homebrew/homebrew-php/issues/1039#issuecomment-41307694">permissions problem</a>:</p>
+
+<pre language="bash">
+chmod -R ug+w $(brew --prefix php56)/lib/php
+</pre>
+
+
+<p>The optional Opcache extension will speed up your PHP environment dramatically, so let&rsquo;s install it. Then, we&rsquo;ll bump up the opcache memory limit:</p>
+
+<pre language="bash">
+brew install -v php56-opcache
+</pre>
+
+
+
+
+<pre language="bash">
+/usr/bin/sed -i '' "s|^\(\;\)\{0,1\}[[:space:]]*\(opcache\.enable[[:space:]]*=[[:space:]]*\)0|\21|; s|^;\(opcache\.memory_consumption[[:space:]]*=[[:space:]]*\)[0-9]*|\1256|;" $(brew --prefix)/etc/php/5.6/php.ini
+</pre>
+
+
+<p>Finally, let&rsquo;s start PHP-FPM:</p>
+
+<pre language="bash">
+brew services start php56
+</pre>
+
+
+<p><strong>Optional:</strong> At this point, if you want to switch between PHP versions, you&rsquo;d want to: <strong>brew services stop php56 &amp;&amp; brew unlink php56 &amp;&amp; brew link php54 &amp;&amp; brew services start php54</strong>. No need to touch the Apache configuration at all!</p>
+
+<h1>DNSMasq</h1>
+
+<p>A difference now between what <a href="/blog/never-touch-your-local-etchosts-file-os-x-again">I&rsquo;ve shown before</a>, is that we don&rsquo;t have to run on port 53 or run <strong>dnsmasq</strong> as root. The end result here is that any DNS request ending in <em>.dev</em> reply with the IP address <em>127.0.0.1</em>:</p>
+
+<pre language="bash">
+brew install -v dnsmasq
+</pre>
+
+
+
+
+<pre language="bash">
+echo 'address=/.dev/127.0.0.1' > $(brew --prefix)/etc/dnsmasq.conf
+</pre>
+
+
+
+
+<pre language="bash">
+echo 'listen-address=127.0.0.1' >> $(brew --prefix)/etc/dnsmasq.conf
+</pre>
+
+
+
+
+<pre language="bash">
+echo 'port=35353' >> $(brew --prefix)/etc/dnsmasq.conf
+</pre>
+
+
+<p>Similar to how we run Apache and PHP-FPM, we&rsquo;ll start DNSMasq:</p>
+
+<pre language="bash">
+brew services start dnsmasq
+</pre>
+
+
+<p>With DNSMasq running, configure OS X to use your local host for DNS queries ending in <em>.dev</em>:</p>
+
+<pre language="bash">
+sudo mkdir -v /etc/resolver 
+</pre>
+
+
+
+
+<pre language="bash">
+sudo bash -c 'echo "nameserver 127.0.0.1" > /etc/resolver/dev'
+</pre>
+
+
+
+
+<pre language="bash">
+sudo bash -c 'echo "port 35353" >> /etc/resolver/dev'
+</pre>
+
+
+<p>To test, the command <strong>ping -c 3 fakedomainthatisntreal.dev</strong> should return results from 127.0.0.1. If it doesn&rsquo;t work right away, try turning WiFi off and on (or unplug/plug your ethernet cable), or reboot your system.</p>
+
+<h1>Great! So, what did I do?</h1>
+
+<p>We set up Apache to run on boot on ports 8080 and 8443 with auto-VirtualHosts for directories in the <em>~/Sites</em> folder and PHP-FPM via mod_fastcgi. The OS X firewall will forward all port 80 traffic to port 8080 and port 443 to port 8443, so we don&rsquo;t have specify the port number when visiting web pages in local web browsers or run Apache as root. MySQL is installed and set to run on boot as well. DNSMasq and some OS X configuration is used to direct any hostname ending in <em>.dev</em> to the local system to work in conjunction with Apache&rsquo;s auto-VirtualHosts.</p>
+
+<h2>What do I do now?</h2>
+
+<p>You shouldn&rsquo;t need to edit the Apache configuration or edit /etc/hosts for new local development sites. Simply create a directory in <em>~/Sites</em> and then reference &ldquo;<a href="http://">http://</a>&rdquo; + that foldername + &ldquo;.dev/&rdquo; in your browser to access it.</p>
+
+<p>For example, download Drupal 7 to the directory <em>~/Sites/firstproject</em>, and it can then be accessed at <em><a href="http://firstproject.dev/*">http://firstproject.dev/*</a> without any additional configuration. A caveat &ndash; you will need to uncomment the line in Drupal&rsquo;s </em>.htaccess* containing <strong>&ldquo;RewriteBase /&rdquo;</strong> to work with the auto-VirtualHosts configuration.</p>
+
+<h2>What if this &ldquo;auto-VirtualHost&rdquo; doesn&rsquo;t work for <em>[other project]</em>?</h2>
+
+<p>If you need to create a manual VirtualHost in Apache because the auto-VirtualHost does not work for your configuration, you will need to declare it before the auto-VirtualHosts if you&rsquo;re also going to use .dev as the TLD. Otherwise the auto-VirtualHost block will be accessed first. I have a commented-out sample for a manual VirtualHost entry in &ldquo;<em>~/Sites/httpd-vhosts.conf</em>&rdquo; you may use.</p>
+
+<h1>Troubleshooting</h1>
+
+<p>The commands above can be run on a fresh Yosemite system without issue as I&rsquo;ve tested with fresh installs in VMware. Nearly every problem I&rsquo;ve heard about has been related to upgrading from 10.9 or earlier, or switching to this style of setup from another or similar setup. The easiest thing to do would be to <strong>brew uninstall</strong> each component referenced above, delete all related config files in <em>$(brew &mdash;prefix)/etc</em> and any Homebrew files in <em>~/Library/LaunchAgents</em>, and start over. If that&rsquo;s a bit heavy-handed, check each of the configuration files edited in this guide and look for duplicate entries or typos.</p>
+
+<p>You can also check log files for error output:</p>
+
+<ul>
+<li>Apache: <em>$(brew &mdash;prefix)/var/log/apache2/error_log</em>, or run <strong>httpd -DFOREGROUND</strong> and look for output</li>
+<li>PHP-FPM: <em>$(brew &mdash;prefix)/var/log/php-fpm.log</em></li>
+<li>MySQL: <em>$(brew &mdash;prefix)/var/mysql/$(hostname).err</em></li>
+<li>DNSMasq: no log file, run <strong>dnsmasq &mdash;keep-in-foreground</strong> and look for output</li>
+</ul>
+
+
+<p>Leave a comment if you have any questions or problems!</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Alan Ivey</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-12-22T16:38:00-05:00" pubdate data-updated="true">Dec 22<span>nd</span>, 2014</time>
+      
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://alanthing.com/blog/2014/12/22/os-x-1010-yosemite-local-development-environment-apache-php-and-mysql-homebrew/" data-via="alanthing" data-counturl="http://alanthing.com/blog/2014/12/22/os-x-1010-yosemite-local-development-environment-apache-php-and-mysql-homebrew/" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
+    <div class="fb-like" data-send="true" data-width="450" data-show-faces="false"></div>
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2014/06/09/os-x-109-local-development-environment-apache-php-and-mysql-homebrew/" title="Previous Post: OS X 10.9 Local Development Environment: Apache, PHP, and MySQL with Homebrew">&laquo; OS X 10.9 Local Development Environment: Apache, PHP, and MySQL with Homebrew</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/12/22/os-x-1010-yosemite-local-development-environment-apache-php-and-mysql-homebrew/">OS X 10.10 Yosemite Local Development Environment: Apache, PHP, and MySQL With Homebrew</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/06/09/os-x-109-local-development-environment-apache-php-and-mysql-homebrew/">OS X 10.9 Local Development Environment: Apache, PHP, and MySQL With Homebrew</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/10/18/whats-the-deal-with-pressflow-7/">What's the Deal With Pressflow 7?</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/07/11/creating-php-packages-software-collection/">Creating PHP Packages as a Software Collection</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/05/09/speed-up-php-on-nfs-with-turbo-realpath/">Speed Up PHP on NFS With Turbo_realpath</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>Coderwall</h1>
+  <ul id="cw_badges">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <div>
+    <a href="http://coderwall.com/alanthing" target="_blank" class="cw_badge"><img
+       alt="Endorse alanthing on Coderwall"
+       src="http://api.coderwall.com/alanthing/endorsecount.png" /></a>
+  </div>
+  
+
+  <script type="text/javascript">
+    var coderwall = (function(){
+      function render(options, badges){
+        var fragment = '',
+            t = $(options.target),
+            height = 65,
+            width = 65,
+            index;
+
+        for (index in badges) {
+          fragment += '<a class="cw_badge"title="' + badges[index].description + '" target="_blank" href="http://coderwall.com/' + options.user + '">';
+          fragment +=   '<img alt="' + badges[index].description + '" height="' + width + '" width="' + height + '" src="' + badges[index].badge + '"/>';
+          fragment += '</a>';
+        }
+
+        t.html(fragment);
+      }
+      return {
+        showBadges: function(options){
+          $.ajax({
+              url: 'http://coderwall.com/' + options.user + '.json?callback=?'
+            , dataType: 'jsonp'
+            , error: function (err) { $(options.target + ' li.loading').addClass('error').text("Error loading feed"); }
+            , success: function(res) {
+                render(options, res.data.badges);
+            }
+          });
+        }
+      };
+    })();
+
+    $(document).ready(function(){
+      coderwall.showBadges({
+        user: 'alanthing',
+        target: '#cw_badges'
+      });
+    });
+  </script>
+</section>
+
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/alanthing">@alanthing</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'alanthing',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2015 - Alan Ivey -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'alanthing';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://alanthing.com/blog/2014/12/22/os-x-1010-yosemite-local-development-environment-apache-php-and-mysql-homebrew/';
+        var disqus_url = 'http://alanthing.com/blog/2014/12/22/os-x-1010-yosemite-local-development-environment-apache-php-and-mysql-homebrew/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id; js.async = true;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

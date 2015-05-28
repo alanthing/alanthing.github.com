@@ -9,7 +9,7 @@
   <meta name="author" content="Alan Ivey">
 
   
-  <meta name="description" content="Update: This no longer appears to be necessary as of nodejs 0.8.0. It may have been fixed earlier but I noticed neither of these changes are &hellip;">
+  <meta name="description" content="This post originally featured on the Echo &amp; Co. blog. Update: This no longer appears to be necessary as of nodejs 0.8.0. It may have been fixed &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -103,7 +103,9 @@
   </header>
 
 
-<div class="entry-content"><p><strong><em>Update:</em> This no longer appears to be necessary as of nodejs 0.8.0.</strong> It may have been fixed earlier but I noticed neither of these changes are necessary anymore. Something new though, I had problems with node-gyp, and the solution was to install python26 with yum and then re-run the npm command with <code>PYTHON="/usr/bin/python26" npm install -deps</code> or similar.</p>
+<div class="entry-content"><p><em>This post originally featured on the <a href="http://echo.co/blog/nodejs-and-npm-centos">Echo &amp; Co. blog</a></em>.</p>
+
+<p><strong><em>Update:</em> This no longer appears to be necessary as of nodejs 0.8.0.</strong> It may have been fixed earlier but I noticed neither of these changes are necessary anymore. Something new though, I had problems with node-gyp, and the solution was to install python26 with yum and then re-run the npm command with <code>PYTHON="/usr/bin/python26" npm install -deps</code> or similar.</p>
 
 <p>The preferred way to install node and NPM seems to be installing from source, but I&rsquo;m a perennial fan of using packages to keep things tidy, especially if I need to uninstall something. I started by going to the <a href="http://nodejs.org/#download">Node.js download page</a>, and through to <a href="https://github.com/joyent/node/wiki/Installing-Node.js-via-package-manager">Installing with a package manager</a>. I installed the yum release RPM for the <a href="http://nodejs.tchol.org/">tchol.org</a> repository as directed and installed <strong>nodejs</strong> and <strong>npm</strong> with yum. From there, I ran into two problems but thankfully they were fairly easy to resolve.</p>
 
@@ -192,6 +194,14 @@
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2014/12/22/os-x-1010-yosemite-local-development-environment-apache-php-and-mysql-homebrew/">OS X 10.10 Yosemite Local Development Environment: Apache, PHP, and MySQL With Homebrew</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/06/09/os-x-109-local-development-environment-apache-php-and-mysql-homebrew/">OS X 10.9 Local Development Environment: Apache, PHP, and MySQL With Homebrew</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2013/10/18/whats-the-deal-with-pressflow-7/">What's the Deal With Pressflow 7?</a>
       </li>
     
@@ -201,14 +211,6 @@
     
       <li class="post">
         <a href="/blog/2013/05/09/speed-up-php-on-nfs-with-turbo-realpath/">Speed Up PHP on NFS With Turbo_realpath</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/03/17/virtualbox-extension-pack-with-one-line/">VirtualBox Extension Pack With One Line</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/02/21/real-time-ruby-gem-development/">"Real-time" Ruby Gem Development</a>
       </li>
     
   </ul>
@@ -308,7 +310,7 @@
     </div>
   </div>
   <footer role="contentinfo"><p>
-  Copyright &copy; 2013 - Alan Ivey -
+  Copyright &copy; 2015 - Alan Ivey -
   <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
 </p>
 

@@ -9,7 +9,7 @@
   <meta name="author" content="Alan Ivey">
 
   
-  <meta name="description" content="Nginx is quickly becoming a popular, low resource alternative to Apache for many websites. This doesn&rsquo;t come without challenges, such as using &hellip;">
+  <meta name="description" content="This post originally featured on the Echo &amp; Co. blog. In each of my posts on setting up a local development environment on OS X, it&rsquo;s &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -83,6 +83,156 @@
       
   <header>
     
+      <h1 class="entry-title"><a href="/blog/2012/04/24/never-touch-your-local-etchosts-file-os-x-again/">Never Touch Your Local /etc/hosts File in OS X Again</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-04-24T08:20:00-04:00" pubdate data-updated="true">Apr 24<span>th</span>, 2012</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><em>This post originally featured on the <a href="http://echo.co/blog/never-touch-your-local-etchosts-file-os-x-again">Echo &amp; Co. blog</a></em>.</p>
+
+<p>In each of my posts on setting up a <a href="http://echodittolabs.org/blog/2012/04/os-x-107-lion-development-nginx-php-mariadb-homebrew">local</a> <a href="http://echodittolabs.org/blog/2011/10/os-x-107-lion-development-macports">development</a> <a href="http://echodittolabs.org/blog/2011/09/os-x-107-lion-development-native-apache-php-homebrew-mysql-or-mariadb">environment</a> <a href="http://echodittolabs.org/blog/2011/08/os-x-107-lion-development-native-mamp-mysql-installer">on OS X</a>, it&rsquo;s mentioned that you need to add your website&rsquo;s domain, even though it&rsquo;s local, in your /etc/hosts file. My preferred way to edit the hosts file on OS X is using <a href="http://code.google.com/p/gmask/">Gas Mask</a>. If you wanted to create the local virtual host <strong>projectx.dev</strong>, you would add the line <code>127.0.0.1 projectx.dev</code> in /etc/hosts or with Gas Mask, and then use that same value in either <strong>ServerName</strong> in Apache or <strong>server_name</strong> in Nginx. This can be tedious for adding new sites. Luckily there&rsquo;s a way to set this up once and then never have to edit your hosts file again for adding new local virtual hosts.</p>
+
+<p>You&rsquo;ll need a copy of dnsmasq, and I find this is most easily installed via Homebrew. If you haven&rsquo;t already, grab either <a href="http://itunes.apple.com/us/app/xcode/id448457090">Xcode</a> or <a href="http://kennethreitz.com/xcode-gcc-and-homebrew.html">Xcode Command Line Tools</a> and <a href="https://github.com/mxcl/homebrew/wiki/installation">install Homebrew</a>.</p>
+
+<p>The steps below will install dnsmasq from Homebrew, configure dnsmasq to return the IP address &lsquo;127.0.0.1&rsquo; for all requests to the fake top-level-domain &ldquo;.dev,&rdquo; start dnsmasq on boot (don&rsquo;t worry, it&rsquo;s an extremely light-weight process), and configure OS X to use dnsmasq for queries ending in &ldquo;.dev.&rdquo;</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>brew install dnsmasq
+</span><span class='line'>mkdir -pv $(brew --prefix)/etc/
+</span><span class='line'>echo 'address=/.dev/127.0.0.1' &gt; $(brew --prefix)/etc/dnsmasq.conf
+</span><span class='line'>sudo cp -v $(brew --prefix dnsmasq)/homebrew.mxcl.dnsmasq.plist /Library/LaunchDaemons
+</span><span class='line'>sudo launchctl load -w /Library/LaunchDaemons/homebrew.mxcl.dnsmasq.plist
+</span><span class='line'>sudo mkdir -v /etc/resolver
+</span><span class='line'>sudo bash -c 'echo "nameserver 127.0.0.1" &gt; /etc/resolver/dev'</span></code></pre></td></tr></table></div></figure>
+
+
+<p>That&rsquo;s it! You can run <code>scutil --dns</code> to show all of your current resolvers, and you should see that all requests for a domain ending in .dev will go to the DNS server at 127.0.0.1:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>resolver #9
+</span><span class='line'>  domain   : dev
+</span><span class='line'>  nameserver[0] : 127.0.0.1</span></code></pre></td></tr></table></div></figure>
+
+
+<p>If you ping any domain that ends in .dev, you&rsquo;ll get the IP address 127.0.0.1 back as a result:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ ping -c 1 thereisnowaythisisarealdomain.dev
+</span><span class='line'>PING thereisnowaythisisarealdomain.dev (127.0.0.1): 56 data bytes
+</span><span class='line'>64 bytes from 127.0.0.1: icmp_seq=0 ttl=64 time=0.057 ms</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Note that if you&rsquo;re using Mountain Lion you may need to reboot before the /etc/resolver settings take effect globally. I was able to get pings to work right away but Chrome would not resolve properly until I restarted.</p>
+
+<p>Now you can set up a new virtual host with <strong>anydomain.dev</strong>, and it&rsquo;ll be available as soon as you reload Apache or Nginx! You could extend this by enabling <a href="http://httpd.apache.org/docs/2.2/vhosts/mass.html">Mass Virtual Hosting for Apache</a> or <a href="http://forum.nginx.org/read.php?2,218617,218617#msg-218617">similar with Nginx</a>, though both require consistent layout of directories. Have fun configuring less stuff on your system!</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/04/23/redirect-all-port-80-requests-port-8080/">Redirect All Port 80 Requests to Port 8080</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-04-23T09:50:00-04:00" pubdate data-updated="true">Apr 23<span>rd</span>, 2012</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><em>This post originally featured on the <a href="http://echo.co/blog/redirect-all-port-80-requests-port-8080-mac-os-x">Echo &amp; Co. blog</a></em>.</p>
+
+<p><a href="http://echodittolabs.org/blog/2012/04/os-x-107-lion-development-nginx-php-mariadb-homebrew">In my previous post</a>, I walked through how to set up a local environment using Nginx running on port 8080 so as to avoid running anything as root or with sudo. Something that I&rsquo;ve found incredibly annoying is when I forget to specify the port I get an error in my browser, or Chrome might even suggest something based on a search term. It&rsquo;s fairly easy though to configure Apache to route everything to another port.</p>
+
+<p>Create the file <em>/etc/apache2/other/port8080-redirect.conf</em> as root. It&rsquo;s probably easiest to hop into Terminal and use nano:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>sudo nano -w /etc/apache2/other/port8080-redirect.conf
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Enter the following lines and save and exit the editor.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='apache'><span class='line'><span class="nt">&lt;VirtualHost</span> <span class="s">_default_:80</span><span class="nt">&gt;</span>
+</span><span class='line'>  <span class="nb">DocumentRoot</span> <span class="sx">/Library/WebServer/Documents</span>
+</span><span class='line'>  <span class="nb">RewriteEngine</span> <span class="k">On</span>
+</span><span class='line'>  <span class="c"># Redirect all requests to the local Apache server to port 8080</span>
+</span><span class='line'>  <span class="nb">RewriteRule</span> ^.*$ http://%{HTTP_HOST}:8080%{REQUEST_URI}
+</span><span class='line'><span class="nt">&lt;/VirtualHost&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Even though the <em>DocumentRoot</em> doesn&rsquo;t appear to be necessary, I wasn&rsquo;t able to get this working without it.</p>
+
+<p>Go into System Preferences, open the Sharing preference pane, and check the box for Web Sharing. If you have trouble getting the check to &ldquo;stick,&rdquo; you can run the following in Terminal: <code>sudo apachectl restart</code></p>
+
+<p>Now if you go in your browser and hit a domain you have defined in <em>/etc/hosts</em>, like <strong><a href="http://drupal.local/**,">http://drupal.local/**,</a> you&rsquo;ll automatically be redirected to </strong><a href="http://drupal.local:8080/**">http://drupal.local:8080/**</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
       <h1 class="entry-title"><a href="/blog/2012/04/22/os-x-107-lion-development-nginx-php-mariadb-homebrew/">OS X 10.7 Lion Development: Nginx, PHP, MariaDB With Homebrew</a></h1>
     
     
@@ -106,7 +256,9 @@
   </header>
 
 
-  <div class="entry-content"><p><a href="http://wiki.nginx.org">Nginx</a> is quickly becoming a popular, low resource alternative to Apache for many websites. This doesn&rsquo;t come without challenges, such as using PHP as CGI due to not having mod_php available. Nginx also does not use any Apache configuration rules, nor does it use .htaccess or anything like it, so it requires additional configuration regardless of the web application being deployed. A big help in getting Nginx started with Drupal is <a href="https://github.com/perusio">António P. P. Almeida&rsquo;s</a> <a href="https://github.com/perusio/drupal-with-nginx/">drupal-with-nginx configuration</a>, which makes it fairly simple to deploy in Linux. But what about local development on OS X? Read on to learn get all of the required components set up for your system, as well as the modifications necessary to get drupal-with-nginx set up on OS X.</p>
+  <div class="entry-content"><p><em>This post originally featured on the <a href="http://echo.co/blog/os-x-107-lion-development-nginx-php-mariadb-homebrew">Echo &amp; Co. blog</a></em>.</p>
+
+<p><a href="http://wiki.nginx.org">Nginx</a> is quickly becoming a popular, low resource alternative to Apache for many websites. This doesn&rsquo;t come without challenges, such as using PHP as CGI due to not having mod_php available. Nginx also does not use any Apache configuration rules, nor does it use .htaccess or anything like it, so it requires additional configuration regardless of the web application being deployed. A big help in getting Nginx started with Drupal is <a href="https://github.com/perusio">António P. P. Almeida&rsquo;s</a> <a href="https://github.com/perusio/drupal-with-nginx/">drupal-with-nginx configuration</a>, which makes it fairly simple to deploy in Linux. But what about local development on OS X? Read on to learn get all of the required components set up for your system, as well as the modifications necessary to get drupal-with-nginx set up on OS X.</p>
 
 <h2>Prerequisites</h2>
 
@@ -365,7 +517,9 @@
   </header>
 
 
-  <div class="entry-content"><p>At <a href="http://www.echoditto.com">EchoDitto</a>, we get a lot of questions about how hosting works, and in particular about changing DNS records for new websites or websites who are moving to new hosting providers. Here&rsquo;s an old but true analogy to make understanding DNS easier: the IP address of your website is like your phone number (it changes if you move houses &ndash; at least, your landline does), and DNS is like the phonebook. If someone wants to call you at your new house they might look you up by name in the phonebook, but if their phonebook hasn&rsquo;t been updated since you moved they&rsquo;re going to call your old house.</p>
+  <div class="entry-content"><p><em>This post originally featured on the <a href="http://echo.co/blog/can-i-get-your-number-dns-made-simple">Echo &amp; Co. blog</a></em>.</p>
+
+<p>At <a href="http://www.echoditto.com">EchoDitto</a>, we get a lot of questions about how hosting works, and in particular about changing DNS records for new websites or websites who are moving to new hosting providers. Here&rsquo;s an old but true analogy to make understanding DNS easier: the IP address of your website is like your phone number (it changes if you move houses &ndash; at least, your landline does), and DNS is like the phonebook. If someone wants to call you at your new house they might look you up by name in the phonebook, but if their phonebook hasn&rsquo;t been updated since you moved they&rsquo;re going to call your old house.</p>
 
 <p>Here&rsquo;s how it works in more detail:</p>
 
@@ -417,7 +571,9 @@
   </header>
 
 
-  <div class="entry-content"><p><strong><em>Update:</em> This no longer appears to be necessary as of nodejs 0.8.0.</strong> It may have been fixed earlier but I noticed neither of these changes are necessary anymore. Something new though, I had problems with node-gyp, and the solution was to install python26 with yum and then re-run the npm command with <code>PYTHON="/usr/bin/python26" npm install -deps</code> or similar.</p>
+  <div class="entry-content"><p><em>This post originally featured on the <a href="http://echo.co/blog/nodejs-and-npm-centos">Echo &amp; Co. blog</a></em>.</p>
+
+<p><strong><em>Update:</em> This no longer appears to be necessary as of nodejs 0.8.0.</strong> It may have been fixed earlier but I noticed neither of these changes are necessary anymore. Something new though, I had problems with node-gyp, and the solution was to install python26 with yum and then re-run the npm command with <code>PYTHON="/usr/bin/python26" npm install -deps</code> or similar.</p>
 
 <p>The preferred way to install node and NPM seems to be installing from source, but I&rsquo;m a perennial fan of using packages to keep things tidy, especially if I need to uninstall something. I started by going to the <a href="http://nodejs.org/#download">Node.js download page</a>, and through to <a href="https://github.com/joyent/node/wiki/Installing-Node.js-via-package-manager">Installing with a package manager</a>. I installed the yum release RPM for the <a href="http://nodejs.tchol.org/">tchol.org</a> repository as directed and installed <strong>nodejs</strong> and <strong>npm</strong> with yum. From there, I ran into two problems but thankfully they were fairly easy to resolve.</p>
 
@@ -474,7 +630,9 @@
   </header>
 
 
-  <div class="entry-content"><h2>Favorite Links of 2011</h2>
+  <div class="entry-content"><p><em>This post originally featured on the <a href="http://echo.co/blog/alans-2011-favorites">Echo &amp; Co. blog</a></em>.</p>
+
+<h2>Favorite Links of 2011</h2>
 
 <p><a href="http://www.google.com/reader">Google Reader</a> &ndash; between the Android app, Reeder for iPad, and the website, keeps me up to date on the news.</p>
 
@@ -544,7 +702,9 @@
   </header>
 
 
-  <div class="entry-content"><p>OS X Lion comes with most of the tools you would need to do &ldquo;MAMP&rdquo; (Mac OS X, Apache, MySQL/MariaDB, PHP) development, as outlined in my <a href="http://echodittolabs.org/blog/2011/08/os-x-107-lion-development-native-mamp-mysql-installer">previous</a> <a href="http://echodittolabs.org/blog/2011/09/os-x-107-lion-development-native-apache-php-homebrew-mysql-or-mariadb">posts</a> once you add a database. So then why would you want to use MacPorts? Setting your development environment up in MacPorts isolates the binaries, libraries, and configuration files, completely separate from the existing OS X install (with the exception of startup scripts). You can also tweak the configuration files on your own, apply your own patches, and apply updates that MacPorts may get before Apple pushes them. It will take more time because you&rsquo;ll be compiling everything, but you have all of the control. Read on for how to get things set up.</p>
+  <div class="entry-content"><p><em>This post originally featured on the <a href="http://echo.co/blog/os-x-107-lion-development-macports">Echo &amp; Co. blog</a></em>.</p>
+
+<p>OS X Lion comes with most of the tools you would need to do &ldquo;MAMP&rdquo; (Mac OS X, Apache, MySQL/MariaDB, PHP) development, as outlined in my <a href="http://echodittolabs.org/blog/2011/08/os-x-107-lion-development-native-mamp-mysql-installer">previous</a> <a href="http://echodittolabs.org/blog/2011/09/os-x-107-lion-development-native-apache-php-homebrew-mysql-or-mariadb">posts</a> once you add a database. So then why would you want to use MacPorts? Setting your development environment up in MacPorts isolates the binaries, libraries, and configuration files, completely separate from the existing OS X install (with the exception of startup scripts). You can also tweak the configuration files on your own, apply your own patches, and apply updates that MacPorts may get before Apple pushes them. It will take more time because you&rsquo;ll be compiling everything, but you have all of the control. Read on for how to get things set up.</p>
 
 <h2>Prerequisites</h2>
 
@@ -856,7 +1016,9 @@
   </header>
 
 
-  <div class="entry-content"><p>OS X Lion ships with Apache and PHP, which both require a little bit of tweaking to get fully-functional for &ldquo;MAMP&rdquo; local development. The one thing Lion does not ship with is a database. This will be very similar to my <a href="http://echodittolabs.org/blog/2011/08/os-x-107-lion-development-native-mamp-mysql-installer">previous post on local development</a> but this time we&rsquo;ll be using Homebrew to install either MySQL or MariaDB for the database. Since we&rsquo;ll be using a compiler for Homebrew, I&rsquo;ll also cover how to add APC and other PECL modules that you can add to OS X.</p>
+  <div class="entry-content"><p><em>This post originally featured on the <a href="http://echo.co/blog/os-x-107-lion-development-native-apache-php-homebrew-mysql-or-mariadb">Echo &amp; Co. blog</a></em>.</p>
+
+<p>OS X Lion ships with Apache and PHP, which both require a little bit of tweaking to get fully-functional for &ldquo;MAMP&rdquo; local development. The one thing Lion does not ship with is a database. This will be very similar to my <a href="http://echodittolabs.org/blog/2011/08/os-x-107-lion-development-native-mamp-mysql-installer">previous post on local development</a> but this time we&rsquo;ll be using Homebrew to install either MySQL or MariaDB for the database. Since we&rsquo;ll be using a compiler for Homebrew, I&rsquo;ll also cover how to add APC and other PECL modules that you can add to OS X.</p>
 
 <p>Note that for all commands before that are starting with a $, the dollar sign is showing a command-line prompt in <a href="http://www.apple.com/macosx/apps/all.html#terminal">Terminal</a>, and you should not actually type it as part of the commands.</p>
 
@@ -1222,7 +1384,9 @@
   </header>
 
 
-  <div class="entry-content"><p>With the release of Lion, there are some subtle differences to setting up a local MAMP (Mac OS X, Apache, MySQL, PHP) environment compared to Snow Leopard. In an effort to keep this from being overly wordy and just get to the good stuff, we&rsquo;ll dive right in, so read on to get started.</p>
+  <div class="entry-content"><p><em>This post originally featured on the <a href="http://echo.co/blog/os-x-107-lion-development-native-mamp-mysql-installer">Echo &amp; Co. blog</a></em>.</p>
+
+<p>With the release of Lion, there are some subtle differences to setting up a local MAMP (Mac OS X, Apache, MySQL, PHP) environment compared to Snow Leopard. In an effort to keep this from being overly wordy and just get to the good stuff, we&rsquo;ll dive right in, so read on to get started.</p>
 
 <p>Note that for all commands before that are starting with a $, the dollar sign is showing a command-line prompt in <a href="http://www.apple.com/macosx/apps/all.html#terminal">Terminal</a>, and you should not actually type it as part of the commands.</p>
 
@@ -1519,7 +1683,9 @@
   </header>
 
 
-  <div class="entry-content"><p>In this example, we choose one of our servers to receive the Syslog traffic and the others will send traffic to it. In a large environment, you should use a non-public-facing server to act as a syslog server for your sites, ideally using a database to store data, but we&rsquo;ll just output everything to a file to keep things simple for this guide. If you decide to use a database like MySQL to store your data, this can still provide you with a starting point, but just know that using your same production database server defeats my intended purpose since I was ultimately trying to alleviate the amount of writes on the database.</p>
+  <div class="entry-content"><p><em>This post originally featured on the <a href="http://echo.co/blog/use-syslog-instead-watchdog">Echo &amp; Co. blog</a></em>.</p>
+
+<p>In this example, we choose one of our servers to receive the Syslog traffic and the others will send traffic to it. In a large environment, you should use a non-public-facing server to act as a syslog server for your sites, ideally using a database to store data, but we&rsquo;ll just output everything to a file to keep things simple for this guide. If you decide to use a database like MySQL to store your data, this can still provide you with a starting point, but just know that using your same production database server defeats my intended purpose since I was ultimately trying to alleviate the amount of writes on the database.</p>
 
 <p>Start by using yum to install <strong>rsyslog</strong>. If you&rsquo;re using another distro, rsyslog is likely included in the base repositories. Also, note that CentOS 6 uses rsyslog by default so you may skip this step if it&rsquo;s already installed on your system. You&rsquo;ll need this on all servers running Drupal or your rsyslog server:</p>
 
@@ -1636,192 +1802,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2011/03/25/keep-drush-date/">Keep Drush Up to Date</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2011-03-25T17:39:00-04:00" pubdate data-updated="true">Mar 25<span>th</span>, 2011</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p><strong>UPDATE:</strong> See <a href="/blog/2012/08/29/three-ways-get-drush-os-x/">Three Ways to Get Drush on OS X</a> for a newer guide.</p>
-
-<p>At <a href="http://www.echoditto.com">EchoDitto</a>, we&rsquo;re big fans of <a href="http://drupal.org/project/drush">Drush</a>. It&rsquo;s installed on all of our servers and it&rsquo;s a great way to <a href="http://drush.ws/#core-cron">perform maintenance tasks</a>, <a href="http://drush.ws/#pm-download">download core and modules</a>, and <a href="http://www.lullabot.com/articles/drush-make-and-pressflow">much much more</a>. I&rsquo;m not a big fan of installing from zip files though, so let&rsquo;s use git to easily keep our Drush install up to date.</p>
-
-<p>Before <a href="http://www.lullabot.com/blog/git-coming-soon-drupalorg">the git transition</a>, I would use Subversion to check out the latest drush release somewhere, like /usr/local/drush (on my Mac), using the CVS clone <a href="http://dembach.net/subversible/en">Subversible</a>. Today, however, I noticed that the latest tagged release Subversible has is <a href="https://subversible.svn.beanstalkapp.com/modules/drush/tags/">4.2</a>, and the <a href="http://drupal.org/project/drush">Drush project page</a> has 4.4 ready to download. I figured now would be a good time to start using <a href="http://git-scm.com/">git</a> for this and stop relying on a third-party to provide the code for Subversion.</p>
-
-<p>The commands below will walk through cloning the Drush git repository and then switching to the latest release. I realize the <a href="http://drush.ws/#self-update">drush self-update</a> will soon make this irrelevant, but this method works today and is a great exercise in learning how Drupal is using git, especially important coming from Subversion.</p>
-
-<p>Clone the repository. It will create the subfolder &ldquo;drush&rdquo; from your current working directory:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>git clone --branch master http://git.drupal.org/project/drush.git
-</span><span class='line'><span class="nb">cd </span>drush
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Use pear to download <em>includes/table.inc</em>. This one-liner will take care of everything for you as long as you have pear installed and are in the new drush directory:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>pear download Console_Table
-</span><span class='line'>tar zxvf <span class="sb">`</span>ls Console_Table-*.tgz<span class="sb">`</span> <span class="sb">`</span>ls Console_Table-*.tgz | sed -e <span class="s1">&#39;s/\.[a-z]\{3\}$//&#39;</span><span class="sb">`</span>/Table.php
-</span><span class='line'>mv <span class="sb">`</span>ls Console_Table-*.tgz | sed -e <span class="s1">&#39;s/\.[a-z]\{3\}$//&#39;</span><span class="sb">`</span>/Table.php includes/table.inc
-</span><span class='line'>chmod 0644 includes/table.inc <span class="o">&amp;&amp;</span> rm -fr Console_Table-*
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>At this point you may or may not have a functioning Drush installation, because you&rsquo;re using the HEAD of the Drush code repository and it might contain broken code. I would recommend switching the checkout to the latest release. We&rsquo;ll start by viewing all releases:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>git tag
-</span><span class='line'>5.x-1.0
-</span><span class='line'>5.x-1.0-beta1
-</span><span class='line'>5.x-1.0-beta2
-</span><span class='line'>... snip ...
-</span><span class='line'>7.x-4.2
-</span><span class='line'>7.x-4.3
-</span><span class='line'>7.x-4.4
-</span><span class='line'>debian/4.3-1
-</span><span class='line'>debian/4.4-1
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>As of this writing, there are over 50 results from this command, but you&rsquo;ll see the latest is &ldquo;7.x-4.4&rdquo;. If we want our local Drush install to be at 4.4, change the checkout:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>git checkout 7.x-4.4
-</span><span class='line'>Previous HEAD position was 1532d0c... <span class="c">#1079434 by msonnabaum. Add .gitignore for includes/table.inc</span>
-</span><span class='line'>HEAD is now at a808ff0... Updating drush version
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>That&rsquo;s it! Drush is set up on 4.4:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>drush --version
-</span><span class='line'>drush version 4.4
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Let&rsquo;s say 4.5 is released tomorrow and you want to change your checkout. First you&rsquo;ll need to update the local git repository: <code>git pull</code></p>
-
-<p>View the list of tags:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>git tag
-</span><span class='line'>5.x-1.0
-</span><span class='line'>5.x-1.0-beta1
-</span><span class='line'>5.x-1.0-beta2
-</span><span class='line'>... snip ...
-</span><span class='line'>7.x-4.3
-</span><span class='line'>7.x-4.4
-</span><span class='line'>7.x-4.5
-</span><span class='line'>debian/4.3-1
-</span><span class='line'>debian/4.4-1
-</span><span class='line'>debian/4.5-1
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>And switch your checkout to the new release: <code>git checkout 7.x-4.5</code></p>
-
-<p>Repeat for future releases, and enjoy! Of course, once <a href="http://drush.ws/#self-update">drush self-update</a> begins working, that will be the preferred method, but this will work today. Please questions or comments below.</p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2011/02/22/dump-each-mysql-table-file/">Dump Each MySQL Table to a File</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2011-02-22T14:30:00-05:00" pubdate data-updated="true">Feb 22<span>nd</span>, 2011</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Here&rsquo;s a one-liner to dump each table in a database to it&rsquo;s own .sql file. Crack open your shell of choice and follow along.</p>
-
-<p>Replace the USER, PASSWORD, and DBNAME values with your own. If you&rsquo;re not running this to connect to a local database, add &mdash;host=domain.tld after each password to connect to your remote server.</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>for i in $(mysql -uUSER -p'PASSWORD' --batch --skip-column-names DBNAME -e'show tables;'); do mysqldump -uUSER -p'PASSWORD' DBNAME $i &gt; DBNAME-$i.sql; done</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Users, passwords, and database names are case sensitive, I made them uppercase here to call them out. Leave a comment if you have a question or notice a problem or typo.</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/3/">&larr; Older</a>
@@ -1839,6 +1819,14 @@
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2014/12/22/os-x-1010-yosemite-local-development-environment-apache-php-and-mysql-homebrew/">OS X 10.10 Yosemite Local Development Environment: Apache, PHP, and MySQL With Homebrew</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/06/09/os-x-109-local-development-environment-apache-php-and-mysql-homebrew/">OS X 10.9 Local Development Environment: Apache, PHP, and MySQL With Homebrew</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2013/10/18/whats-the-deal-with-pressflow-7/">What&#8217;s the Deal With Pressflow 7?</a>
       </li>
     
@@ -1848,14 +1836,6 @@
     
       <li class="post">
         <a href="/blog/2013/05/09/speed-up-php-on-nfs-with-turbo-realpath/">Speed Up PHP on NFS With Turbo_realpath</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/03/17/virtualbox-extension-pack-with-one-line/">VirtualBox Extension Pack With One Line</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/02/21/real-time-ruby-gem-development/">&#8220;Real-time&#8221; Ruby Gem Development</a>
       </li>
     
   </ul>
@@ -1954,7 +1934,7 @@
     </div>
   </div>
   <footer role="contentinfo"><p>
-  Copyright &copy; 2013 - Alan Ivey -
+  Copyright &copy; 2015 - Alan Ivey -
   <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
 </p>
 

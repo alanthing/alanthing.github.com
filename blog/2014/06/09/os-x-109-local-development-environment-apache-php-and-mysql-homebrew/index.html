@@ -1,0 +1,732 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>OS X 10.9 Local Development Environment: Apache, PHP, and MySQL with Homebrew - alanthing</title>
+  <meta name="author" content="Alan Ivey">
+
+  
+  <meta name="description" content="This post originally featured on the Echo &amp; Co. blog. There&rsquo;s nothing quite like setting up everything on your Mac for Drupal (or other PHP &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://alanthing.com/blog/2014/06/09/os-x-109-local-development-environment-apache-php-and-mysql-homebrew">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="alanthing" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-34327970-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">alanthing</a></h1>
+  
+    <h2>Linux and other things</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:alanthing.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">OS X 10.9 Local Development Environment: Apache, PHP, and MySQL With Homebrew</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-06-09T09:55:00-04:00" pubdate data-updated="true">Jun 9<span>th</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p><em>This post originally featured on the <a href="http://echo.co/blog/os-x-109-local-development-environment-apache-php-and-mysql-homebrew">Echo &amp; Co. blog</a></em>.</p>
+
+
+
+<p>There&rsquo;s nothing quite like setting up everything on your Mac for Drupal (or other PHP) development in a way that things just work and don&rsquo;t need constant fiddling. This guide will walk you through using <a href="http://brew.sh/">Homebrew</a> to install Apache, PHP, and MySQL for a &ldquo;MAMP&rdquo; development environment. We&rsquo;ll also use DNSMasq and Apache&rsquo;s VirtualDocumentRoot to set up &ldquo;auto-VirtualHosts,&rdquo; and add a firewall rule to allow the default http port 80 to be used without running Apache as root.</p>
+
+<p>At the conclusion of this guide, you&rsquo;ll be able to create a directory like <em>~/Sites/project</em> and access it at <em><a href="http://project.dev*">http://project.dev*</a> without editing your </em>/etc/hosts* file or editing any Apache configuration. You&rsquo;ll also be able to use <a href="http://xip.io/">xip.io</a> with auto-VirtualHosts for accessing your sites on other devices in your local network.</p>
+
+<p>We also configure PHP and MySQL to allow for enough flexibility for complex operations generally only reserved for development and not production.</p>
+
+<p>The OS X operating system comes with Apache and PHP pre-installed, and I&rsquo;ve <a href="/blog/os-x-107-lion-development-native-apache-php-homebrew-mysql-or-mariadb">previously</a> <a href="/blog/os-x-107-lion-development-native-mamp-mysql-installer">recommended</a> utilizing them to some degree for getting a local PHP development environment on your Mac. Since then, the community around Homebrew has improved dramatically and I now recommend that our developers at Echo &amp; Co. use Homebrew exclusively for all components.</p>
+
+<h1>Homebrew Setup</h1>
+
+<p>If you&rsquo;ve not already install Homebrew, you can follow the instructions at <a href="http://brew.sh/">brew.sh</a>, or simply run the following command:</p>
+
+<pre language="bash">
+ruby -e "$(curl -fsSL https://raw.github.com/Homebrew/homebrew/go/install)"
+brew doctor
+brew update
+</pre>
+
+
+<p>Also of note, if you do not have <code>git</code> available on your system, either from Homebrew, Xcode, or another source, you can install it with Homebrew now (if you already have it installed, feel free to skip this step to keep the version of <code>git</code> you already have):</p>
+
+<pre language="bash">
+brew install -v git
+</pre>
+
+
+<h1>PATH Variable</h1>
+
+<p>Since OS X already comes with PHP and Apache, we&rsquo;ll want to make sure that our <code>brew</code>-installed versions appear in the shell path before the built-in ones. The following command adds logic to your <em>~/.bash_profile</em> to ensure the Homebrew directory is in the beginning of <strong>$PATH</strong>.</p>
+
+<pre language="bash">
+echo "export PATH=\$(echo \$PATH | sed 's|/usr/local/bin||; s|/usr/local/sbin||; s|::|:|; s|^:||; s|\(.*\)|/usr/local/bin:/usr/local/sbin:\1|')" >> ~/.bash_profile && source ~/.bash_profile
+</pre>
+
+
+<h1>MySQL</h1>
+
+<p>The following commands will download and install the latest version of MySQL and do some basic configuration to allow for large imports and a couple other miscellaneous configuration changes.</p>
+
+<pre language="bash">
+brew install -v mysql
+
+cp -v $(brew --prefix mysql)/support-files/my-default.cnf $(brew --prefix mysql)/my.cnf
+
+cat >> $(brew --prefix mysql)/my.cnf <<'EOF'
+# Echo & Co. changes
+max_allowed_packet = 2G
+innodb_file_per_table = 1
+EOF
+
+sed -i '' 's/^# \(innodb_buffer_pool_size\)/\1/' $(brew --prefix mysql)/my.cnf
+</pre>
+
+
+<p>Now we need to start MySQL using OS X&rsquo;s launchd, and we&rsquo;ll set it to start when you login.</p>
+
+<pre language="bash">
+[ ! -d ~/Library/LaunchAgents ] && mkdir -v ~/Library/LaunchAgents
+
+[ -f $(brew --prefix mysql)/homebrew.mxcl.mysql.plist ] && ln -sfv $(brew --prefix mysql)/homebrew.mxcl.mysql.plist ~/Library/LaunchAgents/
+
+[ -e ~/Library/LaunchAgents/homebrew.mxcl.mysql.plist ] && launchctl load -w ~/Library/LaunchAgents/homebrew.mxcl.mysql.plist
+</pre>
+
+
+<p>By default, MySQL&rsquo;s root user has an empty password from any connection. You are advised to run <code>mysql_secure_installation</code> and at least set a password for the root user.</p>
+
+<pre language="bash">
+$(brew --prefix mysql)/bin/mysql_secure_installation
+</pre>
+
+
+<h1>Apache</h1>
+
+<p>Start by stopping the built-in Apache, if it&rsquo;s running, and prevent it from starting on boot. This is one of very few times you&rsquo;ll need to use <code>sudo</code>.</p>
+
+<pre language="bash">
+sudo launchctl unload -w /System/Library/LaunchDaemons/org.apache.httpd.plist 2>/dev/null
+</pre>
+
+
+<p>Apache is not in the default repository of Homebrew formulas, nor are some dependencies, so we use the <code>brew tap</code> command to add other formula repositories.</p>
+
+<pre language="bash">
+brew tap homebrew/dupes
+brew tap homebrew/apache
+</pre>
+
+
+<p>We&rsquo;ll install Apache 2.2 with Apr and OpenSSL from Homebrew as well instead of utilizing the built-in versions of those tools.</p>
+
+<pre language="bash">
+brew install -v httpd22 --with-brewed-openssl
+</pre>
+
+
+<p>We&rsquo;ll be using the file <em>~/Sites/httpd-vhosts.conf</em> to configure our VirtualHosts, so we create necessary directories and then include the file in <em>httpd.conf</em>.</p>
+
+<pre language="bash">
+[ ! -d ~/Sites ] && mkdir -pv ~/Sites
+
+touch ~/Sites/httpd-vhosts.conf
+
+USERHOME=$(dscl . -read /Users/`whoami` NFSHomeDirectory | awk -F": " '{print $2}') cat >> $(brew --prefix)/etc/apache2/2.2/httpd.conf <<EOF
+# Include our VirtualHosts
+Include ${USERHOME}/Sites/httpd-vhosts.conf
+EOF
+</pre>
+
+
+<p>We&rsquo;ll create a folder for our logs in <em>~/Sites</em> as well.</p>
+
+<pre language="bash">
+[ ! -d ~/Sites/logs ] && mkdir -pv ~/Sites/logs
+</pre>
+
+
+<p>Now to fill in the contents of <em>~/Sites/httpd-vhosts.conf</em> that we included in <em>httpd.conf</em> earlier. Note that <strong>this is one command to copy and paste!</strong> Start with <code>USERHOME</code> through the second <code>EOF</code> has a single copy and paste block for the terminal.</p>
+
+<pre language="bash">
+USERHOME=$(dscl . -read /Users/`whoami` NFSHomeDirectory | awk -F": " '{print $2}') cat > ~/Sites/httpd-vhosts.conf <<EOF
+#
+# Use name-based virtual hosting.
+#
+NameVirtualHost *:80
+
+#
+# Set up permissions for VirtualHosts in ~/Sites
+#
+<Directory "${USERHOME}/Sites">
+    Options Indexes FollowSymLinks MultiViews
+    AllowOverride All
+    Order allow,deny
+    Allow from all
+</Directory>
+
+# For http://localhost in the users' Sites folder
+<VirtualHost _default_:80>
+    ServerName localhost
+    DocumentRoot "${USERHOME}/Sites"
+</VirtualHost>
+
+#
+# VirtualHosts
+#
+
+## Manual VirtualHost template
+#<VirtualHost *:80>
+#  ServerName project.dev
+#  CustomLog "${USERHOME}/Sites/logs/project.dev-access_log" combined
+#  ErrorLog "${USERHOME}/Sites/logs/project.dev-error_log"
+#  DocumentRoot "${USERHOME}/Sites/project.dev"
+#</VirtualHost>
+
+#
+# Automatic VirtualHosts
+# A directory at ${USERHOME}/Sites/webroot can be accessed at http://webroot.dev
+# In Drupal, uncomment the line with: RewriteBase /
+
+# This log format will display the per-virtual-host as the first field followed by a typical log line
+LogFormat "%V %h %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\"" combinedmassvhost
+
+# Auto-VirtualHosts with .dev
+<VirtualHost *:80>
+  ServerName dev
+  ServerAlias *.dev
+
+  CustomLog "${USERHOME}/Sites/logs/dev-access_log" combinedmassvhost
+  ErrorLog "${USERHOME}/Sites/logs/dev-error_log"
+
+  VirtualDocumentRoot ${USERHOME}/Sites/%-2+
+</VirtualHost>
+
+# Auto-VirtualHosts with xip.io
+<VirtualHost *:80>
+  ServerName xip
+  ServerAlias *.xip.io
+
+  CustomLog "${USERHOME}/Sites/logs/dev-access_log" combinedmassvhost
+  ErrorLog "${USERHOME}/Sites/logs/dev-error_log"
+
+  VirtualDocumentRoot ${USERHOME}/Sites/%-7+
+</VirtualHost>
+EOF
+</pre>
+
+
+<h2>Run with port 80</h2>
+
+<p>You may notice that <em>httpd.conf</em> is running Apache on port <strong>8080</strong>, but the <VirtualHosts> above are using port <strong>80</strong>. The next two commands will create and load a firewall rule to forward 8080 requests to 80. The end result is that we can use port 80 in VirtualHosts without needing to run Apache as root.</p>
+
+<p>The following <strong>single</strong> command will create the file <em>/Library/LaunchDaemons/co.echo.httpdfwd.plist</em> as root, and owned by root, since it needs elevated privileges.</p>
+
+<pre language="bash">
+sudo bash -c 'export TAB=$'"'"'\t'"'"'
+cat > /Library/LaunchDaemons/co.echo.httpdfwd.plist <<EOF
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+${TAB}<key>Label</key>
+${TAB}<string>co.echo.httpdfwd</string>
+${TAB}<key>ProgramArguments</key>
+${TAB}<array>
+${TAB}${TAB}<string>sh</string>
+${TAB}${TAB}<string>-c</string>
+${TAB}${TAB}<string>ipfw add fwd 127.0.0.1,8080 tcp from any to me dst-port 80 in &amp;&amp; sysctl -w net.inet.ip.forwarding=1</string>
+${TAB}</array>
+${TAB}<key>RunAtLoad</key>
+${TAB}<true/>
+${TAB}<key>UserName</key>
+${TAB}<string>root</string>
+</dict>
+</plist>
+EOF'
+</pre>
+
+
+<p>This file will be loaded on login and set up the 80->8080 port forward, but we can load it manually now so we don&rsquo;t need to log out and back in.</p>
+
+<pre language="bash">
+sudo launchctl load -w /Library/LaunchDaemons/co.echo.httpdfwd.plist
+</pre>
+
+
+<h1>PHP</h1>
+
+<p>The following is for the latest release of PHP, version 5.5. If you&rsquo;d like to use 5.3, 5.4 or 5.6, simply change the &ldquo;5.5&rdquo; and &ldquo;php55&rdquo; values below appropriately. <em>(Note: if you use 5.3, the OpCache extension instructions are different. They will be posted below after the instructions for newer versions.)</em></p>
+
+<p>Start by adding the PHP tap for Homebrew. PHP 5.3 needs an additional tap, so skip the second command if you are using 5.4 or higher.</p>
+
+<pre language="bash">
+brew tap homebrew/php
+
+# Skip this if using PHP 5.4 or higher
+brew tap homebrew/versions
+</pre>
+
+
+<p>Install PHP and mod_php. This command will also load the PHP module in the <em>httpd.conf</em> file for you.</p>
+
+<pre language="bash">
+brew install -v php55 --homebrew-apxs --with-apache
+</pre>
+
+
+<p>Add PHP configuration to Apache&rsquo;s <em>httpd.conf</em> file.</p>
+
+<pre language="bash">
+cat >> $(brew --prefix)/etc/apache2/2.2/httpd.conf <<EOF
+# Send PHP extensions to mod_php
+AddHandler php5-script .php
+AddType text/html .php
+DirectoryIndex index.php index.html
+EOF
+</pre>
+
+
+<p>Set timezone and change other PHP settings (this is a <strong>single</strong> command). <code>sudo</code> is needed here to get the current timezone on OS X (in previous versions of OS X it wasn&rsquo;t needed, I&rsquo;m not sure why it is now).</p>
+
+<pre language="bash">
+sed -i '-default' "s|^;\(date\.timezone[[:space:]]*=\).*|\1 \"$(sudo systemsetup -gettimezone|awk -F": " '{print $2}')\"|; s|^\(memory_limit[[:space:]]*=\).*|\1 256M|; s|^\(post_max_size[[:space:]]*=\).*|\1 200M|; s|^\(upload_max_filesize[[:space:]]*=\).*|\1 100M|; s|^\(default_socket_timeout[[:space:]]*=\).*|\1 600|; s|^\(max_execution_time[[:space:]]*=\).*|\1 300|; s|^\(max_input_time[[:space:]]*=\).*|\1 600|;" $(brew --prefix)/etc/php/5.5/php.ini
+</pre>
+
+
+<p>Add a PHP error log; without this, you may get Internal Server Errors if PHP has errors to write and no logs to write to (this is a <strong>single</strong> command; be sure to copy and paste the lines containing <code>USERHOME</code> through the last <code>EOF</code> as a <strong>single</strong> command).</p>
+
+<pre language="bash">
+USERHOME=$(dscl . -read /Users/`whoami` NFSHomeDirectory | awk -F": " '{print $2}') cat >> $(brew --prefix)/etc/php/5.5/php.ini <<EOF
+; PHP Error log
+error_log = ${USERHOME}/Sites/logs/php-error_log
+EOF
+</pre>
+
+
+<p>This weird little &ldquo;hack&rdquo; is needed to fix <a href="https://github.com/Homebrew/homebrew-php/issues/1039#issuecomment-41307694">a permissions problem</a> with using <code>pear</code> or <code>pecl</code>.</p>
+
+<pre language="bash">
+touch $(brew --prefix php55)/lib/php/.lock && chmod 0644 $(brew --prefix php55)/lib/php/.lock
+</pre>
+
+
+<p>The OpCache extension will speed up your PHP environment dramatically, and it&rsquo;s easy to install for 5.4 and higher. <strong>If you are looking to install PHP 5.3, skip this block.</strong></p>
+
+<pre language="bash">
+brew install -v php55-opcache
+</pre>
+
+
+<p><strong>Skip this block unless you are using PHP 5.3</strong>. Because there is no <em>php53-opcache</em> Homebrew formula, we can install it with <code>pecl</code> and replicate the same configuration file.</p>
+
+<pre language="bash">
+pecl install zendopcache-beta
+
+sed -i '' "s|^\(zend_extension=\"\)\(opcache\.so\"\)|\1$(php -r 'print(ini_get("extension_dir")."/");')\2|" $(brew --prefix)/etc/php/5.3/php.ini
+
+[ ! -d $(brew --prefix)/etc/php/5.3/conf.d ] && mkdir -pv $(brew --prefix)/etc/php/5.3/conf.d
+
+echo "[opcache]" > $(brew --prefix)/etc/php/5.3/conf.d/ext-opcache.ini
+
+grep -E '^zend_extension.*opcache\.so' $(brew --prefix)/etc/php/5.3/php.ini >> $(brew --prefix)/etc/php/5.3/conf.d/ext-opcache.ini
+
+sed -i '' '/^zend_extension.*opcache\.so/d' $(brew --prefix)/etc/php/5.3/php.ini
+
+# "php54" is not a typo here- I'm using a sample config file from
+# another recipe for my config file in php53
+grep -E '^[[:space:]]*opcache\.' \
+  $(brew --prefix)/Library/Taps/homebrew/homebrew-php/Formula/php54-opcache.rb \
+  | sed 's/^[[:space:]]*//g' >> $(brew --prefix)/etc/php/5.3/conf.d/ext-opcache.ini
+</pre>
+
+
+<p>And continue with steps for all PHP versions: give OpCache some more memory to keep more opcode caches.</p>
+
+<pre language="bash">
+sed -i '' "s|^\(opcache\.memory_consumption=\)[0-9]*|\1256|;" $(brew --prefix)/etc/php/5.5/conf.d/ext-opcache.ini
+</pre>
+
+
+<h1>Start Apache</h1>
+
+<p>Start Homebrew&rsquo;s Apache and set to start on boot.</p>
+
+<pre language="bash">
+ln -sfv $(brew --prefix httpd22)/homebrew.mxcl.httpd22.plist ~/Library/LaunchAgents
+
+launchctl load -w ~/Library/LaunchAgents/homebrew.mxcl.httpd22.plist
+</pre>
+
+
+<h1>DNSMasq</h1>
+
+<p><a href="/blog/never-touch-your-local-etchosts-file-os-x-again">I&rsquo;ve covered this before</a>, but we&rsquo;ll list the commands here again for completeness. This example will have any DNS request ending in <em>.dev</em> reply with the IP address <em>127.0.0.1</em>.</p>
+
+<pre language="bash">
+brew install -v dnsmasq
+
+echo 'address=/.dev/127.0.0.1' > $(brew --prefix)/etc/dnsmasq.conf
+
+echo 'listen-address=127.0.0.1' >> $(brew --prefix)/etc/dnsmasq.conf
+</pre>
+
+
+<p>Because DNS services run on a lower port, we need to have this run out of <em>/Library/LaunchDaemons</em>, so we do need to use <code>sudo</code> for the initial setup.</p>
+
+<pre language="bash">
+sudo cp -v $(brew --prefix dnsmasq)/homebrew.mxcl.dnsmasq.plist /Library/LaunchDaemons 
+
+sudo launchctl load -w /Library/LaunchDaemons/homebrew.mxcl.dnsmasq.plist 
+</pre>
+
+
+<p>With DNSMasq running, configure OS X to use your local host for DNS queries ending in <em>.dev</em></p>
+
+<pre language="bash">
+sudo mkdir -v /etc/resolver 
+
+sudo bash -c 'echo "nameserver 127.0.0.1" > /etc/resolver/dev'
+</pre>
+
+
+<h1>Great! So, what did I do?</h1>
+
+<p>We set up Apache to run on boot on port 8080 with mod_php with auto-VirtualHosts for directories in the <em>~/Sites</em> folder. The OS X firewall will forward all port 80 traffic to port 8080, so we don&rsquo;t have specify the port number when visiting web pages in web browsers. MySQL is installed and set to run on boot as well. DNSMasq and some OS X configuration is used to direct any hostname ending in <em>.dev</em> to the local system to work in conjunction with Apache&rsquo;s auto-VirtualHosts.</p>
+
+<h2>What do I do now?</h2>
+
+<p>You shouldn&rsquo;t need to edit the Apache configuration or edit /etc/hosts for new local development sites. Simply create a directory in <em>~/Sites</em> and then reference that foldername + .dev in your browser to access it.</p>
+
+<p>For example, use <code>drush</code> to download Drupal 7 to the directory <em>~/Sites/firstproject</em>, and it can then be accessed at *<a href="http://firstproject.dev/*">http://firstproject.dev/*</a> without any additional configuration. A caveat &ndash; you will need to uncomment the line in Drupal&rsquo;s .htaccess containing <strong>&ldquo;RewriteBase /&rdquo;</strong> to work with the auto-VirtualHosts configuration.</p>
+
+<h2>What about this xip.io thing?</h2>
+
+<p>If your Mac&rsquo;s LAN IP address is <em>192.168.0.10</em>, you can access sites from any other device on your local network using *<a href="http://firstproject.192.168.0.10.xip.io/*.">http://firstproject.192.168.0.10.xip.io/*.</a> You can test a websites on your Mac with your phone/tablet/etc. Pretty great, right?</p>
+
+<h2>What if this &ldquo;auto-VirtualHost&rdquo; doesn&rsquo;t work for me?</h2>
+
+<p>If you need to create a manual VirtualHost in Apache because the auto-VirtualHost does not work for your configuration, you may need to declare it before the auto-VirtualHosts if you&rsquo;re also going to use .dev as the TLD. Otherwise the auto-VirtualHost block will be accessed first.</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Alan Ivey</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-06-09T09:55:00-04:00" pubdate data-updated="true">Jun 9<span>th</span>, 2014</time>
+      
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://alanthing.com/blog/2014/06/09/os-x-109-local-development-environment-apache-php-and-mysql-homebrew/" data-via="alanthing" data-counturl="http://alanthing.com/blog/2014/06/09/os-x-109-local-development-environment-apache-php-and-mysql-homebrew/" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
+    <div class="fb-like" data-send="true" data-width="450" data-show-faces="false"></div>
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2013/10/18/whats-the-deal-with-pressflow-7/" title="Previous Post: What's the deal with Pressflow 7?">&laquo; What's the deal with Pressflow 7?</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2014/12/22/os-x-1010-yosemite-local-development-environment-apache-php-and-mysql-homebrew/" title="Next Post: OS X 10.10 Yosemite Local Development Environment: Apache, PHP, and MySQL with Homebrew">OS X 10.10 Yosemite Local Development Environment: Apache, PHP, and MySQL with Homebrew &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/12/22/os-x-1010-yosemite-local-development-environment-apache-php-and-mysql-homebrew/">OS X 10.10 Yosemite Local Development Environment: Apache, PHP, and MySQL With Homebrew</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/06/09/os-x-109-local-development-environment-apache-php-and-mysql-homebrew/">OS X 10.9 Local Development Environment: Apache, PHP, and MySQL With Homebrew</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/10/18/whats-the-deal-with-pressflow-7/">What's the Deal With Pressflow 7?</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/07/11/creating-php-packages-software-collection/">Creating PHP Packages as a Software Collection</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/05/09/speed-up-php-on-nfs-with-turbo-realpath/">Speed Up PHP on NFS With Turbo_realpath</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>Coderwall</h1>
+  <ul id="cw_badges">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <div>
+    <a href="http://coderwall.com/alanthing" target="_blank" class="cw_badge"><img
+       alt="Endorse alanthing on Coderwall"
+       src="http://api.coderwall.com/alanthing/endorsecount.png" /></a>
+  </div>
+  
+
+  <script type="text/javascript">
+    var coderwall = (function(){
+      function render(options, badges){
+        var fragment = '',
+            t = $(options.target),
+            height = 65,
+            width = 65,
+            index;
+
+        for (index in badges) {
+          fragment += '<a class="cw_badge"title="' + badges[index].description + '" target="_blank" href="http://coderwall.com/' + options.user + '">';
+          fragment +=   '<img alt="' + badges[index].description + '" height="' + width + '" width="' + height + '" src="' + badges[index].badge + '"/>';
+          fragment += '</a>';
+        }
+
+        t.html(fragment);
+      }
+      return {
+        showBadges: function(options){
+          $.ajax({
+              url: 'http://coderwall.com/' + options.user + '.json?callback=?'
+            , dataType: 'jsonp'
+            , error: function (err) { $(options.target + ' li.loading').addClass('error').text("Error loading feed"); }
+            , success: function(res) {
+                render(options, res.data.badges);
+            }
+          });
+        }
+      };
+    })();
+
+    $(document).ready(function(){
+      coderwall.showBadges({
+        user: 'alanthing',
+        target: '#cw_badges'
+      });
+    });
+  </script>
+</section>
+
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/alanthing">@alanthing</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'alanthing',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2015 - Alan Ivey -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'alanthing';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://alanthing.com/blog/2014/06/09/os-x-109-local-development-environment-apache-php-and-mysql-homebrew/';
+        var disqus_url = 'http://alanthing.com/blog/2014/06/09/os-x-109-local-development-environment-apache-php-and-mysql-homebrew/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id; js.async = true;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

@@ -9,7 +9,7 @@
   <meta name="author" content="Alan Ivey">
 
   
-  <meta name="description" content="On Snow Leopard, you can install drush without using sudo. A dependency for installing drush is downloading a Pear library. The following example &hellip;">
+  <meta name="description" content="This post originally featured on the Echo &amp; Co. blog. UPDATE: See Three Ways to Get Drush on OS X for a newer guide. At EchoDitto, we&rsquo;re &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -83,6 +83,196 @@
       
   <header>
     
+      <h1 class="entry-title"><a href="/blog/2011/03/25/keep-drush-date/">Keep Drush Up to Date</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-03-25T17:39:00-04:00" pubdate data-updated="true">Mar 25<span>th</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><em>This post originally featured on the <a href="http://echo.co/blog/2011/03/keep-drush-up-to-date">Echo &amp; Co. blog</a></em>.</p>
+
+<p><strong>UPDATE:</strong> See <a href="/blog/2012/08/29/three-ways-get-drush-os-x/">Three Ways to Get Drush on OS X</a> for a newer guide.</p>
+
+<p>At <a href="http://www.echoditto.com">EchoDitto</a>, we&rsquo;re big fans of <a href="http://drupal.org/project/drush">Drush</a>. It&rsquo;s installed on all of our servers and it&rsquo;s a great way to <a href="http://drush.ws/#core-cron">perform maintenance tasks</a>, <a href="http://drush.ws/#pm-download">download core and modules</a>, and <a href="http://www.lullabot.com/articles/drush-make-and-pressflow">much much more</a>. I&rsquo;m not a big fan of installing from zip files though, so let&rsquo;s use git to easily keep our Drush install up to date.</p>
+
+<p>Before <a href="http://www.lullabot.com/blog/git-coming-soon-drupalorg">the git transition</a>, I would use Subversion to check out the latest drush release somewhere, like /usr/local/drush (on my Mac), using the CVS clone <a href="http://dembach.net/subversible/en">Subversible</a>. Today, however, I noticed that the latest tagged release Subversible has is <a href="https://subversible.svn.beanstalkapp.com/modules/drush/tags/">4.2</a>, and the <a href="http://drupal.org/project/drush">Drush project page</a> has 4.4 ready to download. I figured now would be a good time to start using <a href="http://git-scm.com/">git</a> for this and stop relying on a third-party to provide the code for Subversion.</p>
+
+<p>The commands below will walk through cloning the Drush git repository and then switching to the latest release. I realize the <a href="http://drush.ws/#self-update">drush self-update</a> will soon make this irrelevant, but this method works today and is a great exercise in learning how Drupal is using git, especially important coming from Subversion.</p>
+
+<p>Clone the repository. It will create the subfolder &ldquo;drush&rdquo; from your current working directory:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>git clone --branch master http://git.drupal.org/project/drush.git
+</span><span class='line'><span class="nb">cd </span>drush
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Use pear to download <em>includes/table.inc</em>. This one-liner will take care of everything for you as long as you have pear installed and are in the new drush directory:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>pear download Console_Table
+</span><span class='line'>tar zxvf <span class="sb">`</span>ls Console_Table-*.tgz<span class="sb">`</span> <span class="sb">`</span>ls Console_Table-*.tgz | sed -e <span class="s1">&#39;s/\.[a-z]\{3\}$//&#39;</span><span class="sb">`</span>/Table.php
+</span><span class='line'>mv <span class="sb">`</span>ls Console_Table-*.tgz | sed -e <span class="s1">&#39;s/\.[a-z]\{3\}$//&#39;</span><span class="sb">`</span>/Table.php includes/table.inc
+</span><span class='line'>chmod 0644 includes/table.inc <span class="o">&amp;&amp;</span> rm -fr Console_Table-*
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>At this point you may or may not have a functioning Drush installation, because you&rsquo;re using the HEAD of the Drush code repository and it might contain broken code. I would recommend switching the checkout to the latest release. We&rsquo;ll start by viewing all releases:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>git tag
+</span><span class='line'>5.x-1.0
+</span><span class='line'>5.x-1.0-beta1
+</span><span class='line'>5.x-1.0-beta2
+</span><span class='line'>... snip ...
+</span><span class='line'>7.x-4.2
+</span><span class='line'>7.x-4.3
+</span><span class='line'>7.x-4.4
+</span><span class='line'>debian/4.3-1
+</span><span class='line'>debian/4.4-1
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>As of this writing, there are over 50 results from this command, but you&rsquo;ll see the latest is &ldquo;7.x-4.4&rdquo;. If we want our local Drush install to be at 4.4, change the checkout:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>git checkout 7.x-4.4
+</span><span class='line'>Previous HEAD position was 1532d0c... <span class="c">#1079434 by msonnabaum. Add .gitignore for includes/table.inc</span>
+</span><span class='line'>HEAD is now at a808ff0... Updating drush version
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>That&rsquo;s it! Drush is set up on 4.4:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>drush --version
+</span><span class='line'>drush version 4.4
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Let&rsquo;s say 4.5 is released tomorrow and you want to change your checkout. First you&rsquo;ll need to update the local git repository: <code>git pull</code></p>
+
+<p>View the list of tags:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>git tag
+</span><span class='line'>5.x-1.0
+</span><span class='line'>5.x-1.0-beta1
+</span><span class='line'>5.x-1.0-beta2
+</span><span class='line'>... snip ...
+</span><span class='line'>7.x-4.3
+</span><span class='line'>7.x-4.4
+</span><span class='line'>7.x-4.5
+</span><span class='line'>debian/4.3-1
+</span><span class='line'>debian/4.4-1
+</span><span class='line'>debian/4.5-1
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And switch your checkout to the new release: <code>git checkout 7.x-4.5</code></p>
+
+<p>Repeat for future releases, and enjoy! Of course, once <a href="http://drush.ws/#self-update">drush self-update</a> begins working, that will be the preferred method, but this will work today. Please questions or comments below.</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2011/02/22/dump-each-mysql-table-file/">Dump Each MySQL Table to a File</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-02-22T14:30:00-05:00" pubdate data-updated="true">Feb 22<span>nd</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><em>This post originally featured on the <a href="http://echo.co/blog/dump-each-mysql-table-file">Echo &amp; Co. blog</a></em>.</p>
+
+<p>Here&rsquo;s a one-liner to dump each table in a database to it&rsquo;s own .sql file. Crack open your shell of choice and follow along.</p>
+
+<p>Replace the USER, PASSWORD, and DBNAME values with your own. If you&rsquo;re not running this to connect to a local database, add &mdash;host=domain.tld after each password to connect to your remote server.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>for i in $(mysql -uUSER -p'PASSWORD' --batch --skip-column-names DBNAME -e'show tables;'); do mysqldump -uUSER -p'PASSWORD' DBNAME $i &gt; DBNAME-$i.sql; done</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Users, passwords, and database names are case sensitive, I made them uppercase here to call them out. Leave a comment if you have a question or notice a problem or typo.</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
       <h1 class="entry-title"><a href="/blog/2011/02/15/fix-pear-permissions-problem-mac-os-x/">Fix Pear Permissions Problem on Mac OS X</a></h1>
     
     
@@ -106,7 +296,9 @@
   </header>
 
 
-  <div class="entry-content"><p>On Snow Leopard, you can install drush without using sudo. A dependency for installing drush is downloading a Pear library. The following example should allow you to be able to use the following commands to install drush to /usr/local/drush with a symlink in /usr/local/bin/drush, but it fails on the &lsquo;pear download&rsquo; step, even though it&rsquo;s writing to a user-writeable directory. Read on the figure out how to fix this annoying problem.</p>
+  <div class="entry-content"><p><em>This post originally featured on the <a href="http://echo.co/blog/fix-pear-permissions-problem-mac-os-x">Echo &amp; Co. blog</a></em>.</p>
+
+<p>On Snow Leopard, you can install drush without using sudo. A dependency for installing drush is downloading a Pear library. The following example should allow you to be able to use the following commands to install drush to /usr/local/drush with a symlink in /usr/local/bin/drush, but it fails on the &lsquo;pear download&rsquo; step, even though it&rsquo;s writing to a user-writeable directory. Read on the figure out how to fix this annoying problem.</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -242,7 +434,9 @@
   </header>
 
 
-  <div class="entry-content"><p>I had previously <a href="http://echodittolabs.org/blog/2009/05/all-i-want-php-52-centosrhel">written a post</a> on one method of upgrading PHP from 5.1 to 5.2 on CentOS and Red Hat servers by creating new RPMs. Since then, I have found a much better way to create PHP 5.2.17 (or newer) RPMs to easily upgrade (and later remove, if you want) the older version available by default. I&rsquo;ll presume you have no prior experience building PHP RPMs.</p>
+  <div class="entry-content"><p><em>This post originally featured on the <a href="http://echo.co/blog/easy-php-52-rpms-centos">Echo &amp; Co. blog</a></em>.</p>
+
+<p>I had previously <a href="http://echodittolabs.org/blog/2009/05/all-i-want-php-52-centosrhel">written a post</a> on one method of upgrading PHP from 5.1 to 5.2 on CentOS and Red Hat servers by creating new RPMs. Since then, I have found a much better way to create PHP 5.2.17 (or newer) RPMs to easily upgrade (and later remove, if you want) the older version available by default. I&rsquo;ll presume you have no prior experience building PHP RPMs.</p>
 
 <p>We start by adding the <a href="http://fedoraproject.org/wiki/EPEL">Extra Packages for Enterprise Linux (EPEL) repository</a> to our server. EPEL is safe to add as an additional repository and leave enabled because it <a href="http://fedoraproject.org/wiki/EPEL/FAQ#How_is_EPEL_different_from_other_third_party_repositories_for_RHEL_and_derivatives.3F">provides complementary packages only</a> and will not conflict with the CentOS or Red Hat repositories. Since their installation method may change, I won&rsquo;t reproduce it here; instead head over to the <a href="http://fedoraproject.org/wiki/EPEL/FAQ#howtouse">installation portion of the FAQ</a> and it&rsquo;s just one line to get started with EPEL.</p>
 
@@ -417,7 +611,9 @@
   </header>
 
 
-  <div class="entry-content"><p>In addition to hosting Drupal sites, we also host a number of WordPress sites. Similar to (checking all of our Drupal core versions)[<a href="http://echodittolabs.org/blog/2011/01/are-your-drupal-sites-running-latest-core">http://echodittolabs.org/blog/2011/01/are-your-drupal-sites-running-latest-core</a>], we needed an easy way to quickly see what versions we are running on all of our WordPress sites. Kudos to <a href="http://echodittolabs.org/users/ethan">Ethan</a> for getting this one kicked off; here is a bash script to check your definable <code>$WEBHOME</code> (where you deposit all of your WordPress webroots) and scan for WordPress versions.</p>
+  <div class="entry-content"><p><em>This post originally featured on the <a href="http://echo.co/blog/are-your-wordpress-sites-running-latest-core">Echo &amp; Co. blog</a></em>.</p>
+
+<p>In addition to hosting Drupal sites, we also host a number of WordPress sites. Similar to (checking all of our Drupal core versions)[<a href="http://echodittolabs.org/blog/2011/01/are-your-drupal-sites-running-latest-core">http://echodittolabs.org/blog/2011/01/are-your-drupal-sites-running-latest-core</a>], we needed an easy way to quickly see what versions we are running on all of our WordPress sites. Kudos to <a href="http://echodittolabs.org/users/ethan">Ethan</a> for getting this one kicked off; here is a bash script to check your definable <code>$WEBHOME</code> (where you deposit all of your WordPress webroots) and scan for WordPress versions.</p>
 
 <p>Note: this requires bash, grep, wc, sed, awk, and tree. If your system doesn&rsquo;t have tree, it&rsquo;s usually pretty easy to get from EPEL/Homebrew/apt-get/[mac]ports/etc.</p>
 
@@ -507,7 +703,9 @@
   </header>
 
 
-  <div class="entry-content"><p>At <a href="http://www.echoditto.com">EchoDitto</a>, we host a lot of Drupal sites. Just about all of our web servers contain more than one completely separate Drupal cores since we develop most of our websites independently. We also keep an eye out on <a href="http://drupal.org/security">Drupal Security</a> and when to apply core updates. Since we&rsquo;re not using Aegir, nor do we run every site off of a single multi-site core install, we need a quick and easy way to see what versions we&rsquo;re running.</p>
+  <div class="entry-content"><p><em>This post originally featured on the <a href="http://echo.co/blog/are-your-drupal-sites-running-latest-core">Echo &amp; Co. blog</a></em>.</p>
+
+<p>At <a href="http://www.echoditto.com">EchoDitto</a>, we host a lot of Drupal sites. Just about all of our web servers contain more than one completely separate Drupal cores since we develop most of our websites independently. We also keep an eye out on <a href="http://drupal.org/security">Drupal Security</a> and when to apply core updates. Since we&rsquo;re not using Aegir, nor do we run every site off of a single multi-site core install, we need a quick and easy way to see what versions we&rsquo;re running.</p>
 
 <p>Here&rsquo;s a shell script we recently developed to report the Drupal Core versions for all of our sites under a single parent folder. It works on Drupal 4 through 7. It&rsquo;s not been tested outside of our platform, or non-RHEL systems, but it should be universal as long as you have bash, find, awk, and grep. I decided not to use <a href="http://drupal.org/project/drush">Drush</a> because it would involve bootstrapping every site and invoking PHP; this is just more lightweight. Drush also would not work for Drupal 4 sites, which we surprisingly still have a couple kicking around still.</p>
 
@@ -742,7 +940,9 @@
   </header>
 
 
-  <div class="entry-content"><p><strong>UPDATE:</strong> <a href="/blog/2011/08/24/os-x-107-lion-development-native-mamp-mysql-installer/">A newer version of this has been posted here</a>.</p>
+  <div class="entry-content"><p><em>This post originally featured on the <a href="http://echo.co/blog/native-local-development-environment-os-x">Echo &amp; Co. blog</a></em>.</p>
+
+<p><strong>UPDATE:</strong> <a href="/blog/2011/08/24/os-x-107-lion-development-native-mamp-mysql-installer/">A newer version of this has been posted here</a>.</p>
 
 <p>Apple OS X comes with Apache and PHP built-in but need some tweaking to work. It also does not come with MySQL. Because of this, many developers have chosen to use MacPorts, Homebrew, or MAMP to install new binaries for Apache, PHP, and MySQL. However, doing this means your system would have multiple copies of Apache and PHP on your machine, and could create conflicts depending on how your built-in tools are configured. This tutorial will show you how to get the built-in versions of Apache and PHP running with an easy to install version of MySQL.</p>
 
@@ -1231,7 +1431,9 @@
   </header>
 
 
-  <div class="entry-content"><p><a href="http://www.dropbox.com/">Dropbox</a> hardly needs any introduction; put files in your Dropbox and they show up everywhere else you have Dropbox installed and dropbox.com. A feature about Dropbox that is probably not as widely known is that free accounts come with 30 days of undo history and Pro accounts can get &ldquo;Pack Rat&rdquo; that keeps unlimited history of changes. The history of files, including reverting deleted files, was particularly interesting to me, since I could hook in my latest daily MySQL dumps from <a href="http://sourceforge.net/projects/automysqlbackup/">AutoMySQLBackup</a> to Dropbox and have 30 days of backups for free available from anywhere dropbox.com is accessible.</p>
+  <div class="entry-content"><p><em>This post originally featured on the <a href="http://echo.co/blog/dropbox-cli-centos-5-easy-way">Echo &amp; Co. blog</a></em>.</p>
+
+<p><a href="http://www.dropbox.com/">Dropbox</a> hardly needs any introduction; put files in your Dropbox and they show up everywhere else you have Dropbox installed and dropbox.com. A feature about Dropbox that is probably not as widely known is that free accounts come with 30 days of undo history and Pro accounts can get &ldquo;Pack Rat&rdquo; that keeps unlimited history of changes. The history of files, including reverting deleted files, was particularly interesting to me, since I could hook in my latest daily MySQL dumps from <a href="http://sourceforge.net/projects/automysqlbackup/">AutoMySQLBackup</a> to Dropbox and have 30 days of backups for free available from anywhere dropbox.com is accessible.</p>
 
 <p>The problem is that we use <a href="http://centos.org/">CentOS</a> for our servers and the Dropbox Linux builds are geared for distributions like Ubuntu and Debian that have updated versions of required software like Python, libc, and others, that I did not want to upgrade by hand on my systems and risk the integrity of the system packages. But, I got it to work anyway, read on for how I got Dropbox CLI installed on CentOS without replacing any system files.</p>
 
@@ -1312,7 +1514,9 @@ Terminated</p></li>
   </header>
 
 
-  <div class="entry-content"><p>Today I was made aware of some strange MySQL errors on our development server that ended up being related to a lack of sufficient disk space. Upon inspection, the /tmp partition had completely filled up. A majority of the files were temporary files created by the <a href="http://drupal.org/project/devel">Drupal module devel</a> with devel_themer enabled. Turns out <a href="http://drupal.org/node/327512">these temporary files are not deleted at the end of a session</a>. There were also CURLCOOKIE files related to cron jobs to hit cron.php on various dev and production sites, and some other temporary files that if left unattended could result in the same errors.</p>
+  <div class="entry-content"><p><em>This post originally featured on the <a href="http://echo.co/blog/tidy-tmp-dev-servers">Echo &amp; Co. blog</a></em>.</p>
+
+<p>Today I was made aware of some strange MySQL errors on our development server that ended up being related to a lack of sufficient disk space. Upon inspection, the /tmp partition had completely filled up. A majority of the files were temporary files created by the <a href="http://drupal.org/project/devel">Drupal module devel</a> with devel_themer enabled. Turns out <a href="http://drupal.org/node/327512">these temporary files are not deleted at the end of a session</a>. There were also CURLCOOKIE files related to cron jobs to hit cron.php on various dev and production sites, and some other temporary files that if left unattended could result in the same errors.</p>
 
 <p>My solution is to have these files deleted every night, but only if they&rsquo;re three days old, which should be adequate time for the developer to need access to these temporary files. I added this to root&rsquo;s cron.</p>
 
@@ -1344,444 +1548,9 @@ Terminated</p></li>
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2009/05/22/all-i-want-php-52-centosrhel/">All I Want Is PHP 5.2 on CentOS/RHEL!</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2009-05-22T14:07:00-04:00" pubdate data-updated="true">May 22<span>nd</span>, 2009</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p><strong><a href="/blog/2011/01/25/easy-php-5-dot-2-rpms-on-centos/">An updated, easier method can be found here.</a></strong></p>
-
-<p>At <a href="http://www.echoditto.com">EchoDitto</a>, most of our servers are running <a href="http://www.centos.org/">CentOS Linux</a>, which is a 100% binary-compatible version of the industry standard <a href="http://www.redhat.com/rhel/server/">Red Hat Enterprise Linux</a> (RHEL) without any of the fees. The problem with RHEL/CentOS is that they shipped with PHP 5.1.6, and as of this writing PHP is at 5.2.9. That&rsquo;s not a big deal, being a minor point revision behind, until you come across an application or module that needs a minimum of version 5.2. The last thing I want to do is install packages from a third-party or build it from source and risk breaking other packages. So what&rsquo;s the answer? Building it from the source rpm. There&rsquo;s no better way to keep the system free of third-party packages but also up to date.</p>
-
-<p>Why source RPMs and not the source from <a href="http://www.php.net/downloads.php">PHP</a>? Building a source RPM is the same procedure used to build the packages that Red Hat creates, and includes the libraries and dependencies and sub-packages that you would normally get from Red Hat directly. It will also include all of the same build flags in your new version that were available in the older package, meaning your PHP scripts won&rsquo;t suddenly break. This ultimately ensures binary compatibility and the ability to easily upgrade if Red Hat or CentOS were to release a package newer than yours.</p>
-
-<p>Sure, you could enable the <a href="http://wiki.centos.org/AdditionalResources/Repositories">CentOS Testing repository</a>, but with all of the warnings about packages breaking your system, and configuring yum to only update PHP and not mess up mysql or Apache, I&rsquo;d rather build and install only the packages that I need without worrying about breaking other packages. Want PHP 5.2 on your CentOS or RHEL server? Follow along.</p>
-
-<ul>
-<li>Start by downloading the latest PHP 5.2 source RPM from the aforementioned CentOS Testing repository from <a href="http://dev.centos.org/centos/5/testing/SRPMS/">http://dev.centos.org/centos/5/testing/SRPMS/</a>. As of this writing, they&rsquo;re at <a href="http://dev.centos.org/centos/5/testing/SRPMS/php-5.2.6-2.el5s2.src.rpm">php-5.2.6-2</a>. Why aren&rsquo;t we using the 5.1.6 source? The source RPM for 5.2.6 includes the latest patches from Red Hat that you can normally only get from being a part of the non-free Red Hat Network.</li>
-</ul>
-
-
-<p>I&rsquo;ll assume you&rsquo;re running as root for this guide. Download the source RPM with wget:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>wget http://dev.centos.org/centos/5/testing/SRPMS/php-5.2.6-2.el5s2.src.rpm
-</span></code></pre></td></tr></table></div></figure>
-
-
-<ul>
-<li>Install the source RPM</li>
-</ul>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>rpm -ivh php-5.2.6-2.el5s2.src.rpm
-</span></code></pre></td></tr></table></div></figure>
-
-
-<ul>
-<li>If you get an error and the install fails, you may need to manually create the SOURCES directory and install again</li>
-</ul>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>mkdir -p /usr/src/redhat/SOURCES
-</span><span class='line'>rpm -ivh php-5.2.6-2.el5s2.src.rpm
-</span></code></pre></td></tr></table></div></figure>
-
-
-<ul>
-<li>Download the latest stable release of PHP from <a href="http://www.php.net/downloads.php">the php.net download page</a> and save it in the SOURCES folder. Change the version number to the latest version if needed.</li>
-</ul>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">cd</span> /usr/src/redhat/SOURCES
-</span><span class='line'>wget http://us3.php.net/get/php-5.2.9.tar.gz/from/us.php.net/
-</span></code></pre></td></tr></table></div></figure>
-
-
-<ul>
-<li>In the SPECS folder, copy the original php.spec file in case you make mistakes or wish to build 5.2.6.</li>
-</ul>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">cd</span> /usr/src/redhat/SPECS
-</span><span class='line'>cp php.spec php526.spec
-</span></code></pre></td></tr></table></div></figure>
-
-
-<ul>
-<li>Edit php.spec and change the version and revision numbers to be 5.2.9 (or later) and the revision to 1 since this is your first build.</li>
-</ul>
-
-
-<pre>Summary: The PHP HTML-embedded scripting language
-Name: php
-Version: 5.2.9
-Release: 1%{?dist}
-License: PHP
-Group: Development/Languages
-URL: http://www.php.net/</pre>
-
-
-<ul>
-<li>Make sure you have the Development Tools group install for rpmbuild if you haven&rsquo;t already done so.</li>
-</ul>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>yum groupinstall <span class="s2">&quot;Development Tools&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<ul>
-<li>Try and build the spec file to see if you are missing any packages. For this tutorial, I am running from the minimal package set.</li>
-</ul>
-
-
-<pre>
-rpmbuild -ba php.spec 
-cat: /usr/include/httpd/.mmn: No such file or directory
-error: Failed build dependencies:
-    bzip2-devel is needed by php-5.2.9-1.i386
-    curl-devel >= 7.9 is needed by php-5.2.9-1.i386
-    db4-devel is needed by php-5.2.9-1.i386
-    expat-devel is needed by php-5.2.9-1.i386
-    gmp-devel is needed by php-5.2.9-1.i386
-    aspell-devel >= 0.50.0 is needed by php-5.2.9-1.i386
-    httpd-devel >= 2.0.46-1 is needed by php-5.2.9-1.i386
-    libjpeg-devel is needed by php-5.2.9-1.i386
-    libpng-devel is needed by php-5.2.9-1.i386
-    pam-devel is needed by php-5.2.9-1.i386
-    openssl-devel is needed by php-5.2.9-1.i386
-    sqlite-devel >= 3.0.0 is needed by php-5.2.9-1.i386
-    zlib-devel is needed by php-5.2.9-1.i386
-    pcre-devel >= 6.6 is needed by php-5.2.9-1.i386
-    readline-devel is needed by php-5.2.9-1.i386
-    krb5-devel is needed by php-5.2.9-1.i386
-    libc-client-devel is needed by php-5.2.9-1.i386
-    cyrus-sasl-devel is needed by php-5.2.9-1.i386
-    openldap-devel is needed by php-5.2.9-1.i386
-    mysql-devel >= 4.1.0 is needed by php-5.2.9-1.i386
-    postgresql-devel is needed by php-5.2.9-1.i386
-    unixODBC-devel is needed by php-5.2.9-1.i386
-    libxml2-devel is needed by php-5.2.9-1.i386
-    net-snmp-devel is needed by php-5.2.9-1.i386
-    libxslt-devel >= 1.0.18-1 is needed by php-5.2.9-1.i386
-    libxml2-devel >= 2.4.14-1 is needed by php-5.2.9-1.i386
-    ncurses-devel is needed by php-5.2.9-1.i386
-    gd-devel is needed by php-5.2.9-1.i386
-    freetype-devel is needed by php-5.2.9-1.i386
-</pre>
-
-
-<ul>
-<li>Install any required packages with yum. If any of these packages have other dependencies they will be downloaded as well. This might take a while.</li>
-</ul>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>yum install bzip2-devel curl-devel db4-devel expat-devel gmp-devel aspell-devel httpd-devel libjpeg-devel libpng-devel pam-devel openssl-devel sqlite-devel zlib-devel pcre-devel readline-devel krb5-devel libc-client-devel cyrus-sasl-devel openldap-devel mysql-devel postgresql-devel unixODBC-devel libxml2-devel net-snmp-devel libxslt-devel libxml2-devel ncurses-devel gd-devel freetype-devel
-</span></code></pre></td></tr></table></div></figure>
-
-
-<ul>
-<li>Try and build the spec file again to see if any patches fail to load properly. This usually happens if a patch has been rolled into the mainline PHP project and is no longer needed.</li>
-</ul>
-
-
-<pre>
-rpmbuild -ba php.spec
-Executing(%prep): /bin/sh -e /var/tmp/rpm-tmp.81391
-+ umask 022
-+ cd /usr/src/redhat/BUILD
-+ LANG=C
-+ export LANG
-+ unset DISPLAY
-+ cd /usr/src/redhat/BUILD
-+ rm -rf php-5.2.9
-+ /bin/gzip -dc /usr/src/redhat/SOURCES/php-5.2.9.tar.gz
-+ tar -xf -
-+ STATUS=0
-... output snipped ...
-Patch #32 (php-5.2.5-systzdata.patch):
-+ patch -p1 -b --suffix .systzdata -s
-+ echo 'Patch #50 (php-5.2.4-tests-dashn.patch):'
-Patch #50 (php-5.2.4-tests-dashn.patch):
-+ patch -p1 -b --suffix .tests-dashn -s
-Reversed (or previously applied) patch detected!  Assume -R? [n] 
-Apply anyway? [n] 
-1 out of 1 hunk ignored -- saving rejects to file ext/standard/tests/file/bug26615.phpt.rej
-1 out of 1 hunk FAILED -- saving rejects to file ext/standard/tests/file/proc_open01.phpt.rej
-Reversed (or previously applied) patch detected!  Assume -R? [n] 
-Apply anyway? [n] 
-1 out of 1 hunk ignored -- saving rejects to file ext/standard/tests/file/bug26938.phpt.rej
-error: Bad exit status from /var/tmp/rpm-tmp.81391 (%prep)
-
-
-RPM build errors:
-    Bad exit status from /var/tmp/rpm-tmp.81391 (%prep)
-</pre>
-
-
-<ul>
-<li>Looks like Patch 50 failed. Edit the spec file and comment out the line that begins with %patch50</li>
-</ul>
-
-
-<pre>
-%patch30 -p1 -b .dlopen
-%patch31 -p1 -b .easter
-%patch32 -p1 -b .systzdata
-
-#%patch50 -p1 -b .tests-dashn
-%patch51 -p1 -b .tests-wddx
-</pre>
-
-
-<ul>
-<li><p>For 5.2.9 as of this writing, this is the only patch that fails to load properly. In later versions, you may find that other patches fail to load, and you should comment those out as well.</p></li>
-<li><p>Build the spec file again and after several minutes it will be complete and you&rsquo;ll have a handful of rpms in /usr/src/redhat/RPMS/i386</p></li>
-</ul>
-
-
-<pre>
-rpmbuild -ba php.spec
-Executing(%prep): /bin/sh -e /var/tmp/rpm-tmp.77534
-+ umask 022
-+ cd /usr/src/redhat/BUILD
-+ LANG=C
-+ export LANG
-+ unset DISPLAY
-+ cd /usr/src/redhat/BUILD
-+ rm -rf php-5.2.9
-+ /bin/gzip -dc /usr/src/redhat/SOURCES/php-5.2.9.tar.gz
-+ tar -xf -
-+ STATUS=0
-... output snipped ...
-Wrote: /usr/src/redhat/RPMS/i386/php-ncurses-5.2.9-1.i386.rpm
-Wrote: /usr/src/redhat/RPMS/i386/php-gd-5.2.9-1.i386.rpm
-Wrote: /usr/src/redhat/RPMS/i386/php-bcmath-5.2.9-1.i386.rpm
-Wrote: /usr/src/redhat/RPMS/i386/php-dba-5.2.9-1.i386.rpm
-Wrote: /usr/src/redhat/RPMS/i386/php-debuginfo-5.2.9-1.i386.rpm
-Executing(%clean): /bin/sh -e /var/tmp/rpm-tmp.7525
-+ umask 022
-+ cd /usr/src/redhat/BUILD
-+ cd php-5.2.9
-+ '[' /var/tmp/php-5.2.9-1-root-root '!=' / ']'
-+ rm -rf /var/tmp/php-5.2.9-1-root-root
-+ rm files.bcmath files.common files.dba files.dbase files.dom files.gd files.imap [snip]
-+ exit 0
-</pre>
-
-
-<ul>
-<li>You&rsquo;ll probably want to also build the php-extras source RPM as well. php-extras provides extensions for dbase, readline, mcrypt, mhash, tidy and mssql. Since there is no package in CentOS Testing, grab the latest from 5.1.6.</li>
-</ul>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>wget http://mirror.centos.org/centos/5/extras/SRPMS/php-extras-5.1.6-15.el5.centos.1.src.rpm
-</span></code></pre></td></tr></table></div></figure>
-
-
-<ul>
-<li>And install it.</li>
-</ul>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>rpm -ivh php-extras-5.1.6-15.el5.centos.1.src.rpm
-</span></code></pre></td></tr></table></div></figure>
-
-
-<ul>
-<li>Copy the php-extras.spec file like you did for php.spec so you can have the original.</li>
-</ul>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">cd</span> /usr/src/redhat/SPECS
-</span><span class='line'>cp php-extras.spec php-extras516.spec
-</span></code></pre></td></tr></table></div></figure>
-
-
-<ul>
-<li>We ultimately need to replace the patches in php-extras.spec with the same from the much newer php.spec, as well as the ABI version numbers in the beginning of the file. <a href="http://www.webtatic.com/blog/2009/05/installing-php-526-extra-extensions/">Webtatic.com has already done this</a> and you can go ahead and <a href="http://www.webtatic.com/files/2009/05/php-extras.spec">download the edited spec file</a>, which also includes new PHP 5.2 extensions for json and filter. Remember, if you had a failed patch from php.spec, you&rsquo;ll need to comment it out in php-extras.spec as well. For 5.2.9, I had to comment out patch50 again.</li>
-</ul>
-
-
-<pre>
-%patch32 -p1 -b .systzdata
-
-%patch50 -p1 -b .tests-dashn
-%patch51 -p1 -b .tests-wddx
-
-%build
-</pre>
-
-
-<ul>
-<li>Once your php-extras.spec file is up to date, build the spec file and see if you&rsquo;re missing any dependencies.</li>
-</ul>
-
-
-<pre>
-rpmbuild -ba php-extras.spec 
-error: Failed build dependencies:
-    php-devel = 5.2.9 is needed by php-extras-5.2.9-1.i386
-    libmcrypt-devel is needed by php-extras-5.2.9-1.i386
-    mhash-devel is needed by php-extras-5.2.9-1.i386
-    libtidy-devel is needed by php-extras-5.2.9-1.i386
-    freetds-devel is needed by php-extras-5.2.9-1.i386
-</pre>
-
-
-<ul>
-<li>Let&rsquo;s go back and install the php package that we need. If you only want the minimum needed to build php-extras, start by installing php-devel and seeing what it asks for, and install it&rsquo;s dependencies.</li>
-</ul>
-
-
-<pre>
-cd /usr/src/redhat/RPMS/i386
-rpm -ivh php-devel-5.2.9-1.i386.rpm 
-error: Failed dependencies:
-    php = 5.2.9-1 is needed by php-devel-5.2.9-1.i386
-rpm -ivh php-5.2.9-1.i386.rpm php-devel-5.2.9-1.i386.rpm 
-error: Failed dependencies:
-    php-cli = 5.2.9-1 is needed by php-5.2.9-1.i386
-    php-common = 5.2.9-1 is needed by php-5.2.9-1.i386
-rpm -ivh php-5.2.9-1.i386.rpm php-devel-5.2.9-1.i386.rpm php-cli-5.2.9-1.i386.rpm php-common-5.2.9-1.i386.rpm 
-Preparing...                ########################################### [100%]
-   1:php-common             ########################################### [ 25%]
-   2:php-cli                ########################################### [ 50%]
-   3:php                    ########################################### [ 75%]
-   4:php-devel              ########################################### [100%]
-</pre>
-
-
-<ul>
-<li>After installing those four packages, install the other packages with yum.</li>
-</ul>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>yum install libmcrypt-devel mhash-devel libtidy-devel freetds-devel
-</span></code></pre></td></tr></table></div></figure>
-
-
-<ul>
-<li>Now that all of the dependencies are resolved, build the php-extras.spec file.</li>
-</ul>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">cd</span> /usr/src/redhat/SPECS
-</span><span class='line'>rpmbuild -ba php-extras.spec
-</span></code></pre></td></tr></table></div></figure>
-
-
-<ul>
-<li>If you&rsquo;re using RHEL, the build might fail for two reasons: a library for tidy is needed, and mhash-devel isn&rsquo;t available for RHEL. Both are easy to fix. Install &lsquo;tidy&rsquo; with yum, and while mhash-devel isn&rsquo;t available, you can download libmhash-devel and edit the spec file to require libmhash-devel instead of mhash-devel.</li>
-</ul>
-
-
-<p>You should now have all of your RPMs in /usr/src/redhat/RPMS/i386 (or x86_64) and install whichever packages you want. If in doubt, install them all. They&rsquo;re mainly static libraries and won&rsquo;t bloat your system. You may not want to install the debuginfo packages since you may find little use for them.</p>
-
-<p>Staying updated is easy, download the source from php.net into /usr/src/redhat/SOURCES and edit the spec files for the new version numbers, rebuild, and install RPMs. If you&rsquo;re concerned about new patches being needed, you can grab the latest source RPM from Centos: <a href="http://dev.centos.org/centos/5/testing/SRPMS/">http://dev.centos.org/centos/5/testing/SRPMS/</a>. If CentOS were to ever come out with a newer version, or you want to subscribe to a yum repo and they provided a higher version, it would update as normal. You would need to rebuild in pear/pecl libraries by uninstall+installing them.</p>
-
-<p>Yes, this is an involved process the first time around, but after doing this once you only need to download the latest source from php.net and edit the spec file version number and rebuild and update. If an old patch fails in a newer version you&rsquo;ll need to comment it out, but it&rsquo;s that simple.</p>
-
-<p>This also works for 64-bit installations. Thanks to <a href="http://www.atoomnet.net/centos_updated_php.php">DiNo</a> for helping me get PHP built on a 64-bit RHEL installation.</p>
-
-<p>If you&rsquo;d like to skip the steps and get right to building, you can download and install the source RPMs and build again the spec files. If you&rsquo;d like to do itself, you can compare my spec files to yours. Enjoy the latest PHP hotness!</p>
-
-<ul>
-<li><a href="http://www.filedropper.com/php-spec-files">PHP Spec files</a></li>
-<li><a href="http://www.filedropper.com/php-529-1src">php 5.2.9 source RPM</a> MD5 = 008d5f2ced015c5f6463afb616737b04</li>
-<li><a href="http://www.filedropper.com/php-extras-529-1src">php-extras 5.2.9 source RPM</a> MD5 = 2f8a7e815170bf31509180c196ade19a</li>
-</ul>
-
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2009/04/24/takeaways-from-the-big-internet-gathering/">Takeaways From the Big Internet Gathering</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2009-04-24T10:56:00-04:00" pubdate data-updated="true">Apr 24<span>th</span>, 2009</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>In March I woke up before the sun and left Dulles Airport to make my way to Austin, TX for <a href="http://www.sxsw.com/interactive">South by Southwest Interactive</a>. Having not been to the fabled SXSW before, I was pretty excited. I had heard a lot about what SXSW was supposed to be, what was supposed to be awesome, what would suck, events that would be good and others that would disappoint.</p>
-
-<p>I found the panels to be less than what I was generally expecting. I know that recently coming from <a href="http://dc2009.drupalcon.org">DrupalCon</a>, where they were extremely informative, that it&rsquo;s likely not a fair comparison. Generally I found that once things were open for questions it was no longer interesting to anyone except those asking questions. Worse was sometimes when one audience member would outright dominate the questions and the moderators didn&rsquo;t do a good enough job giving others a fair turn.</p>
-
-<p>Not all fell flat though. <a href="http://www.sxsw.com/interactive/talks/schedule/?action=show&amp;id=IAP0901250">Security for the Social Set</a> was a discussion of all of the attendees facilitated by <a href="http://funkatron.com">Ed Finker</a>. It was refreshing to share and listen to ideas from others instead of 3-5 &ldquo;experts&rdquo; who doesn&rsquo;t always know it all like panel members can come across. <a href="http://www.cmsshowdown.com/">The Ultimate Showdown of CMS Destiny</a> was great, too. It wasn&rsquo;t a lot of new information but it was great to see the EchoDitto weapon of choice <a href="http://drupal.org">Drupal</a> win over Joomla! and WordPress. In fact, Idealware <a href="http://www.idealware.org/comparing_os_cms/">recently compared the major open-source content management systems</a> and Drupal came away very highly there as well. Back to SXSW, <a href="http://garyvaynerchuk.com/post/86998558/gary-vaynerchuks-sxsw-keynote">Gary Vaynerchuk&rsquo;s session</a> was great; it&rsquo;s refreshing to see someone so passionate about doing whatever it takes to succeed (as long as he doesn&rsquo;t annoy you). Oh, I was able to help figure out <a href="http://www.youtube.com/watch?v=ezuiJfvSxUA">how to make money on the Internet</a>.</p>
-
-<p>Despite the ups and <a href="http://news.cnet.com/8301-13772_3-10196573-52.html">downs</a> of the weekend, I had a blast and anyone should spring on the chance to go if they have the opportunity. You&rsquo;ll get to meet great people, <a href="http://www.stubbsaustin.com/">eat amazing food</a>, and use <a href="http://news.cnet.com/at-sxsw-attendees-confront-twitter-saturation">Twitter</a> until your brain hurts.</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
+    
+      <a class="prev" href="/blog/page/4/">&larr; Older</a>
     
     <a href="/blog/archives">Blog Archives</a>
     
@@ -1796,6 +1565,14 @@ Preparing...                ########################################### [100%]
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2014/12/22/os-x-1010-yosemite-local-development-environment-apache-php-and-mysql-homebrew/">OS X 10.10 Yosemite Local Development Environment: Apache, PHP, and MySQL With Homebrew</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/06/09/os-x-109-local-development-environment-apache-php-and-mysql-homebrew/">OS X 10.9 Local Development Environment: Apache, PHP, and MySQL With Homebrew</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2013/10/18/whats-the-deal-with-pressflow-7/">What&#8217;s the Deal With Pressflow 7?</a>
       </li>
     
@@ -1805,14 +1582,6 @@ Preparing...                ########################################### [100%]
     
       <li class="post">
         <a href="/blog/2013/05/09/speed-up-php-on-nfs-with-turbo-realpath/">Speed Up PHP on NFS With Turbo_realpath</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/03/17/virtualbox-extension-pack-with-one-line/">VirtualBox Extension Pack With One Line</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/02/21/real-time-ruby-gem-development/">&#8220;Real-time&#8221; Ruby Gem Development</a>
       </li>
     
   </ul>
@@ -1911,7 +1680,7 @@ Preparing...                ########################################### [100%]
     </div>
   </div>
   <footer role="contentinfo"><p>
-  Copyright &copy; 2013 - Alan Ivey -
+  Copyright &copy; 2015 - Alan Ivey -
   <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
 </p>
 

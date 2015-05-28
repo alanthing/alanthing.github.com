@@ -9,7 +9,7 @@
   <meta name="author" content="Alan Ivey">
 
   
-  <meta name="description" content="At EchoDitto, we host a lot of Drupal sites. Just about all of our web servers contain more than one completely separate Drupal cores since we &hellip;">
+  <meta name="description" content="This post originally featured on the Echo &amp; Co. blog. At EchoDitto, we host a lot of Drupal sites. Just about all of our web servers contain more &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -103,7 +103,9 @@
   </header>
 
 
-<div class="entry-content"><p>At <a href="http://www.echoditto.com">EchoDitto</a>, we host a lot of Drupal sites. Just about all of our web servers contain more than one completely separate Drupal cores since we develop most of our websites independently. We also keep an eye out on <a href="http://drupal.org/security">Drupal Security</a> and when to apply core updates. Since we&rsquo;re not using Aegir, nor do we run every site off of a single multi-site core install, we need a quick and easy way to see what versions we&rsquo;re running.</p>
+<div class="entry-content"><p><em>This post originally featured on the <a href="http://echo.co/blog/are-your-drupal-sites-running-latest-core">Echo &amp; Co. blog</a></em>.</p>
+
+<p>At <a href="http://www.echoditto.com">EchoDitto</a>, we host a lot of Drupal sites. Just about all of our web servers contain more than one completely separate Drupal cores since we develop most of our websites independently. We also keep an eye out on <a href="http://drupal.org/security">Drupal Security</a> and when to apply core updates. Since we&rsquo;re not using Aegir, nor do we run every site off of a single multi-site core install, we need a quick and easy way to see what versions we&rsquo;re running.</p>
 
 <p>Here&rsquo;s a shell script we recently developed to report the Drupal Core versions for all of our sites under a single parent folder. It works on Drupal 4 through 7. It&rsquo;s not been tested outside of our platform, or non-RHEL systems, but it should be universal as long as you have bash, find, awk, and grep. I decided not to use <a href="http://drupal.org/project/drush">Drush</a> because it would involve bootstrapping every site and invoking PHP; this is just more lightweight. Drush also would not work for Drupal 4 sites, which we surprisingly still have a couple kicking around still.</p>
 
@@ -261,6 +263,14 @@
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2014/12/22/os-x-1010-yosemite-local-development-environment-apache-php-and-mysql-homebrew/">OS X 10.10 Yosemite Local Development Environment: Apache, PHP, and MySQL With Homebrew</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/06/09/os-x-109-local-development-environment-apache-php-and-mysql-homebrew/">OS X 10.9 Local Development Environment: Apache, PHP, and MySQL With Homebrew</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2013/10/18/whats-the-deal-with-pressflow-7/">What's the Deal With Pressflow 7?</a>
       </li>
     
@@ -270,14 +280,6 @@
     
       <li class="post">
         <a href="/blog/2013/05/09/speed-up-php-on-nfs-with-turbo-realpath/">Speed Up PHP on NFS With Turbo_realpath</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/03/17/virtualbox-extension-pack-with-one-line/">VirtualBox Extension Pack With One Line</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/02/21/real-time-ruby-gem-development/">"Real-time" Ruby Gem Development</a>
       </li>
     
   </ul>
@@ -377,7 +379,7 @@
     </div>
   </div>
   <footer role="contentinfo"><p>
-  Copyright &copy; 2013 - Alan Ivey -
+  Copyright &copy; 2015 - Alan Ivey -
   <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
 </p>
 

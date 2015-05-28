@@ -2,23 +2,23 @@
 <urlset xmlns='http://www.sitemaps.org/schemas/sitemap/0.9'>
     <url>
         <loc>http://alanthing.com/blog/2009/04/24/takeaways-from-the-big-internet-gathering/</loc>
-        <lastmod>2013-07-11T23:01:37-04:00</lastmod>
+        <lastmod>2015-05-28T15:06:10-04:00</lastmod>
     </url>
     <url>
         <loc>http://alanthing.com/blog/2009/05/22/all-i-want-php-52-centosrhel/</loc>
-        <lastmod>2013-07-11T23:01:37-04:00</lastmod>
+        <lastmod>2015-05-28T15:05:55-04:00</lastmod>
     </url>
     <url>
         <loc>http://alanthing.com/blog/2010/07/15/tidy-tmp-dev-servers/</loc>
-        <lastmod>2013-07-11T23:01:37-04:00</lastmod>
+        <lastmod>2015-05-28T15:05:37-04:00</lastmod>
     </url>
     <url>
         <loc>http://alanthing.com/blog/2010/08/12/dropbox-cli-centos-5-easy-way/</loc>
-        <lastmod>2013-07-11T23:01:37-04:00</lastmod>
+        <lastmod>2015-05-28T15:05:19-04:00</lastmod>
     </url>
     <url>
         <loc>http://alanthing.com/blog/2010/10/15/native-local-development-environment-os-x/</loc>
-        <lastmod>2013-07-11T23:01:37-04:00</lastmod>
+        <lastmod>2015-05-28T15:05:00-04:00</lastmod>
     </url>
     <url>
         <loc>
@@ -30,81 +30,81 @@
         <loc>
             http://alanthing.com/blog/2011/01/05/are-your-drupal-sites-running-the-latest-core/
         </loc>
-        <lastmod>2013-07-11T23:01:37-04:00</lastmod>
+        <lastmod>2015-05-28T15:04:41-04:00</lastmod>
     </url>
     <url>
         <loc>
             http://alanthing.com/blog/2011/01/05/are-your-wordpress-sites-running-the-latest-core/
         </loc>
-        <lastmod>2013-07-11T23:01:37-04:00</lastmod>
+        <lastmod>2015-05-28T15:04:26-04:00</lastmod>
     </url>
     <url>
         <loc>http://alanthing.com/blog/2011/01/25/easy-php-5-dot-2-rpms-on-centos/</loc>
-        <lastmod>2013-07-11T23:01:37-04:00</lastmod>
+        <lastmod>2015-05-28T15:04:08-04:00</lastmod>
     </url>
     <url>
         <loc>http://alanthing.com/blog/2011/02/15/fix-pear-permissions-problem-mac-os-x/</loc>
-        <lastmod>2013-07-11T23:01:37-04:00</lastmod>
+        <lastmod>2015-05-28T15:03:51-04:00</lastmod>
     </url>
     <url>
         <loc>http://alanthing.com/blog/2011/02/22/dump-each-mysql-table-file/</loc>
-        <lastmod>2013-07-11T23:01:37-04:00</lastmod>
+        <lastmod>2015-05-28T15:03:38-04:00</lastmod>
     </url>
     <url>
         <loc>http://alanthing.com/blog/2011/03/25/keep-drush-date/</loc>
-        <lastmod>2013-07-11T23:01:37-04:00</lastmod>
+        <lastmod>2015-05-28T15:03:24-04:00</lastmod>
     </url>
     <url>
         <loc>http://alanthing.com/blog/2011/08/17/use-syslog-instead-watchdog/</loc>
-        <lastmod>2013-07-11T23:01:37-04:00</lastmod>
+        <lastmod>2015-05-28T15:03:05-04:00</lastmod>
     </url>
     <url>
         <loc>
             http://alanthing.com/blog/2011/08/24/os-x-107-lion-development-native-mamp-mysql-installer/
         </loc>
-        <lastmod>2013-07-11T23:01:37-04:00</lastmod>
+        <lastmod>2015-05-28T15:02:47-04:00</lastmod>
     </url>
     <url>
         <loc>
             http://alanthing.com/blog/2011/09/07/os-x-107-lion-development-native-apache-php-homebrew-mysql-or-mariadb/
         </loc>
-        <lastmod>2013-07-11T23:01:37-04:00</lastmod>
+        <lastmod>2015-05-28T15:02:29-04:00</lastmod>
     </url>
     <url>
         <loc>http://alanthing.com/blog/2011/10/11/os-x-107-lion-development-macports/</loc>
-        <lastmod>2013-07-11T23:01:37-04:00</lastmod>
+        <lastmod>2015-05-28T15:02:16-04:00</lastmod>
     </url>
     <url>
         <loc>http://alanthing.com/blog/2012/01/30/alans-2011-favorites/</loc>
-        <lastmod>2013-07-11T23:01:37-04:00</lastmod>
+        <lastmod>2015-05-28T15:01:46-04:00</lastmod>
     </url>
     <url>
         <loc>http://alanthing.com/blog/2012/02/10/nodejs-and-npm-centos/</loc>
-        <lastmod>2013-07-11T23:01:37-04:00</lastmod>
+        <lastmod>2015-05-28T15:01:31-04:00</lastmod>
     </url>
     <url>
         <loc>http://alanthing.com/blog/2012/02/29/can-i-get-your-number-dns-made-simple/</loc>
-        <lastmod>2013-07-11T23:01:37-04:00</lastmod>
+        <lastmod>2015-05-28T15:01:15-04:00</lastmod>
     </url>
     <url>
         <loc>
             http://alanthing.com/blog/2012/04/22/os-x-107-lion-development-nginx-php-mariadb-homebrew/
         </loc>
-        <lastmod>2013-07-11T23:01:37-04:00</lastmod>
+        <lastmod>2015-05-28T15:00:53-04:00</lastmod>
     </url>
     <url>
         <loc>http://alanthing.com/blog/2012/04/23/redirect-all-port-80-requests-port-8080/</loc>
-        <lastmod>2013-07-11T23:01:37-04:00</lastmod>
+        <lastmod>2015-05-28T15:00:38-04:00</lastmod>
     </url>
     <url>
         <loc>
             http://alanthing.com/blog/2012/04/24/never-touch-your-local-etchosts-file-os-x-again/
         </loc>
-        <lastmod>2013-07-11T23:01:37-04:00</lastmod>
+        <lastmod>2015-05-28T14:59:09-04:00</lastmod>
     </url>
     <url>
         <loc>http://alanthing.com/blog/2012/08/29/three-ways-get-drush-os-x/</loc>
-        <lastmod>2013-07-11T23:01:37-04:00</lastmod>
+        <lastmod>2015-05-28T14:58:51-04:00</lastmod>
     </url>
     <url>
         <loc>http://alanthing.com/blog/2012/09/04/apache-modules-on-os-x-with-homebrew/</loc>
@@ -112,7 +112,7 @@
     </url>
     <url>
         <loc>http://alanthing.com/blog/2012/12/19/usable-mamp-os-x-108-mountain-lion/</loc>
-        <lastmod>2013-07-11T23:01:37-04:00</lastmod>
+        <lastmod>2015-05-28T14:58:32-04:00</lastmod>
     </url>
     <url>
         <loc>http://alanthing.com/blog/2013/02/21/real-time-ruby-gem-development/</loc>
@@ -124,7 +124,7 @@
     </url>
     <url>
         <loc>http://alanthing.com/blog/2013/05/09/speed-up-php-on-nfs-with-turbo-realpath/</loc>
-        <lastmod>2013-07-11T23:01:37-04:00</lastmod>
+        <lastmod>2015-05-28T14:57:59-04:00</lastmod>
     </url>
     <url>
         <loc>http://alanthing.com/blog/2013/07/11/creating-php-packages-software-collection/</loc>
@@ -132,11 +132,23 @@
     </url>
     <url>
         <loc>http://alanthing.com/blog/2013/10/18/whats-the-deal-with-pressflow-7/</loc>
-        <lastmod>2013-10-22T11:29:46-04:00</lastmod>
+        <lastmod>2015-05-28T14:57:29-04:00</lastmod>
+    </url>
+    <url>
+        <loc>
+            http://alanthing.com/blog/2014/06/09/os-x-109-local-development-environment-apache-php-and-mysql-homebrew/
+        </loc>
+        <lastmod>2015-05-28T14:56:58-04:00</lastmod>
+    </url>
+    <url>
+        <loc>
+            http://alanthing.com/blog/2014/12/22/os-x-1010-yosemite-local-development-environment-apache-php-and-mysql-homebrew/
+        </loc>
+        <lastmod>2015-05-28T14:57:03-04:00</lastmod>
     </url>
     <url>
         <loc>http://alanthing.com/blog/archives/</loc>
-        <lastmod>2013-10-22T11:29:46-04:00</lastmod>
+        <lastmod>2015-05-28T15:06:10-04:00</lastmod>
     </url>
     <url>
         <loc>http://alanthing.com/files/php-pear_scl.diff</loc>
@@ -160,7 +172,7 @@
     </url>
     <url>
         <loc>http://alanthing.com/</loc>
-        <lastmod>2013-10-22T11:29:46-04:00</lastmod>
+        <lastmod>2015-05-28T15:06:10-04:00</lastmod>
     </url>
     <url>
         <loc>http://alanthing.com/robots.txt</loc>

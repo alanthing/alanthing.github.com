@@ -9,7 +9,7 @@
   <meta name="author" content="Alan Ivey">
 
   
-  <meta name="description" content="I had previously written a post on one method of upgrading PHP from 5.1 to 5.2 on CentOS and Red Hat servers by creating new RPMs. Since then, I have &hellip;">
+  <meta name="description" content="This post originally featured on the Echo &amp; Co. blog. I had previously written a post on one method of upgrading PHP from 5.1 to 5.2 on CentOS &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -103,7 +103,9 @@
   </header>
 
 
-<div class="entry-content"><p>I had previously <a href="http://echodittolabs.org/blog/2009/05/all-i-want-php-52-centosrhel">written a post</a> on one method of upgrading PHP from 5.1 to 5.2 on CentOS and Red Hat servers by creating new RPMs. Since then, I have found a much better way to create PHP 5.2.17 (or newer) RPMs to easily upgrade (and later remove, if you want) the older version available by default. I&rsquo;ll presume you have no prior experience building PHP RPMs.</p>
+<div class="entry-content"><p><em>This post originally featured on the <a href="http://echo.co/blog/easy-php-52-rpms-centos">Echo &amp; Co. blog</a></em>.</p>
+
+<p>I had previously <a href="http://echodittolabs.org/blog/2009/05/all-i-want-php-52-centosrhel">written a post</a> on one method of upgrading PHP from 5.1 to 5.2 on CentOS and Red Hat servers by creating new RPMs. Since then, I have found a much better way to create PHP 5.2.17 (or newer) RPMs to easily upgrade (and later remove, if you want) the older version available by default. I&rsquo;ll presume you have no prior experience building PHP RPMs.</p>
 
 <p>We start by adding the <a href="http://fedoraproject.org/wiki/EPEL">Extra Packages for Enterprise Linux (EPEL) repository</a> to our server. EPEL is safe to add as an additional repository and leave enabled because it <a href="http://fedoraproject.org/wiki/EPEL/FAQ#How_is_EPEL_different_from_other_third_party_repositories_for_RHEL_and_derivatives.3F">provides complementary packages only</a> and will not conflict with the CentOS or Red Hat repositories. Since their installation method may change, I won&rsquo;t reproduce it here; instead head over to the <a href="http://fedoraproject.org/wiki/EPEL/FAQ#howtouse">installation portion of the FAQ</a> and it&rsquo;s just one line to get started with EPEL.</p>
 
@@ -310,6 +312,14 @@
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2014/12/22/os-x-1010-yosemite-local-development-environment-apache-php-and-mysql-homebrew/">OS X 10.10 Yosemite Local Development Environment: Apache, PHP, and MySQL With Homebrew</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/06/09/os-x-109-local-development-environment-apache-php-and-mysql-homebrew/">OS X 10.9 Local Development Environment: Apache, PHP, and MySQL With Homebrew</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2013/10/18/whats-the-deal-with-pressflow-7/">What's the Deal With Pressflow 7?</a>
       </li>
     
@@ -319,14 +329,6 @@
     
       <li class="post">
         <a href="/blog/2013/05/09/speed-up-php-on-nfs-with-turbo-realpath/">Speed Up PHP on NFS With Turbo_realpath</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/03/17/virtualbox-extension-pack-with-one-line/">VirtualBox Extension Pack With One Line</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/02/21/real-time-ruby-gem-development/">"Real-time" Ruby Gem Development</a>
       </li>
     
   </ul>
@@ -426,7 +428,7 @@
     </div>
   </div>
   <footer role="contentinfo"><p>
-  Copyright &copy; 2013 - Alan Ivey -
+  Copyright &copy; 2015 - Alan Ivey -
   <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
 </p>
 
