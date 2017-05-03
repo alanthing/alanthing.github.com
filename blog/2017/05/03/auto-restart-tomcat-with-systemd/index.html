@@ -5,11 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>VirtualBox Extension Pack With One Line - alanthing</title>
+  <title>Auto-restart Tomcat with systemd - alanthing</title>
   <meta name="author" content="Alan Ivey">
 
   
-  <meta name="description" content="Just installed VirtualBox on OS X and need the Extension Pack? This (really long) one-liner will download and install it for you. Run in terminal and &hellip;">
+  <meta name="description" content="It&rsquo;s commonplace that if you&rsquo;ve run services on Linux and wanted something to auto-restart if it crashed, then you&rsquo;ve looked at &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://alanthing.github.io/blog/2013/03/17/virtualbox-extension-pack-with-one-line">
+  <link rel="canonical" href="http://alanthing.github.io/blog/2017/05/03/auto-restart-tomcat-with-systemd">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="alanthing" type="application/atom+xml">
@@ -80,7 +80,7 @@
   
   <header>
     
-      <h1 class="entry-title">VirtualBox Extension Pack With One Line</h1>
+      <h1 class="entry-title">Auto-restart Tomcat With Systemd</h1>
     
     
       <p class="meta">
@@ -96,20 +96,65 @@
   
 
 
-<time datetime="2013-03-17T20:46:00-04:00" pubdate data-updated="true">Mar 17<span>th</span>, 2013</time>
+<time datetime="2017-05-03T08:14:00-04:00" pubdate data-updated="true">May 3<span>rd</span>, 2017</time>
         
       </p>
     
   </header>
 
 
-<div class="entry-content"><p>Just installed <a href="http://www.virtualbox.org">VirtualBox</a> on OS X and need the <a href="http://www.virtualbox.org/wiki/Downloads">Extension Pack</a>? This (really long) one-liner will download and install it for you. Run in terminal and enter your password once and you&rsquo;re off to the races!</p>
+<div class="entry-content"><p>It&rsquo;s commonplace that if you&rsquo;ve run services on Linux and wanted something to auto-restart if it crashed, then you&rsquo;ve looked at <a href="https://mmonit.com/monit/">monit</a>. You may not know, however, that <a href="https://www.freedesktop.org/wiki/Software/systemd/">systemd</a> can provide the ability to restart a failed process without adding another daemon. In this example, we&rsquo;ll keep Tomcat running if it stops for any reason, unless we <code>systemctl stop tomcat</code> using a systemd override:</p>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>export version=$(/usr/bin/vboxmanage -v) && export var1=$(echo ${version} | cut -d 'r' -f 1) && export var2=$(echo ${version} | cut -d 'r' -f 2) && export file="Oracle_VM_VirtualBox_Extension_Pack-${var1}-${var2}.vbox-extpack" && curl --silent --location http://download.virtualbox.org/virtualbox/${var1}/${file} -o ~/Downloads/${file} && VBoxManage extpack install ~/Downloads/${file} --replace && rm ~/Downloads/${file} && unset version var1 var2 file</span></code></pre></td></tr></table></div></figure>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>mkdir -pv /etc/systemd/system/tomcat.service.d/
+</span><span class='line'>
+</span><span class='line'>cat &gt; /etc/systemd/system/tomcat.service.d/restart.conf <span class="s">&lt;&lt;&#39;EOF&#39;</span>
+</span><span class='line'><span class="s">[Service]</span>
+</span><span class='line'><span class="s">Restart=always</span>
+</span><span class='line'><span class="s">RestartSec=30</span>
+</span><span class='line'><span class="s">TimeoutStartSec=240</span>
+</span><span class='line'><span class="s">TimeoutStopSec=240</span>
+</span><span class='line'><span class="s">EOF</span>
+</span><span class='line'>
+</span><span class='line'>systemctl daemon-reload
+</span></code></pre></td></tr></table></div></figure>
 
 
-<p>Note that VirtualBox must be installed first :)</p>
+<p>You don&rsquo;t need to restart Tomcat; systemd will begin to honor the <code>Restart</code> setting immediately. You can view all of these values before and after to verify the changes were honored:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>systemctl show tomcat | grep -E <span class="s1">&#39;^(Restart(|USec)|Timeout(Start|Stop)USec)=&#39;</span>
+</span><span class='line'><span class="nv">Restart</span><span class="o">=</span>always
+</span><span class='line'><span class="nv">RestartUSec</span><span class="o">=</span>30s
+</span><span class='line'><span class="nv">TimeoutStartUSec</span><span class="o">=</span>4min
+</span><span class='line'><span class="nv">TimeoutStopUSec</span><span class="o">=</span>4min
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>I recommend reading the <a href="https://www.freedesktop.org/software/systemd/man/systemd.service.html">documentation</a> about each of the options, but a quick explanation:</p>
+
+<ul>
+<li><code>Restart=always</code>: Unless running <code>systemctl stop</code>, systemd will always attempt to start the process if it dies for any reason. That means if you were to <code>pkill -f tomcat</code> or any other kill command, regardless of the SIG code, it will be restarted. This would mean you should always be using <code>systemctl</code> to stop. If you&rsquo;d like the ability to stop the process another way and only want systemd to restart if the application crashed or exited with a non-zero exit code, you can use <code>Restart=on-failure</code> or another value. Check the docs for your use-case.</li>
+<li><code>RestartSec=30</code>: First, the documentation above lists <code>RestartSec</code> despite <code>systemctl show</code> returning <code>RestartUSec</code>; I try and stick with the docs where I can so you can follow along with the official guidance rather than something I have stumbled upon that may not work in the future. This value is how long to sleep before restarting the service. The default is only <code>100ms</code>, so I like to set it higher to allow for a busy operation to continue before systemd gets too aggressive with restarting.</li>
+<li><code>TimeoutStartSec</code> and <code>TimeoutStopSec</code> instruct systemd how long to wait for the stop and start commands before considering the operation failed and trying again. Change as needed, but I set it to 4 minutes to allow for our Tomcat applications to completely initialize.</li>
+</ul>
+
+
+<p>It&rsquo;s worth noting that you can run the interactive command <code>systemctl edit tomcat</code> and it will open <code>/etc/systemd/system/tomcat.service.d/override.conf</code> in your <code>$EDITOR</code> for adding in the contents above, eliminating the need to remember the directory structure and where to put override directives. I prefer adding files by hand as shown above for two reasons: 1) adding a file directly is obviously easier in a non-interactive server initialization script, and 2) you can have multiple files with the pattern <code>/etc/systemd/system/name.service.d/*.conf</code>. For organizing purposes, you could have a <code>restart.conf</code> where you specify your custom Restarting parameters, and another <code>environment.conf</code> file where you might add more environmental variables.</p>
 </div>
 
 
@@ -132,7 +177,7 @@
   
 
 
-<time datetime="2013-03-17T20:46:00-04:00" pubdate data-updated="true">Mar 17<span>th</span>, 2013</time>
+<time datetime="2017-05-03T08:14:00-04:00" pubdate data-updated="true">May 3<span>rd</span>, 2017</time>
       
 
 
@@ -140,7 +185,7 @@
     
       <div class="sharing">
   
-  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://alanthing.github.io/blog/2013/03/17/virtualbox-extension-pack-with-one-line/" data-via="alanthing" data-counturl="http://alanthing.github.io/blog/2013/03/17/virtualbox-extension-pack-with-one-line/" >Tweet</a>
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://alanthing.github.io/blog/2017/05/03/auto-restart-tomcat-with-systemd/" data-via="alanthing" data-counturl="http://alanthing.github.io/blog/2017/05/03/auto-restart-tomcat-with-systemd/" >Tweet</a>
   
   
   <div class="g-plusone" data-size="medium"></div>
@@ -153,10 +198,8 @@
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/blog/2013/02/21/real-time-ruby-gem-development/" title="Previous Post: "Real-time" Ruby Gem Development">&laquo; "Real-time" Ruby Gem Development</a>
+        <a class="basic-alignment left" href="/blog/2014/12/22/os-x-1010-yosemite-local-development-environment-apache-php-and-mysql-homebrew/" title="Previous Post: OS X 10.10 Yosemite Local Development Environment: Apache, PHP, and MySQL with Homebrew">&laquo; OS X 10.10 Yosemite Local Development Environment: Apache, PHP, and MySQL with Homebrew</a>
       
-      
-        <a class="basic-alignment right" href="/blog/2013/05/09/speed-up-php-on-nfs-with-turbo-realpath/" title="Next Post: Speed up PHP on NFS with turbo_realpath">Speed up PHP on NFS with turbo_realpath &raquo;</a>
       
     </p>
   </footer>
@@ -251,8 +294,8 @@
       
         
         // var disqus_developer = 1;
-        var disqus_identifier = 'http://alanthing.github.io/blog/2013/03/17/virtualbox-extension-pack-with-one-line/';
-        var disqus_url = 'http://alanthing.github.io/blog/2013/03/17/virtualbox-extension-pack-with-one-line/';
+        var disqus_identifier = 'http://alanthing.github.io/blog/2017/05/03/auto-restart-tomcat-with-systemd/';
+        var disqus_url = 'http://alanthing.github.io/blog/2017/05/03/auto-restart-tomcat-with-systemd/';
         var disqus_script = 'embed.js';
       
     (function () {

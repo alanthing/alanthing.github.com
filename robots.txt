@@ -1,4 +1,4 @@
 User-agent: *
 Disallow: 
 
-Sitemap: http://alanthing.com/sitemap.xml 
+Sitemap: http://alanthing.github.io/sitemap.xml 

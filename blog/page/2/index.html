@@ -9,7 +9,7 @@
   <meta name="author" content="Alan Ivey">
 
   
-  <meta name="description" content="This post originally featured on the Echo &amp; Co. blog. In each of my posts on setting up a local development environment on OS X, it&rsquo;s &hellip;">
+  <meta name="description" content="This post originally featured on the Echo &amp; Co. blog. As I&rsquo;ve said before, we love drush. It&rsquo;s hard to imagine doing Drupal work &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://alanthing.com/blog/page/2">
+  <link rel="canonical" href="http://alanthing.github.io/blog/page/2">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="alanthing" type="application/atom+xml">
@@ -62,7 +62,7 @@
   
 <form action="http://google.com/search" method="get">
   <fieldset role="search">
-    <input type="hidden" name="q" value="site:alanthing.com" />
+    <input type="hidden" name="q" value="site:alanthing.github.io" />
     <input class="search" type="text" name="q" results="0" placeholder="Search"/>
   </fieldset>
 </form>
@@ -77,6 +77,124 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/08/29/three-ways-get-drush-os-x/">Three Ways to Get Drush on OS X</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-08-29T15:18:00-04:00" pubdate data-updated="true">Aug 29<span>th</span>, 2012</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><em>This post originally featured on the <a href="http://echo.co/blog/three-ways-get-drush-os-x">Echo &amp; Co. blog</a></em>.</p>
+
+<p><a href="http://echodittolabs.org/blog/2011/03/keep-drush-up-to-date">As I&rsquo;ve said before</a>, we love <a href="http://drupal.org/project/drush">drush</a>. It&rsquo;s hard to imagine doing Drupal work without it. If OS X is your workstation, it&rsquo;s pretty simple to install with pear, as described on the project page. Let&rsquo;s review that method and cover two others, git and Homebrew, and how to keep them updated.</p>
+
+<p>All commands listed below are to be executed on the command line with the Terminal application. But if you use Drush regularly then you already knew that!</p>
+
+<h2>Homebrew</h2>
+
+<p>If you need introduced to Homebrew, or need help installing it, check out the <a href="http://mxcl.github.com/homebrew/">Homebrew project homepage</a>. The installation script is at the bottom.</p>
+
+<p>Ready to install drush?</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>brew install drush</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Yup, that&rsquo;s it! Upgrading is simple as well, as explained in the <a href="https://github.com/mxcl/homebrew/wiki/FAQ">Homebrew FAQ</a>:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>brew update
+</span><span class='line'>brew upgrade drush</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>PEAR</h2>
+
+<p>Whether you&rsquo;ve installed your own copy of PHP with Homebrew, are using the one included with MAMP, or the version provided by OS X, drush is easy to install using the <code>pear</code> command.</p>
+
+<p>If you are using the built-in php with OS X, you&rsquo;ll need to prefix each command with <code>sudo</code>.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>pear channel-discover pear.drush.org</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>Homebrew Note:</strong> If you are using Homebrew and get an error about not being able to create a lock file, run the following command (change php54 to php53 if applicable): <code>touch $(brew --prefix php54)/lib/php/.lock &amp;&amp; chmod 0644 $(brew --prefix php54)/lib/php/.lock</code></p>
+
+<p>Continue by installing drush now that the channel is added:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>pear install drush/drush
+</span><span class='line'>pear upgrade --force Console_Getopt</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>Homebrew Note:</strong> If you do not have drush available in your path after installing, relink PHP and you should then have the symlink available in <em>/usr/local/bin</em>: <code>brew unlink php54 &amp;&amp; brew link php54</code></p>
+
+<p>Upgrading is also easy (again, if using the built-in PHP with OS X, prefix with <code>sudo</code>):</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>pear channel-update pear.drush.org
+</span><span class='line'>pear upgrade drush</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Git</h2>
+
+<p>If you would prefer to keep track of the source code for Drush, or perhaps be a contributor, you will want to use Git so you can easily make and keep track of changes. If you do not have git installed on your system, install <a href="http://itunes.apple.com/us/app/xcode/id497799835?mt=12">Xcode</a> or <a href="http://developer.apple.com/downloads">Command Line Tools for Xcode</a> and then proceed. These commands will clone the drush repository, checkout the latest stable tag, and create a symlink in <em>/usr/local/bin</em>:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>[ ! -d /usr/local ] && sudo mkdir /usr/local && sudo chgrp admin /usr/local && sudo chmod g+rwx /usr/local
+</span><span class='line'>git clone http://git.drupal.org/project/drush.git /usr/local/drush
+</span><span class='line'>cd /usr/local/drush
+</span><span class='line'>git checkout $(git tag|grep "^[0-9]"|egrep -v "alpha|beta|rc"|tail -1)
+</span><span class='line'>cd /usr/local/bin 2&gt;/dev/null || mkdir /usr/local/bin && cd /usr/local/bin
+</span><span class='line'>ln -s ../drush/drush || sudo ln -s ../drush/drush</span></code></pre></td></tr></table></div></figure>
+
+
+<p>To update, fetch the latest code and grab the latest stable tag:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>cd /usr/local/drush
+</span><span class='line'>git fetch
+</span><span class='line'>git checkout $(git tag|grep "^[0-9]"|egrep -v "alpha|beta|rc"|tail -1)</span></code></pre></td></tr></table></div></figure>
+
+
+<p>If you have any questions or improvements, please leave a comment!</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1655,153 +1773,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2011/08/17/use-syslog-instead-watchdog/">Use Syslog Instead of Watchdog</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2011-08-17T16:02:00-04:00" pubdate data-updated="true">Aug 17<span>th</span>, 2011</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p><em>This post originally featured on the <a href="http://echo.co/blog/use-syslog-instead-watchdog">Echo &amp; Co. blog</a></em>.</p>
-
-<p>In this example, we choose one of our servers to receive the Syslog traffic and the others will send traffic to it. In a large environment, you should use a non-public-facing server to act as a syslog server for your sites, ideally using a database to store data, but we&rsquo;ll just output everything to a file to keep things simple for this guide. If you decide to use a database like MySQL to store your data, this can still provide you with a starting point, but just know that using your same production database server defeats my intended purpose since I was ultimately trying to alleviate the amount of writes on the database.</p>
-
-<p>Start by using yum to install <strong>rsyslog</strong>. If you&rsquo;re using another distro, rsyslog is likely included in the base repositories. Also, note that CentOS 6 uses rsyslog by default so you may skip this step if it&rsquo;s already installed on your system. You&rsquo;ll need this on all servers running Drupal or your rsyslog server:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>yum install rsyslog
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>For CentOS 5, you&rsquo;ll need to unload the default syslog and switch to rsyslog. The following will ensure it starts on boot as well. Until otherwise noted, run the following commands on all servers:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>/sbin/service syslog stop <span class="o">&amp;&amp;</span> /sbin/service rsyslog start
-</span><span class='line'>/sbin/chkconfig rsyslog on
-</span><span class='line'>/sbin/chkconfig syslog off
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Rather than hacking the config file to bits, I find it easier to create an include folder and keep things organized by files. I also like to back up default files created by RPMs so if an update leaves behind rsyslog.rpmnew, you can compare it to the default to see the changes:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>mkdir -v /etc/rsyslog.d
-</span><span class='line'>cp -av /etc/rsyslog.conf<span class="o">{</span>,-default<span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Add the following to <strong>/etc/rsyslog.conf</strong> below the last line containing &ldquo;$ModLoad&rdquo;:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># Include all files in /etc/rsyslog.d</span>
-</span><span class='line'><span class="nv">$IncludeConfig</span> /etc/rsyslog.d/*.conf
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Reload the current rsyslog configuration:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>/sbin/service rsyslog reload
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>The next several steps will only need to be run on the syslog server. Back up and edit <strong>/etc/sysconfig/rsyslog</strong> to accept UDP connections from other servers. If you&rsquo;re using iptables, open up port 514 on UDP.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>cp -a /etc/sysconfig/rsyslog /etc/sysconfig/rsyslog-default
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Edit /etc/sysconfig.rsyslog and change <strong>SYSLOGD_OPTIONS=&ldquo;-m 0&rdquo;</strong> to <strong>SYSLOGD_OPTIONS=&ldquo;-m 0 -r514&rdquo;</strong></p>
-
-<p>Create a root folder for website logs to go:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>mkdir /var/log/websites
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Create the following file to work with example.com (this format will allow you to create other files for anotherexample.org, etc.): <strong>/etc/rsyslog.d/example.conf</strong>. Add the following:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># example.com</span>
-</span><span class='line'><span class="nv">$template</span> DailyPerHostLogs-example,<span class="s2">&quot;/var/log/websites/%SYSLOGTAG:F,58:1%/%SYSLOGTAG:F,58:1%.%$YEAR%-%$MONTH%-%$DAY%.log&quot;</span>
-</span><span class='line'>:syslogtag, contains, <span class="s2">&quot;example&quot;</span>                    -?DailyPerHostLogs-example
-</span><span class='line'>&amp; ~
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>This will create <strong>/var/log/websites/example/example.2011-08-17.log</strong> and new files for each day. To add other websites, duplicate the file and replace example with another string. We&rsquo;ll later use &ldquo;example&rdquo; in the Drupal configuration for Syslog later that will correlate to the correct file.</p>
-
-<p>For those curious about this configuration: a template is needed for dynamic file paths with year-month-day. The syslogtag variable will use the string sent by Drupal in the Syslog module settings. Drupal will send it as <strong>example:</strong>, so <em>:F,58:1</em> will use the colon as the field separator and grab the first field. Even though it would appear as though this single template could be used on multiple sites, I found I still had to have a unique template for each website or all websites would dump into the same file (perhaps this is remedied in newer versions of rsyslog). The last line means that the syslog input will not be sent to any other syslog files.</p>
-
-<p>Reload the current rsyslog configuration, and the server is set up:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>/sbin/service rsyslog reload
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>On the clients, we&rsquo;ll create simple .conf files for each website. Create <strong>/etc/rsyslog.d/example.conf</strong> on each additional web server containing:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># example.com</span>
-</span><span class='line'>:syslogtag, contains, <span class="s2">&quot;example&quot;</span>     @192.168.1.20
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Note that the IP address can also be a domain name, though I would not recommend it to keep another process from being needed for the lookup.</p>
-
-<p>Reload the current rsyslog configuration, and each web client is set up:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>/sbin/service rsyslog reload
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Enable the syslog module and go to <strong><a href="http://example.com/admin/settings/logging/syslog**.">http://example.com/admin/settings/logging/syslog**.</a> Set the Syslog Identity to match the value used in /etc/rsyslog.d/example.conf; in this case, </strong>example**. Using the rsyslog filter we&rsquo;re using, it does not matter which facility we send to. Save the configuration.</p>
-
-<p><img src="http://echoditto.com/sites/default/files/rsyslog-screenshot.png" alt="rsyslog-screenshot" /></p>
-
-<p>Go to your rsyslog server and watch the <strong>/var/log/websites/example/example.2011-08-16.log</strong> file. After verifying that the server is receiving all messages, disable the Watchdog module in **<a href="http://example.org/admin/build/modules/list**.">http://example.org/admin/build/modules/list**.</a></p></p>
-
-<p>There are improvements that can be had here, like using TCP instead of UDP, using <a href="http://loganalyzer.adiscon.com">LogAnalyzer</a> to filter through the files, and more. This was meant to be an introduction into getting combined text files of your watchdog output while reducing the strain on your database by not writing to it as often.</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/3/">&larr; Older</a>
@@ -1819,6 +1790,10 @@
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2017/05/03/auto-restart-tomcat-with-systemd/">Auto-restart Tomcat With Systemd</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2014/12/22/os-x-1010-yosemite-local-development-environment-apache-php-and-mysql-homebrew/">OS X 10.10 Yosemite Local Development Environment: Apache, PHP, and MySQL With Homebrew</a>
       </li>
     
@@ -1834,66 +1809,8 @@
         <a href="/blog/2013/07/11/creating-php-packages-software-collection/">Creating PHP Packages as a Software Collection</a>
       </li>
     
-      <li class="post">
-        <a href="/blog/2013/05/09/speed-up-php-on-nfs-with-turbo-realpath/">Speed Up PHP on NFS With Turbo_realpath</a>
-      </li>
-    
   </ul>
 </section>
-
-<section>
-  <h1>Coderwall</h1>
-  <ul id="cw_badges">
-    <li class="loading">Status updating&#8230;</li>
-  </ul>
-  
-  <div>
-    <a href="http://coderwall.com/alanthing" target="_blank" class="cw_badge"><img
-       alt="Endorse alanthing on Coderwall"
-       src="http://api.coderwall.com/alanthing/endorsecount.png" /></a>
-  </div>
-  
-
-  <script type="text/javascript">
-    var coderwall = (function(){
-      function render(options, badges){
-        var fragment = '',
-            t = $(options.target),
-            height = 65,
-            width = 65,
-            index;
-
-        for (index in badges) {
-          fragment += '<a class="cw_badge"title="' + badges[index].description + '" target="_blank" href="http://coderwall.com/' + options.user + '">';
-          fragment +=   '<img alt="' + badges[index].description + '" height="' + width + '" width="' + height + '" src="' + badges[index].badge + '"/>';
-          fragment += '</a>';
-        }
-
-        t.html(fragment);
-      }
-      return {
-        showBadges: function(options){
-          $.ajax({
-              url: 'http://coderwall.com/' + options.user + '.json?callback=?'
-            , dataType: 'jsonp'
-            , error: function (err) { $(options.target + ' li.loading').addClass('error').text("Error loading feed"); }
-            , success: function(res) {
-                render(options, res.data.badges);
-            }
-          });
-        }
-      };
-    })();
-
-    $(document).ready(function(){
-      coderwall.showBadges({
-        user: 'alanthing',
-        target: '#cw_badges'
-      });
-    });
-  </script>
-</section>
-
 
 <section>
   <h1>GitHub Repos</h1>
@@ -1934,7 +1851,7 @@
     </div>
   </div>
   <footer role="contentinfo"><p>
-  Copyright &copy; 2015 - Alan Ivey -
+  Copyright &copy; 2017 - Alan Ivey -
   <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
 </p>
 
