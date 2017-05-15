@@ -9,7 +9,7 @@
   <meta name="author" content="Alan Ivey">
 
   
-  <meta name="description" content="It&rsquo;s commonplace that if you&rsquo;ve run services on Linux and wanted something to auto-restart if it crashed, then you&rsquo;ve looked at &hellip;">
+  <meta name="description" content="If you&rsquo;re managing an environment similar to a production and want to keep bots from indexing traffic, it&rsquo;s customary to add a robots.txt &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -77,6 +77,55 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2017/05/15/robots-dot-txt-disallow-all-with-nginx/">Robots.txt Disallow All With Nginx</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2017-05-15T21:08:00-04:00" pubdate data-updated="true">May 15<span>th</span>, 2017</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>If you&rsquo;re managing an environment similar to a production and want to keep bots from indexing traffic, it&rsquo;s customary to add a <em>robots.txt</em> file at the root of your website to <a href="http://www.robotstxt.org/faq/prevent.html">disallow all</a>. Instead of creating a two-line plain text file, you can do this with only nginx:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='nginx'><span class='line'><span class="k">location</span> <span class="p">=</span> <span class="s">/robots.txt</span> <span class="p">{</span>
+</span><span class='line'>  <span class="kn">add_header</span>  <span class="s">Content-Type</span>  <span class="s">text/plain</span><span class="p">;</span>
+</span><span class='line'>  <span class="kn">return</span> <span class="mi">200</span> <span class="s">&quot;User-agent:</span> <span class="s">*\nDisallow:</span> <span class="s">/\n&quot;</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Add this into your configuration management as determined by environment, or add it by hand, and no longer worry if Google might start broadcasting your dev site to the world.</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -2890,59 +2939,6 @@ Reference 2: <a href="http://jsdelfino.blogspot.com/2012/08/autoconf-and-automak
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2012/09/04/apache-modules-on-os-x-with-homebrew/">Apache Modules on OS X With Homebrew</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-09-04T11:27:00-04:00" pubdate data-updated="true">Sep 4<span>th</span>, 2012</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>I have long been a big fan of <a href="http://mxcl.github.com/homebrew">Homebrew</a>, a way of adding open-source software to OS X without much of the overhead and systems link <a href="http://www.macports.org">MacPorts</a> and <a href="http://www.finkproject.org">Fink</a> introduce. It&rsquo;s quickly become my favorite way to do PHP-based development on a Mac, and I&rsquo;ve <a href="http://echodittolabs.org/blog/2012/04/os-x-107-lion-development-nginx-php-mariadb-homebrew">blogged</a> <a href="http://echodittolabs.org/blog/2011/09/os-x-107-lion-development-native-apache-php-homebrew-mysql-or-mariadb">before</a> about various ways to integrate Homebrew-based software into your workflow.</p>
-
-<p>In preparing new documentation for using Homebrew on 10.7 and 10.8 (coming soon to <a href="http://echodittolabs.org/blogs/alan-ivey">my EchoDitto blog</a>), I wanted to find a way to run either <a href="http://httpd.apache.org/docs/2.2/mod/mod_suexec.html">mod_suexec</a> or <a href="http://www.fastcgi.com/mod_fastcgi/docs/mod_fastcgi.html">mod_fastcgi</a> so I could use the built-in version of Apache without having to change folder ownership in random places where the web server needed to modify files. Homebrew did not have any formulas, but I found that <a href="http://github.com/lifepillar">Lifepillar</a> had written formulas <a href="https://github.com/mxcl/homebrew/pull/12093/files">(mod_fastcgi)</a> <a href="https://github.com/mxcl/homebrew/pull/12091">(mod_suexec)</a> for them both and was hoping to get them into Homebrew.</p>
-
-<p>Driven solely by my desire to have my documentation easier to follow, I set up a <a href="https://github.com/mxcl/homebrew/wiki/Homebrew-0.9">brew tap</a> for these two Apache modules. Shortly after adding it to the list of <a href="https://github.com/mxcl/homebrew/wiki/Interesting-Taps-&amp;-Branches">interesting taps and branches</a>, the decision was made to <a href="https://github.com/mxcl/homebrew/issues/14622">incorporate the repository under the Homebrew organization</a> and have a place just for Apache modules.</p>
-
-<p>As of today, here are the modules available in the tap:</p>
-
-<ul>
-<li><a href="https://github.com/Homebrew/homebrew-apache/blob/master/mod_fastcgi.rb">mod_fastcgi</a> &ndash; written by <a href="https://github.com/lifepillar">lifepillar</a></li>
-<li><a href="https://github.com/Homebrew/homebrew-apache/blob/master/mod_suexec.rb">mod_suexec</a> &ndash; written by <a href="https://github.com/lifepillar">lifepillar</a>, 10.8 work by <a href="https://github.com/alanthing">me</a></li>
-<li><a href="https://github.com/Homebrew/homebrew-apache/blob/master/mod_fcgid.rb">mod_fcgid</a> &ndash; written by <a href="https://github.com/rjocoleman">rjocoleman</a></li>
-<li><a href="https://github.com/Homebrew/homebrew-apache/blob/master/mod_bonjour.rb">mod_bonjour</a> &ndash; written by <a href="https://github.com/joemaller">joemaller</a></li>
-<li><a href="https://github.com/Homebrew/homebrew-apache/blob/master/mod_python.rb">mod_python</a> and <a href="https://github.com/Homebrew/homebrew-apache/blob/master/mod_wsgi.rb">mod_wsgi</a> &ndash; copied from main Homebrew formulas</li>
-</ul>
-
-
-<p>If you have any problems or questions, let me know in the issue queue! Or write a formula and submit a pull request!</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/2/">&larr; Older</a>
@@ -2958,6 +2954,10 @@ Reference 2: <a href="http://jsdelfino.blogspot.com/2012/08/autoconf-and-automak
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2017/05/15/robots-dot-txt-disallow-all-with-nginx/">Robots.txt Disallow All With Nginx</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2017/05/03/auto-restart-tomcat-with-systemd/">Auto-restart Tomcat With Systemd</a>
       </li>
     
@@ -2971,10 +2971,6 @@ Reference 2: <a href="http://jsdelfino.blogspot.com/2012/08/autoconf-and-automak
     
       <li class="post">
         <a href="/blog/2013/10/18/whats-the-deal-with-pressflow-7/">What&#8217;s the Deal With Pressflow 7?</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/07/11/creating-php-packages-software-collection/">Creating PHP Packages as a Software Collection</a>
       </li>
     
   </ul>

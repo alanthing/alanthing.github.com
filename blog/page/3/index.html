@@ -9,7 +9,7 @@
   <meta name="author" content="Alan Ivey">
 
   
-  <meta name="description" content="This post originally featured on the Echo &amp; Co. blog. In this example, we choose one of our servers to receive the Syslog traffic and the others &hellip;">
+  <meta name="description" content="This post originally featured on the Echo &amp; Co. blog. With the release of Lion, there are some subtle differences to setting up a local MAMP (Mac &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -77,6 +77,305 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2011/08/24/os-x-107-lion-development-native-mamp-mysql-installer/">OS X 10.7 Lion Development: Native MAMP With MySQL Installer</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-08-24T15:30:00-04:00" pubdate data-updated="true">Aug 24<span>th</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><em>This post originally featured on the <a href="http://echo.co/blog/os-x-107-lion-development-native-mamp-mysql-installer">Echo &amp; Co. blog</a></em>.</p>
+
+<p>With the release of Lion, there are some subtle differences to setting up a local MAMP (Mac OS X, Apache, MySQL, PHP) environment compared to Snow Leopard. In an effort to keep this from being overly wordy and just get to the good stuff, we&rsquo;ll dive right in, so read on to get started.</p>
+
+<p>Note that for all commands before that are starting with a $, the dollar sign is showing a command-line prompt in <a href="http://www.apple.com/macosx/apps/all.html#terminal">Terminal</a>, and you should not actually type it as part of the commands.</p>
+
+<h2>Apache</h2>
+
+<p>We&rsquo;ll set things up so we won&rsquo;t need sudo often in the future, and so we can manage multiple VirtualHosts. We&rsquo;ll keep the Apache information and our website roots in ~/Sites, and Apache logs in ~/Sites/logs</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span><span class="o">[</span> ! -d ~/Sites <span class="o">]</span> <span class="o">&amp;&amp;</span> mkdir ~/Sites
+</span><span class='line'><span class="nv">$ </span>touch ~/Sites/httpd-vhosts.conf
+</span><span class='line'><span class="nv">$ </span>sudo ln -s ~/Sites/httpd-vhosts.conf /etc/apache2/other
+</span><span class='line'><span class="nv">$ </span>mkdir ~/Sites/logs
+</span><span class='line'><span class="nv">$ </span>chmod 0777 ~/Sites/logs
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Edit the new <strong>~/Sites/httpd-vhosts.conf</strong> file and add the following. Note that you&rsquo;ll need to change all instances of &ldquo;/Users/name&rdquo; to your actual home folder path.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+</pre></td><td class='code'><pre><code class='apache'><span class='line'><span class="c"># </span>
+</span><span class='line'><span class="c"># Use name-based virtual hosting. </span>
+</span><span class='line'><span class="c"># </span>
+</span><span class='line'><span class="nb">NameVirtualHost</span> *:80
+</span><span class='line'>
+</span><span class='line'><span class="c"># </span>
+</span><span class='line'><span class="c"># Set up permissions for VirtualHosts in ~/Sites </span>
+</span><span class='line'><span class="c"># </span>
+</span><span class='line'><span class="nt">&lt;Directory</span> <span class="s">&quot;/Users/name/Sites&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>    <span class="nb">Options</span> Indexes FollowSymLinks MultiViews
+</span><span class='line'>    <span class="nb">AllowOverride</span> <span class="k">All</span>
+</span><span class='line'>    <span class="nb">Order</span> allow,deny
+</span><span class='line'>    <span class="nb">Allow</span> from <span class="k">all</span>
+</span><span class='line'><span class="nt">&lt;/Directory&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># For http://localhost in the OS X default location </span>
+</span><span class='line'><span class="nt">&lt;VirtualHost</span> <span class="s">_default_:80</span><span class="nt">&gt;</span>
+</span><span class='line'>    <span class="nb">ServerName</span> localhost
+</span><span class='line'>    <span class="nb">DocumentRoot</span> <span class="sx">/Library/WebServer/Documents</span>
+</span><span class='line'><span class="nt">&lt;/VirtualHost&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># </span>
+</span><span class='line'><span class="c"># VirtualHosts below </span>
+</span><span class='line'><span class="c"># </span>
+</span><span class='line'>
+</span><span class='line'><span class="c">## Template </span>
+</span><span class='line'><span class="c">#&lt;VirtualHost *:80&gt; </span>
+</span><span class='line'><span class="c">#    ServerName domain.local </span>
+</span><span class='line'><span class="c">#    CustomLog &quot;/Users/name/Sites/logs/domain.local-access_log&quot; combined </span>
+</span><span class='line'><span class="c">#    ErrorLog &quot;/Users/name/Sites/logs/domain.local-error_log&quot; </span>
+</span><span class='line'><span class="c">#    DocumentRoot &quot;/Users/name/Sites/domain.local&quot; </span>
+</span><span class='line'><span class="c">#&lt;/VirtualHost&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Launch <strong>System Preferences</strong> and go to <strong>Sharing</strong> and toggle <strong>Web Sharing</strong> off and on so it&rsquo;s started and reloaded with the new settings. Then click on the blue underlined link under <em>&ldquo;Your computer&rsquo;s website is available at this address:&rdquo;</em> to ensure Apache is working correctly, and you should see text saying &ldquo;It works!&rdquo;</p>
+
+<p>To add a site, duplicate the &lt;VirtualHost&gt; section under the Template, remove the comments, and edit appropriately. Edit /etc/hosts (or use <a href="http://code.google.com/p/gmask/">Gas Mask</a>) and add an entry for 127.0.0.1 for your project.local, and make the appropriate change in the conf file, along with the correct DocumentRoot and Log file locations. See <a href="http://httpd.apache.org/docs/2.2/vhosts/name-based.html">Apache&rsquo;s documentation</a> for more information.</p>
+
+<h2>PHP</h2>
+
+<p>OS X has shipped with PHP for quite some time, but not had it enabled by default. We&rsquo;ll enable mod_php for Apache, and also set up an /etc/php.ini file based on the default one shipped with Lion with some development-friendly changes. Change your timezone as needed.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sudo bash -c <span class="s2">&quot;grep php /etc/apache2/httpd.conf|grep LoadModule|cut -d&#39;#&#39; -f2 &gt; /etc/apache2/other/php5-loadmodule.conf&quot;</span>
+</span><span class='line'><span class="nv">$ </span>sudo cp -a /etc/php.ini.default /etc/php.ini
+</span><span class='line'><span class="nv">$ </span>sudo bash -c <span class="s2">&quot;cat &gt;&gt; /etc/php.ini &lt;&lt;&#39;EOF&#39; </span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="s2">;; </span>
+</span><span class='line'><span class="s2">;; User customizations below </span>
+</span><span class='line'><span class="s2">;; </span>
+</span><span class='line'>
+</span><span class='line'><span class="s2">; Original - memory_limit = 128M </span>
+</span><span class='line'><span class="s2">memory_limit = 196M </span>
+</span><span class='line'><span class="s2">; Original - post_max_size = 8M </span>
+</span><span class='line'><span class="s2">post_max_size = 200M </span>
+</span><span class='line'><span class="s2">; Original - upload_max_filesize = 2M </span>
+</span><span class='line'><span class="s2">upload_max_filesize = 100M </span>
+</span><span class='line'><span class="s2">; Original - default_socket_timeout = 60 </span>
+</span><span class='line'><span class="s2">default_socket_timeout = 600 </span>
+</span><span class='line'><span class="s2">; Original - max_execution_time = 30 </span>
+</span><span class='line'><span class="s2">max_execution_time = 300 </span>
+</span><span class='line'><span class="s2">; Original - max_input_time = 60 </span>
+</span><span class='line'><span class="s2">max_input_time = 600 </span>
+</span><span class='line'><span class="s2">; Original - display_errors = Off </span>
+</span><span class='line'><span class="s2">display_errors = on </span>
+</span><span class='line'><span class="s2">; Original - display_startup_errors = Off </span>
+</span><span class='line'><span class="s2">display_startup_errors = on </span>
+</span><span class='line'><span class="s2">; Original - ;date.timezone = </span>
+</span><span class='line'><span class="s2">date.timezone = &#39;America/New_York&#39; </span>
+</span><span class='line'><span class="s2">EOF&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>Optional:</strong> Lion ships with PEAR but not installed, whereas Snow Leopard it was installed. This will install PEAR from the phar archive, upgrade it, and add <code>pear</code> and <code>pecl</code> aliases to your shell.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sudo /usr/bin/php /usr/lib/php/install-pear-nozlib.phar
+</span><span class='line'><span class="nv">$ </span>cat &gt;&gt; ~/.bashrc <span class="s">&lt;&lt;&#39;EOF&#39; </span>
+</span><span class='line'>
+</span><span class='line'><span class="s">alias pear=&quot;php /usr/lib/php/pear/pearcmd.php&quot; </span>
+</span><span class='line'><span class="s">alias pecl=&quot;php /usr/lib/php/pear/peclcmd.php&quot; </span>
+</span><span class='line'><span class="s">EOF</span>
+</span><span class='line'><span class="nv">$ </span>. ~/.bashrc
+</span><span class='line'><span class="nv">$ </span>sudo pear channel-update pear.php.net
+</span><span class='line'><span class="nv">$ </span>sudo pecl channel-update pecl.php.net
+</span><span class='line'><span class="nv">$ </span>sudo pear upgrade --force pear
+</span><span class='line'><span class="nv">$ </span>sudo pear upgrade
+</span><span class='line'><span class="nv">$ </span>sudo pecl upgrade
+</span><span class='line'><span class="nv">$ </span>sudo sh -c <span class="s2">&quot;cat &gt;&gt; /etc/php.ini &lt;&lt;&#39;EOF&#39; </span>
+</span><span class='line'><span class="s2">; Original - ;include_path = &quot;</span>.:/php/includes<span class="s2">&quot; </span>
+</span><span class='line'><span class="s2">include_path = &quot;</span>.:/usr/lib/php/pear<span class="s2">&quot; </span>
+</span><span class='line'><span class="s2">EOF&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Note that installing most pecl modules will require having a compiler installed via Xcode. I&rsquo;ll be addressing installing <a href="http://pecl.php.net/package/uploadprogress">uploadprogress</a> and <a href="http://pecl.php.net/package/apc">APC</a> in a later post, since this walkthrough requires no compiling.</p>
+
+<p>Toggle <strong>Web Sharing</strong> in <strong>System Preferences &gt; Sharing</strong> for the new PHP options to take effect.</p>
+
+<h2>MySQL</h2>
+
+<p>MySQL is the only thing not shipped with OS X that we need for our development environment. Go to the download site for OS X pre-built binaries at <a href="http://dev.mysql.com/downloads/mysql/index.html#macosx-dmg">http://dev.mysql.com/downloads/mysql/index.html#macosx-dmg</a> and choose the <strong>DMG Archive</strong> most appropriate for your system. As of this writing, the most recent version says <em>OS X 10.6</em>, but it will work on 10.7 as well.</p>
+
+<p>Open the downloaded disk image and begin by installing the <em>mysql-5.x.x-osx10.6-x86_64.pkg</em> file. Once the Installer script is completed, install the Preference Pane by double-clicking on MySQL.prefPane. If you are not sure where to install the preference pane, choose &ldquo;Install for this user only.&rdquo;</p>
+
+<p><strong>Optional:</strong> If you wish to have MySQL start on boot, you do need to additionally install the MySQLStartupItem.pkg file. The preference pane has a toggle for starting on boot, but it will not work until you install the pkg and you run the following in Terminal:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>sudo chown -R root:wheel /Library/StartupItems/MySQLCOM
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Open <strong>System Preferences</strong> and <strong>MySQL</strong> and start the database by clicking the <strong>Start MySQL Server</strong> button.</p>
+
+<p><strong>Optional:</strong> The MySQL installer installed its files to /usr/local/mysql, and the binaries are in /usr/local/mysql/bin which is not in the $PATH of any user by default. Rather than edit the $PATH shell variable, we add symbolic links in /usr/local/bin (a location already in $PATH) to a few MySQL binaries. Add more or omit more binaries as desired:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span> ! -d /usr/local/bin <span class="o">]</span> <span class="o">&amp;&amp;</span> sudo mkdir -p /usr/local <span class="o">&amp;&amp;</span> sudo chmod 0777 /usr/local <span class="o">&amp;&amp;</span> mkdir /usr/local/bin <span class="o">&amp;&amp;</span> sudo chmod 0755 /usr/local
+</span><span class='line'><span class="nb">cd</span> /usr/local/bin
+</span><span class='line'>ln -s /usr/local/mysql/bin/mysql
+</span><span class='line'>ln -s /usr/local/mysql/bin/mysqladmin
+</span><span class='line'>ln -s /usr/local/mysql/bin/mysqldump
+</span><span class='line'>ln -s /usr/local/mysql/support-files/mysql.server
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This script ships with MySQL and only needs to be run once, and it should be run with sudo. As you run it, you can accept all other defaults after you set the root user&rsquo;s password:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>sudo /usr/local/mysql/bin/mysql_secure_installation
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>After installing MySQL, several sample my.cnf files are created but none is placed where MySQL can find it. Start with a &ldquo;small&rdquo; configuration file and make a few changes to increase the max_allowed_packet variable:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>sudo cp /usr/local/mysql/support-files/my-small.cnf /usr/local/mysql/data/my.cnf
+</span><span class='line'>sudo sed -i <span class="s2">&quot;&quot;</span> <span class="s1">&#39;s/max_allowed_packet = 1.*M/max_allowed_packet = 2G/g&#39;</span> /usr/local/mysql/data/my.cnf
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>To load in these changes, go back to the MySQL System Preferences pane, and restart the server by pressing &ldquo;Stop MySQL Server&rdquo; followed by &ldquo;Start MySQL Server.&rdquo;</p>
+
+<h2>Make PHP and MySQL Play Nice</h2>
+
+<p>If you were to run <code>php -i|egrep 'mysql.*default_socket'</code> you would see that PHP was compiled to expect the MySQL socket file in /var/mysql, but MySQL will place it in /tmp. This easiest fix is to tell PHP to look in /tmp:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>sudo sed -i <span class="s2">&quot;&quot;</span> <span class="s1">&#39;s/\/var\/mysql\/mysql\.sock/\/tmp\/mysql\.sock/g&#39;</span> /etc/php.ini
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Toggle <strong>Web Sharing</strong> in <strong>System Preferences &gt; Sharing</strong> for the new PHP options to take effect.</p>
+
+<h2>Hooray!</h2>
+
+<p>You should now be all set to keep adding more VirtualHosts in httpd-vhosts.conf and begin development on your local machine. Stay tuned for instructions on how to use <a href="http://mariadb.org/">MariaDB</a> or MySQL with <a href="http://mxcl.github.com/homebrew/">Homebrew</a> instead of the Oracle MySQL installer, and <a href="http://www.macports.org/">MacPorts</a>!</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1550,89 +1849,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2010/08/12/dropbox-cli-centos-5-easy-way/">Dropbox CLI for CentOS 5 the Easy Way</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2010-08-12T12:27:00-04:00" pubdate data-updated="true">Aug 12<span>th</span>, 2010</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p><em>This post originally featured on the <a href="http://echo.co/blog/dropbox-cli-centos-5-easy-way">Echo &amp; Co. blog</a></em>.</p>
-
-<p><a href="http://www.dropbox.com/">Dropbox</a> hardly needs any introduction; put files in your Dropbox and they show up everywhere else you have Dropbox installed and dropbox.com. A feature about Dropbox that is probably not as widely known is that free accounts come with 30 days of undo history and Pro accounts can get &ldquo;Pack Rat&rdquo; that keeps unlimited history of changes. The history of files, including reverting deleted files, was particularly interesting to me, since I could hook in my latest daily MySQL dumps from <a href="http://sourceforge.net/projects/automysqlbackup/">AutoMySQLBackup</a> to Dropbox and have 30 days of backups for free available from anywhere dropbox.com is accessible.</p>
-
-<p>The problem is that we use <a href="http://centos.org/">CentOS</a> for our servers and the Dropbox Linux builds are geared for distributions like Ubuntu and Debian that have updated versions of required software like Python, libc, and others, that I did not want to upgrade by hand on my systems and risk the integrity of the system packages. But, I got it to work anyway, read on for how I got Dropbox CLI installed on CentOS without replacing any system files.</p>
-
-<ul>
-<li><p>Download <a href="http://www.getdropbox.com/download?plat=lnx.x86">http://www.getdropbox.com/download?plat=lnx.x86</a> or <a href="http://www.getdropbox.com/download?plat=lnx.x86_64">http://www.getdropbox.com/download?plat=lnx.x86_64</a> <a href="http://forums.dropbox.com/topic.php?id=8386#post-53456">(ref)</a></p></li>
-<li><p>Extract tar.gz file downloaded and leave in ~ of desired user</p></li>
-<li><p>Run <code>~/.dropbox-dist/dropboxd</code> to get Dropbox to provide a URL to go to in your browser to link this computer to your Dropbox account</p></li>
-</ul>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>./dropboxd
-</span><span class='line'>This client is not linked to any account...
-</span><span class='line'>Please visit https: //www.dropbox.com/cli_link?host_id<span class="o">=</span>xxxxxxxxxxxxxxxxxxxxxxxxxxxx to link this machine.
-</span></code></pre></td></tr></table></div></figure>
-
-
-<ul>
-<li>After visiting the URL in a browser to which you&rsquo;ve logged into dropbox.com, you&rsquo;ll see the following output:</li>
-</ul>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>/usr/bin/nautilus
-</span><span class='line'>cannot open display:
-</span><span class='line'>Run <span class="s1">&#39;nautilus --help&#39;</span> to see a full list of available <span class="nb">command </span>line options.
-</span></code></pre></td></tr></table></div></figure>
-
-
-<ul>
-<li><p>If you cannot quit the app, open another a shell, get the PID by running <code>ps -ef|grep dropbox</code>, and kill PID. The output on your other shell should say:
-Terminated</p></li>
-<li><p>Download the official Dropbox CLI: <a href="http://www.dropbox.com/download?dl=packages/dropbox.py">http://www.dropbox.com/download?dl=packages/dropbox.py</a> <a href="http://wiki.dropbox.com/TipsAndTricks/TextBasedLinuxInstall">(ref)</a></p></li>
-<li><p><code>dropbox.py</code> won&rsquo;t work without Python 2.6, but let&rsquo;s not risk messing up our official RHEL packages. Download ActivePython 2.6 (AS Package) from <a href="https://www.activestate.com/activepython/downloads">https://www.activestate.com/activepython/downloads</a> <a href="http://stackoverflow.com/questions/1465036/install-python-2-6-in-centos">(ref)</a></p></li>
-<li><p>As mentioned in the AP documentation <a href="http://docs.activestate.com/activepython/2.6/installnotes.html#aspackage">(ref)</a>, run the installer with <code>./install.sh</code> and install where desired. It defaults to <em>/opt/ActivePython-2.6</em>, which is fine because it does not conflcit with the system default python 2.4 install. For my purposes, I had created a user called <em>dropbox</em> that did not have root privileges, so I installed to <em>/home/dropbox/ActivePython-2.6</em>.</p></li>
-<li><p>Edit <em>dropbox.py</em> and change <code>#!/usr/bin/python</code> to the path you just installed AP to. For my installation, it&rsquo;s set to <code>#!/home/dropbox/bin/ActivePython-2.6/bin/python</code></p></li>
-<li><p>Run <code>dropbox.py</code> without commands to see your available options.</p></li>
-</ul>
-
-
-<p>Optional: To suppress LAN Sync broadcasts, download <a href="http://wiki.dropbox.com/TipsAndTricks/TextBasedLinuxInstall?action=AttachFile&amp;do=view&amp;target=dropboxp2p.py">dropboxp2p.py</a> <a href="http://wiki.dropbox.com/TipsAndTricks/TextBasedLinuxInstall">(ref)</a>, edit the first line to use the ActivePython binary as you did for dropbox.py, and run <code>./dropboxp2p -d</code> to disable LAN syncing (unless you have other machines in the LAN with Dropbox installed, and your firewalls are set up appropriately).</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/4/">&larr; Older</a>
@@ -1650,6 +1866,10 @@ Terminated</p></li>
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2017/05/15/robots-dot-txt-disallow-all-with-nginx/">Robots.txt Disallow All With Nginx</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2017/05/03/auto-restart-tomcat-with-systemd/">Auto-restart Tomcat With Systemd</a>
       </li>
     
@@ -1663,10 +1883,6 @@ Terminated</p></li>
     
       <li class="post">
         <a href="/blog/2013/10/18/whats-the-deal-with-pressflow-7/">What&#8217;s the Deal With Pressflow 7?</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/07/11/creating-php-packages-software-collection/">Creating PHP Packages as a Software Collection</a>
       </li>
     
   </ul>
