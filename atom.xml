@@ -4,7 +4,7 @@
   <title><![CDATA[alanthing]]></title>
   <link href="http://alanthing.com/atom.xml" rel="self"/>
   <link href="http://alanthing.com/"/>
-  <updated>2017-05-15T16:16:26-04:00</updated>
+  <updated>2017-06-08T07:47:40-04:00</updated>
   <id>http://alanthing.com/</id>
   <author>
     <name><![CDATA[Alan Ivey]]></name>
@@ -16,7 +16,7 @@
   <entry>
     <title type="html"><![CDATA[Robots.txt disallow all with nginx]]></title>
     <link href="http://alanthing.com/blog/2017/05/15/robots-dot-txt-disallow-all-with-nginx/"/>
-    <updated>2017-05-15T21:08:00-04:00</updated>
+    <updated>2017-05-15T16:16:00-04:00</updated>
     <id>http://alanthing.com/blog/2017/05/15/robots-dot-txt-disallow-all-with-nginx</id>
     <content type="html"><![CDATA[<p>If you&rsquo;re managing an environment similar to a production and want to keep bots from indexing traffic, it&rsquo;s customary to add a <em>robots.txt</em> file at the root of your website to <a href="http://www.robotstxt.org/faq/prevent.html">disallow all</a>. Instead of creating a two-line plain text file, you can do this with only nginx:</p>
 
@@ -40,7 +40,7 @@
     <link href="http://alanthing.com/blog/2017/05/03/auto-restart-tomcat-with-systemd/"/>
     <updated>2017-05-03T08:14:00-04:00</updated>
     <id>http://alanthing.com/blog/2017/05/03/auto-restart-tomcat-with-systemd</id>
-    <content type="html"><![CDATA[<p>It&rsquo;s commonplace that if you&rsquo;ve run services on Linux and wanted something to auto-restart if it crashed, then you&rsquo;ve looked at <a href="https://mmonit.com/monit/">monit</a>. You may not know, however, that <a href="https://www.freedesktop.org/wiki/Software/systemd/">systemd</a> can provide the ability to restart a failed process without adding another daemon. In this example, we&rsquo;ll keep Tomcat running if it stops for any reason, unless we <code>systemctl stop tomcat</code> using a systemd override:</p>
+    <content type="html"><![CDATA[<p>It&rsquo;s commonplace that if you&rsquo;ve run services on Linux and wanted something to auto-restart if it crashed, then you&rsquo;ve looked at <a href="https://mmonit.com/monit/">monit</a>. You may not know, however, that <a href="https://www.freedesktop.org/wiki/Software/systemd/">systemd</a> can provide the ability to restart a failed process without adding another daemon. In this example, we&rsquo;ll keep Tomcat running if it stops for any reason, unless we <code>systemctl stop tomcat</code>, by using a systemd override:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>

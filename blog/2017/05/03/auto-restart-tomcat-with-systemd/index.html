@@ -103,7 +103,7 @@
   </header>
 
 
-<div class="entry-content"><p>It&rsquo;s commonplace that if you&rsquo;ve run services on Linux and wanted something to auto-restart if it crashed, then you&rsquo;ve looked at <a href="https://mmonit.com/monit/">monit</a>. You may not know, however, that <a href="https://www.freedesktop.org/wiki/Software/systemd/">systemd</a> can provide the ability to restart a failed process without adding another daemon. In this example, we&rsquo;ll keep Tomcat running if it stops for any reason, unless we <code>systemctl stop tomcat</code> using a systemd override:</p>
+<div class="entry-content"><p>It&rsquo;s commonplace that if you&rsquo;ve run services on Linux and wanted something to auto-restart if it crashed, then you&rsquo;ve looked at <a href="https://mmonit.com/monit/">monit</a>. You may not know, however, that <a href="https://www.freedesktop.org/wiki/Software/systemd/">systemd</a> can provide the ability to restart a failed process without adding another daemon. In this example, we&rsquo;ll keep Tomcat running if it stops for any reason, unless we <code>systemctl stop tomcat</code>, by using a systemd override:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
