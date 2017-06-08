@@ -6,7 +6,7 @@ comments: true
 categories: 
 ---
 
-It's commonplace that if you've run services on Linux and wanted something to auto-restart if it crashed, then you've looked at [monit](https://mmonit.com/monit/). You may not know, however, that [systemd](https://www.freedesktop.org/wiki/Software/systemd/) can provide the ability to restart a failed process without adding another daemon. In this example, we'll keep Tomcat running if it stops for any reason, unless we `systemctl stop tomcat` using a systemd override:
+It's commonplace that if you've run services on Linux and wanted something to auto-restart if it crashed, then you've looked at [monit](https://mmonit.com/monit/). You may not know, however, that [systemd](https://www.freedesktop.org/wiki/Software/systemd/) can provide the ability to restart a failed process without adding another daemon. In this example, we'll keep Tomcat running if it stops for any reason, unless we `systemctl stop tomcat`, by using a systemd override:
 
 ```bash
 mkdir -pv /etc/systemd/system/tomcat.service.d/
