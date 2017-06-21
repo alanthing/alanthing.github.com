@@ -9,7 +9,7 @@
   <meta name="author" content="Alan Ivey">
 
   
-  <meta name="description" content="If you&rsquo;re managing an environment similar to a production and want to keep bots from indexing traffic, it&rsquo;s customary to add a robots.txt &hellip;">
+  <meta name="description" content="Wherever I can, I avoid compiling applications from source or packaging up my own versions of things that exist in popular repositories. I recently &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -77,6 +77,264 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2017/06/21/python-3-and-uwsgi-on-centos-7/">Python 3 and uWSGI on CentOS 7</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2017-06-21T07:04:00-04:00" pubdate data-updated="true">Jun 21<span>st</span>, 2017</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Wherever I can, I avoid compiling applications from source or packaging up my own versions of things that exist in popular repositories. I recently needed to run a Python 3 application via uWSGI on CentOS 7 and was frustrated at how many search results were recommending building uWSGI from source when it&rsquo;s <a href="https://dl.fedoraproject.org/pub/epel/7/x86_64/u/">available in EPEL</a>. I&rsquo;ve only deployed a handful of Python applications, and was not interested in keeping up with source-compiled dependencies to support this small project over time. We&rsquo;ll discuss a couple of different ways to run these programs together with minimal customization.</p>
+
+<h1>Python 3.4</h1>
+
+<p>In CentOS 7, you can run Python 3.4 alongside Python 2.7 as it is available in <a href="https://dl.fedoraproject.org/pub/epel/7/x86_64/p/">EPEL</a>.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>rpm -q epel-release <span class="o">||</span> yum -q -y install epel-release
+</span><span class='line'>
+</span><span class='line'>yum -y install python34
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>pip</h2>
+
+<p>If you want to install <a href="https://pip.pypa.io">pip</a>, simply <code>yum install python34-pip</code> and it will install at <code>/usr/bin/pip3</code> and <code>/usr/bin/pip3.4</code>, leaving <code>/usr/bin/pip</code> alone as that is part of the <code>python2-pip</code> package. This was only available recently (late 2016); previously you had to manually install and deal with <code>/usr/bin/pip</code> being overwritten.</p>
+
+<h2>Virtual Environments</h2>
+
+<p>Since 3.3, Python supports creating virtual environments without an external module like <code>virtualenv</code>. <code>pyvenv</code> was the &ldquo;recommended tool&rdquo; for this initially, though it <a href="https://docs.python.org/dev/whatsnew/3.6.html#id8">is deprecated in Python 3.6</a>. As such, to lean into the preferred Python nomenclature, you can use the <a href="https://docs.python.org/3/library/venv.html">venv module</a> directly to create Python 3.4 virtual environments:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>python3.4 -m venv /path/to/venv34dirname
+</span><span class='line'>
+</span><span class='line'><span class="nb">source</span> /path/to/venv34dirname/bin/activate
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>If you like using <a href="https://virtualenv.pypa.io">virtualenv</a>, you&rsquo;ll be disappointed to see that there is no <code>python34-virtualenv</code> package available in EPEL. While you could <code>pip3 install virtualenv</code>, that would install at <code>/usr/bin/virtualenv</code>, potentially overwriting the same file provided by the <code>python-virtualenv</code> package. But, if you do, consider the following:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># Install virtualenv with the pip provided the &#39;python34&#39; package:</span>
+</span><span class='line'>pip3 install virtualenv
+</span><span class='line'>
+</span><span class='line'><span class="c"># Then, a virtualenv based on /usr/bin/python3.4:</span>
+</span><span class='line'>virtualenv /path/to/venv34dirname
+</span><span class='line'>
+</span><span class='line'><span class="c"># Now, to create based on /usr/bin/python2.7, using a newer version of virtualenv than is provided by the &#39;python-virtualenv&#39; package:</span>
+</span><span class='line'>virtualenv --python<span class="o">=</span>/usr/bin/python2.7 /path/to/venv27dirname
+</span><span class='line'>
+</span><span class='line'><span class="c"># Or, recommended, use the alternate path from the &#39;python-virtualenv&#39; package:</span>
+</span><span class='line'>virtualenv-2.7 /path/to/venv27dirname
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Unless you have a compelling reason for <code>virtualenv</code> on your servers, use the built-in <code>venv</code> module. I don&rsquo;t like to overwrite files provided by packages, and we should use recommended upstream tools where possible.</p>
+
+<h2>uWSGI</h2>
+
+<p>Since uWSGI is provided by EPEL, there is no need to install it with <code>pip</code>.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>yum -y install uwsgi uwsgi-plugin-python3
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This will install the Python 3.4 uWSGI plugin to <code>/usr/lib64/uwsgi/python3_plugin.so</code>. Be sure to include the directive <code>plugin = python3</code> in your uWSGI definition and proceed as normal (beyond the scope of this post).</p>
+
+<h1>Python 3.5 Software Collection</h1>
+
+<p>I love <a href="http://softwarecollections.org">Software Collections</a>. With Python 2.7 being the default version of Python with CentOS 7, I find it much better to keep another version in a completely separate directory structure than integrating with <code>/usr</code> and such. We&rsquo;ll use a rebuild of the Red Hat SCL for Python 3.5, and everything will be installed to <code>/opt/rh/rh-python35</code>.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>yum -y install centos-release-scl
+</span><span class='line'>
+</span><span class='line'>yum -y install rh-python35-python
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Using</h2>
+
+<p>You&rsquo;ll quickly notice that the newly-installed Python 3.5 binary is not in your <code>$PATH</code>; it&rsquo;s in <code>/opt/rh/rh-python35/root/bin</code>. You have a few options:</p>
+
+<p>Launch a new instance of bash:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>scl <span class="nb">enable </span>rh-python35 bash
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Alternatively, you can modify your existing session by running one of the following manually, or add to <code>~/.bashrc</code>:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># Preferred method:</span>
+</span><span class='line'><span class="nb">source </span>scl_source <span class="nb">enable </span>rh-python35
+</span><span class='line'>
+</span><span class='line'><span class="c"># Source the file directly:</span>
+</span><span class='line'><span class="c">#source /opt/rh/rh-python35/enable</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>pip</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>yum -y install rh-python35-python-pip
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>After installing, you can use <code>pip</code>, <code>pip3</code>, or <code>pip3.5</code></p>
+
+<h2>Virtual Environments</h2>
+
+<p>You can use the built-in method:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>python3.5 -m venv /path/to/venv35dirname
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Or, you can use <code>virtualenv</code> (though, see the 3.4 section for the rationale I recommend against this):</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>yum -y install rh-python35-python-virtualenv
+</span><span class='line'>
+</span><span class='line'>virtualenv-3.5 /path/to/venv35dirname
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>uWSGI</h2>
+
+<p>While there is a <code>uwsgi-plugin-python3</code> RPM, it&rsquo;s for the aforementioned <code>python34</code> package. This is where you will have to compile something manually; so carefully consider the pros and cons of using a Software Collection. <em>(Later, I may add to this post where you can use a yum post-install or post-upgrade action to ensure the compiled plugin is kept up to date.)</em></p>
+
+<p>This is a helpful exercise to learn how you can integrate packages that install to default paths and a Software Collection which is kept away from default paths.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>yum -y install uwsgi uwsgi-plugin-common
+</span><span class='line'>
+</span><span class='line'><span class="nv">UWSGI_VERSION</span><span class="o">=</span><span class="s2">&quot;$( rpm -q uwsgi --queryformat &#39;%{VERSION}&#39; )&quot;</span>
+</span><span class='line'><span class="nv">UWSGI_PLUGINS_DIR</span><span class="o">=</span><span class="s2">&quot;$( dirname &quot;</span><span class="k">$(</span> rpm -q uwsgi-plugin-common -l | grep <span class="s1">&#39;_plugin\.so&#39;</span> | tail -1 <span class="k">)</span><span class="s2">&quot; )&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nb">source </span>scl_source <span class="nb">enable </span>rh-python35
+</span><span class='line'>
+</span><span class='line'><span class="k">if</span> <span class="o">[[</span> <span class="nv">$X_SCLS</span> <span class="o">==</span> *rh-python35* <span class="o">]]</span>; <span class="k">then</span>
+</span><span class='line'><span class="k">  </span><span class="nv">UWSGI_PLUGINS_DIR</span><span class="o">=</span><span class="s2">&quot;/opt/rh/rh-python35/root${UWSGI_PLUGINS_DIR:?}&quot;</span>
+</span><span class='line'><span class="k">fi</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">if</span> <span class="o">[[</span> ! -f <span class="s2">&quot;${UWSGI_PLUGINS_DIR:?}/python35_plugin.so&quot;</span> <span class="o">]]</span>; <span class="k">then</span>
+</span><span class='line'><span class="k">  </span>yum -y install gcc libcap-devel libuuid-devel make openssl-devel rh-python35-python-devel
+</span><span class='line'>
+</span><span class='line'>  mkdir -pv /opt/rh/rh-python35/root/src
+</span><span class='line'>  <span class="nb">cd</span> /opt/rh/rh-python35/root/src
+</span><span class='line'>
+</span><span class='line'>  curl -LO <span class="s2">&quot;https://projects.unbit.it/downloads/uwsgi-${UWSGI_VERSION:?}.tar.gz&quot;</span>
+</span><span class='line'>  tar zxvf <span class="s2">&quot;uwsgi-${UWSGI_VERSION:?}.tar.gz&quot;</span>
+</span><span class='line'>  <span class="nb">cd</span> <span class="s2">&quot;uwsgi-${UWSGI_VERSION:?}/&quot;</span>
+</span><span class='line'>
+</span><span class='line'>  make <span class="nv">PROFILE</span><span class="o">=</span>nolang
+</span><span class='line'>  <span class="nv">PYTHON</span><span class="o">=</span>python3.5 /usr/sbin/uwsgi --build-plugin <span class="s2">&quot;plugins/python python35&quot;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="o">[[</span> ! -d <span class="s2">&quot;${UWSGI_PLUGINS_DIR:?}/&quot;</span> <span class="o">]]</span> <span class="o">&amp;&amp;</span> mkdir -pv <span class="s2">&quot;${UWSGI_PLUGINS_DIR:?}/&quot;</span>
+</span><span class='line'>  mv -v python35_plugin.so <span class="s2">&quot;${UWSGI_PLUGINS_DIR:?}/&quot;</span>
+</span><span class='line'><span class="k">fi</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><em>(Reference: <a href="http://uwsgi-docs.readthedocs.io/en/latest/WSGIquickstart.html">http://uwsgi-docs.readthedocs.io/en/latest/WSGIquickstart.html</a>)</em></p>
+
+<p>After completing, your resulting uWSGI file will need to contain:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='ini'><span class='line'><span class="na">plugins-dir</span> <span class="o">=</span> <span class="s">/opt/rh/rh-python35/root/usr/lib64/uwsgi</span>
+</span><span class='line'><span class="na">plugin</span> <span class="o">=</span> <span class="s">python35</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h1>Which should you use?</h1>
+
+<p>If you need Python 3 but want to reduce the amount of customization that you need to do, I recommend installing <code>python34</code> from EPEL. You can use it with uWSGI with no compiling from source.</p>
+
+<p>If Python 3.4 is too old and/or you need 3.5+ functionality, the Software Collection can be an alternative to compiling Python from source and knowing that you&rsquo;re getting quality packages designed by Red Hat and rebuilt by CentOS.</p>
+
+<p>If you need Python 3.6, or a newer release of 3.4 or 3.5 not provided quickly enough by the package maintainers, and you don&rsquo;t want to deal with all of the pain of <code>./configure &amp;&amp; make &amp;&amp; sudo make install</code>, I would suggest looking at <a href="https://github.com/pyenv/pyenv">pyenv</a> to meet your needs.</p>
+
+<p>Please let me know if I missed something or should add anything. I&rsquo;m cumulatively green with running Python in production but wanted to share my learnings as I was frustrated by the lack of good information for my needs. Feedback is welcome.</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -2588,357 +2846,6 @@ createrepo -v -d ~/rpmbuild/RPMS/repo/el6/x86_64
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2012/12/19/usable-mamp-os-x-108-mountain-lion/">Usable MAMP on OS X 10.8 Mountain Lion</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-12-19T11:18:00-05:00" pubdate data-updated="true">Dec 19<span>th</span>, 2012</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p><em>This post originally featured on the <a href="http://echo.co/blog/usable-mamp-os-x-108-mountain-lion">Echo &amp; Co. blog</a></em>.</p>
-
-<h2>Install MAMP</h2>
-
-<p>Download the latest MAMP from <a href="http://mamp.info/en/downloads/index.html">http://mamp.info/en/downloads/index.html</a> and run the installer.</p>
-
-<h2>Choose APC Cache</h2>
-
-<p>Open the MAMP app, open <strong>Preferences&hellip;</strong>, click the <strong>PHP</strong> tab, and change <strong>Cache</strong> to <strong>APC</strong>. Click <strong>OK</strong> to close Preferences and <strong>Quit</strong> MAMP.</p>
-
-<p><img src="http://i46.tinypic.com/2wltqpw.png" alt="MAMP Screenshot" /></p>
-
-<h2>PATH variable</h2>
-
-<p>Put MAMP binaries, including PHP, in the front of your $PATH (this is a single command):</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">echo</span> <span class="s1">&#39;export PATH=&quot;/Applications/MAMP/bin:/Applications/MAMP/Library/bin:$(find /Applications/MAMP/bin/php -type d -name &quot;php5.4*&quot; | sort | tail -1)/bin:$PATH&quot;&#39;</span> &gt;&gt; ~/.bash_profile <span class="o">&amp;&amp;</span> <span class="nb">source</span> ~/.bash_profile
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>MySQL</h2>
-
-<p>Set up MySQL and stop it (default MySQL password is <strong>root</strong>, you do not have to change it when running <code>mysql_secure_installation</code>, though I recommend all of the other defaults):</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>cp -va /Applications/MAMP/Library/support-files/my-small.cnf /Applications/MAMP/conf/my.cnf
-</span><span class='line'>
-</span><span class='line'>sed -i <span class="s1">&#39;&#39;</span> <span class="s2">&quot;s/^\(max_allowed_packet =\) [0-9]*M/\1 1G/g&quot;</span> /Applications/MAMP/conf/my.cnf
-</span><span class='line'>
-</span><span class='line'>egrep <span class="s2">&quot;^# Uncomment the following if you are using InnoDB tables$&quot;</span> /Applications/MAMP/conf/my.cnf &amp;&gt;/dev/null <span class="o">&amp;&amp;</span> sed -i <span class="s1">&#39;&#39;</span> <span class="s2">&quot;s/^\(# Uncomment the following if you are using InnoDB tables\)$/\1@innodb_file_per_table/; y/@/\n/; s/^#\(innodb_.*\)/\1/g&quot;</span> /Applications/MAMP/conf/my.cnf
-</span><span class='line'>
-</span><span class='line'>/Applications/MAMP/bin/startMysql.sh &amp;
-</span><span class='line'>
-</span><span class='line'><span class="c"># Secure MySQL setup:</span>
-</span><span class='line'>/Applications/MAMP/Library/bin/mysql_secure_installation
-</span><span class='line'><span class="c"># -- OR --</span>
-</span><span class='line'><span class="c"># Less secure MySQL setup:</span>
-</span><span class='line'><span class="c">#/Applications/MAMP/Library/bin/mysql -uroot -proot -e&quot;DELETE FROM mysql.user WHERE User=&#39;&#39;; DELETE FROM mysql.user WHERE User=&#39;root&#39; AND Host!=&#39;localhost&#39;; FLUSH PRIVILEGES;&quot;</span>
-</span><span class='line'>
-</span><span class='line'>/Applications/MAMP/bin/stopMysql.sh
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>PHP</h2>
-
-<p>Set timezone, and increase timeouts and memory values:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>sed -i <span class="s1">&#39;-default&#39;</span> <span class="s2">&quot;s|^;*\(date\.timezone[[:space:]]*=\).*|\1 \&quot;`systemsetup -gettimezone|awk -F&quot;</span><span class="se">\:</span> <span class="s2">&quot; &#39;{print $2}&#39;`\&quot;|; s|^\(memory_limit[[:space:]]*=\).*\(\;.*\)|\1 256M \2|; s|^\(post_max_size[[:space:]]*=\).*|\1 200M|; s|^\(upload_max_filesize[[:space:]]*=\).*|\1 100M|; s|^\(default_socket_timeout[[:space:]]*=\).*|\1 600|; s|^\(max_execution_time[[:space:]]*=\).*\(\;.*\)|\1 300 \2|; s|^\(max_input_time[[:space:]]*=\).*\(\;.*\)|\1 600 \2|;&quot;</span> <span class="k">$(</span>find /Applications/MAMP/bin/php -type d -name <span class="s2">&quot;php5.4*&quot;</span> | sort | tail -1<span class="k">)</span>/conf/php.ini
-</span><span class='line'>
-</span><span class='line'><span class="nb">echo</span> -e <span class="s2">&quot;\n[apc]\napc.shm_size = 192M\napc.rfc1867 = 1&quot;</span> &gt;&gt; <span class="k">$(</span>find /Applications/MAMP/bin/php -type d -name <span class="s2">&quot;php5.4*&quot;</span> | sort | tail -1<span class="k">)</span>/conf/php.ini
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>PECL Uploadprogress</h3>
-
-<p><strong>Feel free to skip:</strong> This is quite involved when <code>apc.rfc1867=1</code> does the job in most cases. This is mostly an exercise in building PHP modules for MAMP.</p>
-
-<p><strong>You&rsquo;ll need to install Xcode Command Line Tools from <a href="http://develop.apple.com/downloads">http://develop.apple.com/downloads</a> in order to complete all of the steps below.</strong></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-<span class='line-number'>48</span>
-<span class='line-number'>49</span>
-<span class='line-number'>50</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>mkdir -p <span class="k">$(</span>find /Applications/MAMP/bin/php -type d -name <span class="s2">&quot;php5.4*&quot;</span> | sort | tail -1<span class="k">)</span>/include
-</span><span class='line'><span class="nb">cd</span> <span class="k">$(</span>find /Applications/MAMP/bin/php -type d -name <span class="s2">&quot;php5.4*&quot;</span> | sort | tail -1<span class="k">)</span>/include
-</span><span class='line'><span class="nb">export </span><span class="nv">PHPVER</span><span class="o">=</span><span class="k">$(</span><span class="nb">cd</span> /Applications/MAMP/bin/php <span class="o">&amp;&amp;</span> find * -type d -name <span class="s2">&quot;php5.4*&quot;</span> | sort | tail -1 | sed <span class="s1">&#39;s/php//&#39;</span><span class="k">)</span> <span class="o">&amp;&amp;</span> curl -L -o php-<span class="k">${</span><span class="nv">PHPVER</span><span class="k">}</span>.tar.bz2 http://us3.php.net/get/php-<span class="k">${</span><span class="nv">PHPVER</span><span class="k">}</span>.tar.bz2/from/us3.php.net/mirror <span class="o">&amp;&amp;</span> <span class="nb">unset </span>PHPVER
-</span><span class='line'>ls php-5.4*bz2 | xargs -L1 tar jxpf <span class="o">&amp;&amp;</span> rm php-5.4*bz2
-</span><span class='line'>mv -v <span class="k">$(</span>find * -type d -name <span class="s2">&quot;php-5.4*&quot;</span><span class="k">)</span> php
-</span><span class='line'><span class="nb">cd </span>php
-</span><span class='line'>./configure
-</span><span class='line'><span class="nb">cd</span> ..
-</span><span class='line'>
-</span><span class='line'><span class="c">## Build automake and related tools</span>
-</span><span class='line'><span class="nb">export </span><span class="nv">build</span><span class="o">=</span><span class="s2">&quot;$PWD/build&quot;</span>
-</span><span class='line'>mkdir -p <span class="nv">$build</span>
-</span><span class='line'><span class="nb">cd</span> <span class="nv">$build</span>
-</span><span class='line'>curl -OL http://ftpmirror.gnu.org/autoconf/autoconf-2.68.tar.gz
-</span><span class='line'>tar xzf autoconf-2.68.tar.gz
-</span><span class='line'><span class="nb">cd </span>autoconf-2.68
-</span><span class='line'>./configure --prefix<span class="o">=</span><span class="nv">$build</span>/autotools-bin
-</span><span class='line'>make
-</span><span class='line'>make install
-</span><span class='line'><span class="nb">export </span><span class="nv">PATH</span><span class="o">=</span><span class="nv">$PATH</span>:<span class="nv">$build</span>/autotools-bin/bin
-</span><span class='line'><span class="nb">cd</span> <span class="nv">$build</span>
-</span><span class='line'>curl -OL http://ftpmirror.gnu.org/automake/automake-1.11.tar.gz
-</span><span class='line'>tar xzf automake-1.11.tar.gz
-</span><span class='line'><span class="nb">cd </span>automake-1.11
-</span><span class='line'>./configure --prefix<span class="o">=</span><span class="nv">$build</span>/autotools-bin
-</span><span class='line'>make
-</span><span class='line'>make install
-</span><span class='line'><span class="nb">cd</span> <span class="nv">$build</span>
-</span><span class='line'>curl -OL http://ftpmirror.gnu.org/libtool/libtool-2.4.tar.gz
-</span><span class='line'>tar xzf libtool-2.4.tar.gz
-</span><span class='line'><span class="nb">cd </span>libtool-2.4
-</span><span class='line'>./configure --prefix<span class="o">=</span><span class="nv">$build</span>/autotools-bin
-</span><span class='line'>make
-</span><span class='line'>make install
-</span><span class='line'><span class="nb">cd</span> <span class="nv">$build</span>
-</span><span class='line'><span class="nb">unset </span>build
-</span><span class='line'>rm autoconf-2.68.tar.gz automake-1.11.tar.gz libtool-2.4.tar.gz
-</span><span class='line'>rm -rf autoconf-2.68 automake-1.11 libtool-2.4
-</span><span class='line'><span class="nb">cd</span> ..
-</span><span class='line'>
-</span><span class='line'>pecl download uploadprogress
-</span><span class='line'>ls uploadprogress*z | xargs -L1 tar zxpf <span class="o">&amp;&amp;</span> rm -v uploadprogress*z package*xml
-</span><span class='line'>mv -v <span class="k">$(</span>find * -type d -name <span class="s2">&quot;uploadprogress*&quot;</span><span class="k">)</span> uploadprogress
-</span><span class='line'><span class="nb">cd </span>uploadprogress
-</span><span class='line'>phpize
-</span><span class='line'>./configure --with-php-config<span class="o">=</span><span class="k">$(</span>find /Applications/MAMP/bin/php -type d -name <span class="s2">&quot;php5.4*&quot;</span> | sort | tail -1<span class="k">)</span>/bin/php-config
-</span><span class='line'>make
-</span><span class='line'>make install
-</span><span class='line'>
-</span><span class='line'><span class="nb">echo</span> -e <span class="s2">&quot;\n[uploadprogress]\nextension=uploadprogress.so&quot;</span> &gt;&gt; <span class="k">$(</span>find /Applications/MAMP/bin/php -type d -name <span class="s2">&quot;php5.4*&quot;</span> | sort | tail -1<span class="k">)</span>/conf/php.ini
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Reference 1: <a href="http://www.lullabot.com/articles/installing-php-pear-and-pecl-extensions-on-mamp-mac-os-x-107-lion">http://www.lullabot.com/articles/installing-php-pear-and-pecl-extensions-on-mamp-mac-os-x-107-lion</a>
-Reference 2: <a href="http://jsdelfino.blogspot.com/2012/08/autoconf-and-automake-on-mac-os-x.html">http://jsdelfino.blogspot.com/2012/08/autoconf-and-automake-on-mac-os-x.html</a></p>
-
-<h2>Apache</h2>
-
-<p>Set up VirtualHosts in <strong>~/Sites/mamp-vhosts.conf</strong> so it&rsquo;s easy to edit later:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>cp -av /Applications/MAMP/conf/apache/httpd.conf<span class="o">{</span>,-default<span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="nb">export </span><span class="nv">USERHOME</span><span class="o">=</span><span class="k">$(</span>dscl . -read /Users/<span class="sb">`</span>whoami<span class="sb">`</span> NFSHomeDirectory | awk -F<span class="s2">&quot;\: &quot;</span> <span class="s1">&#39;{print $2}&#39;</span><span class="k">)</span> <span class="o">&amp;&amp;</span> <span class="nb">echo</span> -e <span class="s2">&quot;\n# User VirtualHosts file (added after MAMP installer)\nInclude ${USERHOME}/Sites/mamp-vhosts.conf&quot;</span> &gt;&gt; /Applications/MAMP/conf/apache/httpd.conf <span class="o">&amp;&amp;</span> <span class="nb">unset </span>USERHOME
-</span><span class='line'>
-</span><span class='line'><span class="o">[</span> ! -d ~/Sites/logs <span class="o">]</span> <span class="o">&amp;&amp;</span> mkdir -pv ~/Sites/logs
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong><em>IMPORTANT!</em></strong> Be sure to copy and paste the lines containing <code>PORTNUM</code> through the last <code>EOF</code> as a <strong><em>single</em></strong> command (this entire block is a single copy+paste):</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-<span class='line-number'>48</span>
-<span class='line-number'>49</span>
-<span class='line-number'>50</span>
-<span class='line-number'>51</span>
-</pre></td><td class='code'><pre><code class='apache'><span class='line'><span class="err">PORTNUM=$(</span><span class="nb">egrep</span> &#39;^Listen [0-9]*&#39; <span class="sx">/Applications/MAMP/conf/apache/httpd.conf</span> | awk &#39;{print $2}&#39;) USERHOME=$(dscl . -read <span class="sx">/Users/</span>`whoami` NFSHomeDirectory | awk -F<span class="s2">&quot;\: &quot;</span> &#39;{print $2}&#39;) cat &gt; ~/Sites/mamp-vhosts.conf &lt;&lt;EOF
-</span><span class='line'><span class="c">#</span>
-</span><span class='line'><span class="c"># Use name-based virtual hosting.</span>
-</span><span class='line'><span class="c">#</span>
-</span><span class='line'><span class="nb">NameVirtualHost</span> *:${PORTNUM}
-</span><span class='line'>
-</span><span class='line'><span class="c">#</span>
-</span><span class='line'><span class="c"># Set up permissions for VirtualHosts in ~/Sites</span>
-</span><span class='line'><span class="c">#</span>
-</span><span class='line'><span class="nt">&lt;Directory</span> <span class="s">&quot;${USERHOME}/Sites&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>    <span class="nb">Options</span> Indexes FollowSymLinks MultiViews
-</span><span class='line'>    <span class="nb">AllowOverride</span> <span class="k">All</span>
-</span><span class='line'>    <span class="nb">Order</span> allow,deny
-</span><span class='line'>    <span class="nb">Allow</span> from <span class="k">all</span>
-</span><span class='line'><span class="nt">&lt;/Directory&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="c"># For http://localhost in the MAMP default location</span>
-</span><span class='line'><span class="nt">&lt;VirtualHost</span> <span class="s">_default_:${PORTNUM}</span><span class="nt">&gt;</span>
-</span><span class='line'>    <span class="nb">ServerName</span> localhost
-</span><span class='line'>    <span class="nb">DocumentRoot</span> <span class="s2">&quot;/Applications/MAMP/htdocs&quot;</span>
-</span><span class='line'><span class="nt">&lt;/VirtualHost&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="c">#</span>
-</span><span class='line'><span class="c"># VirtualHosts</span>
-</span><span class='line'><span class="c">#</span>
-</span><span class='line'>
-</span><span class='line'><span class="c">## VirtualHost template</span>
-</span><span class='line'><span class="c">#&lt;VirtualHost *:${PORTNUM}&gt;</span>
-</span><span class='line'><span class="c">#  ServerName domain.local</span>
-</span><span class='line'><span class="c">#  CustomLog &quot;${USERHOME}/Sites/logs/domain.local-access_log&quot; combined</span>
-</span><span class='line'><span class="c">#  ErrorLog &quot;${USERHOME}/Sites/logs/domain.local-error_log&quot;</span>
-</span><span class='line'><span class="c">#  DocumentRoot &quot;${USERHOME}/Sites/domain.local&quot;</span>
-</span><span class='line'><span class="c">#&lt;/VirtualHost&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="c">#</span>
-</span><span class='line'><span class="c"># Automatic VirtualHosts</span>
-</span><span class='line'><span class="c"># A directory at ${USERHOME}/Sites/webroot can be accessed at http://webroot.dev</span>
-</span><span class='line'><span class="c"># In Drupal, uncomment the line in .htaccess with: RewriteBase /</span>
-</span><span class='line'><span class="c">#</span>
-</span><span class='line'><span class="c"># This log format will display the per-virtual-host as the first field followed by a typical log line</span>
-</span><span class='line'><span class="nb">LogFormat</span> <span class="s2">&quot;%V %h %l %u %t \&quot;%r\&quot; %&gt;s %b \&quot;%{Referer}i\&quot; \&quot;%{User-Agent}i\&quot;&quot;</span> combinedmassvhost
-</span><span class='line'><span class="nt">&lt;VirtualHost</span> <span class="s">*:${PORTNUM}</span><span class="nt">&gt;</span>
-</span><span class='line'>  <span class="nb">ServerName</span> dev
-</span><span class='line'>  <span class="nb">ServerAlias</span> *.dev
-</span><span class='line'>
-</span><span class='line'>  <span class="nb">CustomLog</span> <span class="s2">&quot;${USERHOME}/Sites/logs/dev-access_log&quot;</span> combinedmassvhost
-</span><span class='line'>  <span class="nb">ErrorLog</span> <span class="s2">&quot;${USERHOME}/Sites/logs/dev-error_log&quot;</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="nb">VirtualDocumentRoot</span> ${USERHOME}/Sites/%-2+
-</span><span class='line'><span class="nt">&lt;/VirtualHost&gt;</span>
-</span><span class='line'><span class="nb">EOF</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>If you read that closely, you&rsquo;ll see that it&rsquo;s set up to do <a href="http://httpd.apache.org/docs/2.2/vhosts/mass.html">MassVirtualHosts</a> using the <code>*.dev</code> tld. For example, set up a web root at <code>$HOME/Sites/project</code> and you will be able to view it at <a href="http://project.dev:8888">http://project.dev:8888</a> without needing to create a separate VirtualHost. A custom log format is used, putting the domain name at the beginning of the line, so you can easily see the output as it related to a project.</p>
-
-<h2>Finishing Up</h2>
-
-<p>Open the MAMP application to <strong>Start Servers</strong>. Note that if you ever change the Apache port number, you&rsquo;ll need to edit <code>~/Sites/mamp-vhosts.conf</code> appropriately.</p>
-
-<p>As always with MAMP, you can work out of <a href="http://localhost:8888/">http://localhost:8888/</a> by putting files in <code>/Applications/MAMP/htdocs</code>. For example, the folder <code>/Applications/MAMP/drupal</code> will be accessible at <a href="http://localhost:8888/drupal">http://localhost:8888/drupal</a>. You can find other MAMP tools at <a href="http://localhost:8888/MAMP">http://localhost:8888/MAMP</a>.</p>
-
-<p>If you&rsquo;re having trouble connecting to MySQL with Sequel Pro or another utility, use <code>/Applications/MAMP/tmp/mysql/mysql.sock</code> as the socket path. If MAMP&rsquo;s MySQL is the only service running mysqld, this should not be necessary but YMMV&hellip;</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/2/">&larr; Older</a>
@@ -2954,6 +2861,10 @@ Reference 2: <a href="http://jsdelfino.blogspot.com/2012/08/autoconf-and-automak
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2017/06/21/python-3-and-uwsgi-on-centos-7/">Python 3 and uWSGI on CentOS 7</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2017/05/15/robots-dot-txt-disallow-all-with-nginx/">Robots.txt Disallow All With Nginx</a>
       </li>
     
@@ -2967,10 +2878,6 @@ Reference 2: <a href="http://jsdelfino.blogspot.com/2012/08/autoconf-and-automak
     
       <li class="post">
         <a href="/blog/2014/06/09/os-x-109-local-development-environment-apache-php-and-mysql-homebrew/">OS X 10.9 Local Development Environment: Apache, PHP, and MySQL With Homebrew</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/10/18/whats-the-deal-with-pressflow-7/">What&#8217;s the Deal With Pressflow 7?</a>
       </li>
     
   </ul>

@@ -1,0 +1,517 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Python 3 and uWSGI on CentOS 7 - alanthing</title>
+  <meta name="author" content="Alan Ivey">
+
+  
+  <meta name="description" content="Wherever I can, I avoid compiling applications from source or packaging up my own versions of things that exist in popular repositories. I recently &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://alanthing.com/blog/2017/06/21/python-3-and-uwsgi-on-centos-7">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="alanthing" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-34327970-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">alanthing</a></h1>
+  
+    <h2>Linux and other things</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:alanthing.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Python 3 and uWSGI on CentOS 7</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2017-06-21T07:04:00-04:00" pubdate data-updated="true">Jun 21<span>st</span>, 2017</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>Wherever I can, I avoid compiling applications from source or packaging up my own versions of things that exist in popular repositories. I recently needed to run a Python 3 application via uWSGI on CentOS 7 and was frustrated at how many search results were recommending building uWSGI from source when it&rsquo;s <a href="https://dl.fedoraproject.org/pub/epel/7/x86_64/u/">available in EPEL</a>. I&rsquo;ve only deployed a handful of Python applications, and was not interested in keeping up with source-compiled dependencies to support this small project over time. We&rsquo;ll discuss a couple of different ways to run these programs together with minimal customization.</p>
+
+<h1>Python 3.4</h1>
+
+<p>In CentOS 7, you can run Python 3.4 alongside Python 2.7 as it is available in <a href="https://dl.fedoraproject.org/pub/epel/7/x86_64/p/">EPEL</a>.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>rpm -q epel-release <span class="o">||</span> yum -q -y install epel-release
+</span><span class='line'>
+</span><span class='line'>yum -y install python34
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>pip</h2>
+
+<p>If you want to install <a href="https://pip.pypa.io">pip</a>, simply <code>yum install python34-pip</code> and it will install at <code>/usr/bin/pip3</code> and <code>/usr/bin/pip3.4</code>, leaving <code>/usr/bin/pip</code> alone as that is part of the <code>python2-pip</code> package. This was only available recently (late 2016); previously you had to manually install and deal with <code>/usr/bin/pip</code> being overwritten.</p>
+
+<h2>Virtual Environments</h2>
+
+<p>Since 3.3, Python supports creating virtual environments without an external module like <code>virtualenv</code>. <code>pyvenv</code> was the &ldquo;recommended tool&rdquo; for this initially, though it <a href="https://docs.python.org/dev/whatsnew/3.6.html#id8">is deprecated in Python 3.6</a>. As such, to lean into the preferred Python nomenclature, you can use the <a href="https://docs.python.org/3/library/venv.html">venv module</a> directly to create Python 3.4 virtual environments:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>python3.4 -m venv /path/to/venv34dirname
+</span><span class='line'>
+</span><span class='line'><span class="nb">source</span> /path/to/venv34dirname/bin/activate
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>If you like using <a href="https://virtualenv.pypa.io">virtualenv</a>, you&rsquo;ll be disappointed to see that there is no <code>python34-virtualenv</code> package available in EPEL. While you could <code>pip3 install virtualenv</code>, that would install at <code>/usr/bin/virtualenv</code>, potentially overwriting the same file provided by the <code>python-virtualenv</code> package. But, if you do, consider the following:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># Install virtualenv with the pip provided the &#39;python34&#39; package:</span>
+</span><span class='line'>pip3 install virtualenv
+</span><span class='line'>
+</span><span class='line'><span class="c"># Then, a virtualenv based on /usr/bin/python3.4:</span>
+</span><span class='line'>virtualenv /path/to/venv34dirname
+</span><span class='line'>
+</span><span class='line'><span class="c"># Now, to create based on /usr/bin/python2.7, using a newer version of virtualenv than is provided by the &#39;python-virtualenv&#39; package:</span>
+</span><span class='line'>virtualenv --python<span class="o">=</span>/usr/bin/python2.7 /path/to/venv27dirname
+</span><span class='line'>
+</span><span class='line'><span class="c"># Or, recommended, use the alternate path from the &#39;python-virtualenv&#39; package:</span>
+</span><span class='line'>virtualenv-2.7 /path/to/venv27dirname
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Unless you have a compelling reason for <code>virtualenv</code> on your servers, use the built-in <code>venv</code> module. I don&rsquo;t like to overwrite files provided by packages, and we should use recommended upstream tools where possible.</p>
+
+<h2>uWSGI</h2>
+
+<p>Since uWSGI is provided by EPEL, there is no need to install it with <code>pip</code>.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>yum -y install uwsgi uwsgi-plugin-python3
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This will install the Python 3.4 uWSGI plugin to <code>/usr/lib64/uwsgi/python3_plugin.so</code>. Be sure to include the directive <code>plugin = python3</code> in your uWSGI definition and proceed as normal (beyond the scope of this post).</p>
+
+<h1>Python 3.5 Software Collection</h1>
+
+<p>I love <a href="http://softwarecollections.org">Software Collections</a>. With Python 2.7 being the default version of Python with CentOS 7, I find it much better to keep another version in a completely separate directory structure than integrating with <code>/usr</code> and such. We&rsquo;ll use a rebuild of the Red Hat SCL for Python 3.5, and everything will be installed to <code>/opt/rh/rh-python35</code>.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>yum -y install centos-release-scl
+</span><span class='line'>
+</span><span class='line'>yum -y install rh-python35-python
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Using</h2>
+
+<p>You&rsquo;ll quickly notice that the newly-installed Python 3.5 binary is not in your <code>$PATH</code>; it&rsquo;s in <code>/opt/rh/rh-python35/root/bin</code>. You have a few options:</p>
+
+<p>Launch a new instance of bash:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>scl <span class="nb">enable </span>rh-python35 bash
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Alternatively, you can modify your existing session by running one of the following manually, or add to <code>~/.bashrc</code>:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># Preferred method:</span>
+</span><span class='line'><span class="nb">source </span>scl_source <span class="nb">enable </span>rh-python35
+</span><span class='line'>
+</span><span class='line'><span class="c"># Source the file directly:</span>
+</span><span class='line'><span class="c">#source /opt/rh/rh-python35/enable</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>pip</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>yum -y install rh-python35-python-pip
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>After installing, you can use <code>pip</code>, <code>pip3</code>, or <code>pip3.5</code></p>
+
+<h2>Virtual Environments</h2>
+
+<p>You can use the built-in method:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>python3.5 -m venv /path/to/venv35dirname
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Or, you can use <code>virtualenv</code> (though, see the 3.4 section for the rationale I recommend against this):</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>yum -y install rh-python35-python-virtualenv
+</span><span class='line'>
+</span><span class='line'>virtualenv-3.5 /path/to/venv35dirname
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>uWSGI</h2>
+
+<p>While there is a <code>uwsgi-plugin-python3</code> RPM, it&rsquo;s for the aforementioned <code>python34</code> package. This is where you will have to compile something manually; so carefully consider the pros and cons of using a Software Collection. <em>(Later, I may add to this post where you can use a yum post-install or post-upgrade action to ensure the compiled plugin is kept up to date.)</em></p>
+
+<p>This is a helpful exercise to learn how you can integrate packages that install to default paths and a Software Collection which is kept away from default paths.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>yum -y install uwsgi uwsgi-plugin-common
+</span><span class='line'>
+</span><span class='line'><span class="nv">UWSGI_VERSION</span><span class="o">=</span><span class="s2">&quot;$( rpm -q uwsgi --queryformat &#39;%{VERSION}&#39; )&quot;</span>
+</span><span class='line'><span class="nv">UWSGI_PLUGINS_DIR</span><span class="o">=</span><span class="s2">&quot;$( dirname &quot;</span><span class="k">$(</span> rpm -q uwsgi-plugin-common -l | grep <span class="s1">&#39;_plugin\.so&#39;</span> | tail -1 <span class="k">)</span><span class="s2">&quot; )&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nb">source </span>scl_source <span class="nb">enable </span>rh-python35
+</span><span class='line'>
+</span><span class='line'><span class="k">if</span> <span class="o">[[</span> <span class="nv">$X_SCLS</span> <span class="o">==</span> *rh-python35* <span class="o">]]</span>; <span class="k">then</span>
+</span><span class='line'><span class="k">  </span><span class="nv">UWSGI_PLUGINS_DIR</span><span class="o">=</span><span class="s2">&quot;/opt/rh/rh-python35/root${UWSGI_PLUGINS_DIR:?}&quot;</span>
+</span><span class='line'><span class="k">fi</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">if</span> <span class="o">[[</span> ! -f <span class="s2">&quot;${UWSGI_PLUGINS_DIR:?}/python35_plugin.so&quot;</span> <span class="o">]]</span>; <span class="k">then</span>
+</span><span class='line'><span class="k">  </span>yum -y install gcc libcap-devel libuuid-devel make openssl-devel rh-python35-python-devel
+</span><span class='line'>
+</span><span class='line'>  mkdir -pv /opt/rh/rh-python35/root/src
+</span><span class='line'>  <span class="nb">cd</span> /opt/rh/rh-python35/root/src
+</span><span class='line'>
+</span><span class='line'>  curl -LO <span class="s2">&quot;https://projects.unbit.it/downloads/uwsgi-${UWSGI_VERSION:?}.tar.gz&quot;</span>
+</span><span class='line'>  tar zxvf <span class="s2">&quot;uwsgi-${UWSGI_VERSION:?}.tar.gz&quot;</span>
+</span><span class='line'>  <span class="nb">cd</span> <span class="s2">&quot;uwsgi-${UWSGI_VERSION:?}/&quot;</span>
+</span><span class='line'>
+</span><span class='line'>  make <span class="nv">PROFILE</span><span class="o">=</span>nolang
+</span><span class='line'>  <span class="nv">PYTHON</span><span class="o">=</span>python3.5 /usr/sbin/uwsgi --build-plugin <span class="s2">&quot;plugins/python python35&quot;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="o">[[</span> ! -d <span class="s2">&quot;${UWSGI_PLUGINS_DIR:?}/&quot;</span> <span class="o">]]</span> <span class="o">&amp;&amp;</span> mkdir -pv <span class="s2">&quot;${UWSGI_PLUGINS_DIR:?}/&quot;</span>
+</span><span class='line'>  mv -v python35_plugin.so <span class="s2">&quot;${UWSGI_PLUGINS_DIR:?}/&quot;</span>
+</span><span class='line'><span class="k">fi</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><em>(Reference: <a href="http://uwsgi-docs.readthedocs.io/en/latest/WSGIquickstart.html">http://uwsgi-docs.readthedocs.io/en/latest/WSGIquickstart.html</a>)</em></p>
+
+<p>After completing, your resulting uWSGI file will need to contain:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='ini'><span class='line'><span class="na">plugins-dir</span> <span class="o">=</span> <span class="s">/opt/rh/rh-python35/root/usr/lib64/uwsgi</span>
+</span><span class='line'><span class="na">plugin</span> <span class="o">=</span> <span class="s">python35</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h1>Which should you use?</h1>
+
+<p>If you need Python 3 but want to reduce the amount of customization that you need to do, I recommend installing <code>python34</code> from EPEL. You can use it with uWSGI with no compiling from source.</p>
+
+<p>If Python 3.4 is too old and/or you need 3.5+ functionality, the Software Collection can be an alternative to compiling Python from source and knowing that you&rsquo;re getting quality packages designed by Red Hat and rebuilt by CentOS.</p>
+
+<p>If you need Python 3.6, or a newer release of 3.4 or 3.5 not provided quickly enough by the package maintainers, and you don&rsquo;t want to deal with all of the pain of <code>./configure &amp;&amp; make &amp;&amp; sudo make install</code>, I would suggest looking at <a href="https://github.com/pyenv/pyenv">pyenv</a> to meet your needs.</p>
+
+<p>Please let me know if I missed something or should add anything. I&rsquo;m cumulatively green with running Python in production but wanted to share my learnings as I was frustrated by the lack of good information for my needs. Feedback is welcome.</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Alan Ivey</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2017-06-21T07:04:00-04:00" pubdate data-updated="true">Jun 21<span>st</span>, 2017</time>
+      
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://alanthing.com/blog/2017/06/21/python-3-and-uwsgi-on-centos-7/" data-via="alanthing" data-counturl="http://alanthing.com/blog/2017/06/21/python-3-and-uwsgi-on-centos-7/" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
+    <div class="fb-like" data-send="true" data-width="450" data-show-faces="false"></div>
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2017/05/15/robots-dot-txt-disallow-all-with-nginx/" title="Previous Post: Robots.txt disallow all with nginx">&laquo; Robots.txt disallow all with nginx</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2017/06/21/python-3-and-uwsgi-on-centos-7/">Python 3 and uWSGI on CentOS 7</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2017/05/15/robots-dot-txt-disallow-all-with-nginx/">Robots.txt Disallow All With Nginx</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2017/05/03/auto-restart-tomcat-with-systemd/">Auto-restart Tomcat With Systemd</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/12/22/os-x-1010-yosemite-local-development-environment-apache-php-and-mysql-homebrew/">OS X 10.10 Yosemite Local Development Environment: Apache, PHP, and MySQL With Homebrew</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/06/09/os-x-109-local-development-environment-apache-php-and-mysql-homebrew/">OS X 10.9 Local Development Environment: Apache, PHP, and MySQL With Homebrew</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/alanthing">@alanthing</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'alanthing',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2017 - Alan Ivey -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'alanthing';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://alanthing.com/blog/2017/06/21/python-3-and-uwsgi-on-centos-7/';
+        var disqus_url = 'http://alanthing.com/blog/2017/06/21/python-3-and-uwsgi-on-centos-7/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id; js.async = true;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>
