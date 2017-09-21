@@ -4,7 +4,7 @@
   <title><![CDATA[alanthing]]></title>
   <link href="http://alanthing.com/atom.xml" rel="self"/>
   <link href="http://alanthing.com/"/>
-  <updated>2017-06-21T08:57:26-04:00</updated>
+  <updated>2017-09-20T21:16:10-04:00</updated>
   <id>http://alanthing.com/</id>
   <author>
     <name><![CDATA[Alan Ivey]]></name>
@@ -12,6 +12,159 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Certbot on CentOS 6]]></title>
+    <link href="http://alanthing.com/blog/2017/09/20/certbot-on-centos-6/"/>
+    <updated>2017-09-20T20:32:00-04:00</updated>
+    <id>http://alanthing.com/blog/2017/09/20/certbot-on-centos-6</id>
+    <content type="html"><![CDATA[<p>CentOS 6 is getting updates through <a href="https://wiki.centos.org/FAQ/General#head-fe8a0be91ee3e7dea812e8694491e1dde5b75e6d">November 30, 2020</a>, but it&rsquo;s getting more and more difficult to find newer packages for the operating system. If you want to use <a href="https://certbot.eff.org">Certbot</a> for obtaining and renewing <a href="https://letsencrypt.org">Let&rsquo;s Encrypt</a> TLS certificates, you can use <a href="https://certbot.eff.org/#centos6-other">certbot-auto</a> and let it handle the work for you, but I wanted to try only <a href="https://pypi.python.org/pypi/certbot/">the PyPi package</a> via pip.</p>
+
+<p><em>Note:</em> I&rsquo;m using Docker to test these commands via: <code>docker run --rm -it centos:6 bash</code></p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'># No Python wheels available, so we need gcc and some devel packages
+</span><span class='line'>$ yum install gcc libffi-devel openssl-devel python-devel python-pip
+</span><span class='line'>
+</span><span class='line'># Let's try and install certbot
+</span><span class='line'>$ pip install --upgrade certbot
+</span><span class='line'>...snip...
+</span><span class='line'>Successfully installed ConfigArgParse-0.12.0 PyOpenSSL-17.3.0 acme-0.18.2 certbot-0.18.2 cffi-1.11.0 configobj-5.0.6 cryptography-2.0.3 funcsigs-1.0.2 mock-2.0.0 pbr-3.1.1 pyrfc3339-1.0 requests-2.18.4 zope.component-4.4.0 zope.event-4.3.0</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Seemed to work, right? Nope 😠:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ certbot --help
+</span><span class='line'>Traceback (most recent call last):
+</span><span class='line'>  File "/usr/bin/certbot", line 7, in &lt;module&gt;
+</span><span class='line'>    from certbot.main import main
+</span><span class='line'>  File "/usr/lib/python2.6/site-packages/certbot/main.py", line 7, in &lt;module&gt;
+</span><span class='line'>    import zope.component
+</span><span class='line'>  File "/usr/lib/python2.6/site-packages/zope/component/__init__.py", line 28, in &lt;module&gt;
+</span><span class='line'>    from zope.component.globalregistry import getGlobalSiteManager
+</span><span class='line'>  File "/usr/lib/python2.6/site-packages/zope/component/globalregistry.py", line 18, in &lt;module&gt;
+</span><span class='line'>    from zope.interface.registry import Components
+</span><span class='line'>  File "/usr/lib64/python2.6/site-packages/zope/interface/registry.py", line 167
+</span><span class='line'>    filtered_state = {k: v for k, v in reduction[2].items()
+</span><span class='line'>                             ^
+</span><span class='line'>SyntaxError: invalid syntax</span></code></pre></td></tr></table></div></figure>
+
+
+<p><a href="https://stackoverflow.com/q/345356/534275">Of course this doesn&rsquo;t work</a>, it&rsquo;s Python <strong>2.6</strong>!</p>
+
+<p><a href="https://wiki.centos.org/AdditionalResources/Repositories/SCL">Software Collections</a>, to the rescue! Let&rsquo;s use the Python 2.7 SCL and try again:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'># Install the SCL Yum repo files
+</span><span class='line'>$ yum install centos-release-scl
+</span><span class='line'>
+</span><span class='line'># Grab Python 2.7, pip, and related depedencies
+</span><span class='line'>$ yum install python27-python-pip
+</span><span class='line'>
+</span><span class='line'># Install into the SCL root with pip. Wheels are available, so no compiler or devel packages necessary!
+</span><span class='line'>$ scl enable python27 'pip install certbot'
+</span><span class='line'>...snip...
+</span><span class='line'>Successfully installed ConfigArgParse-0.12.0 PyOpenSSL-17.3.0 acme-0.18.2 asn1crypto-0.22.0 certbot-0.18.2 certifi-2017.7.27.1 cffi-1.11.0 chardet-3.0.4 configobj-5.0.6 cryptography-2.0.3 enum34-1.1.6 funcsigs-1.0.2 future-0.16.0 idna-2.6 ipaddress-1.0.18 mock-2.0.0 parsedatetime-2.4 pbr-3.1.1 pycparser-2.18 pyrfc3339-1.0 pytz-2017.2 requests-2.18.4 setuptools-36.5.0 six-1.11.0 urllib3-1.22 zope.component-4.4.0 zope.event-4.3.0 zope.interface-4.4.2</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Success! Right?</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ certbot --help
+</span><span class='line'>bash: certbot: command not found</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Hrm, what happened?</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ find /opt/rh/python27/ -name certbot -executable
+</span><span class='line'>/opt/rh/python27/root/usr/bin/certbot
+</span><span class='line'>/opt/rh/python27/root/usr/lib/python2.7/site-packages/certbot</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Right, it&rsquo;s in the SCL. You have some options. You could <a href="https://access.redhat.com/solutions/527703">enable the SCL in userspace</a> through commands like <code>source scl_source enable python27</code> or <code>scl enable python27 bash</code>. Or, because I want to use <code>certbot</code> interactively and in crons without thinking about the SCL, we can use a &ldquo;shim&rdquo;:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ cat &gt; /usr/local/bin/certbot &lt;&lt;'EOF'
+</span><span class='line'>#!/bin/bash
+</span><span class='line'>source scl_source enable python27
+</span><span class='line'>certbot "$@"
+</span><span class='line'>EOF
+</span><span class='line'>$ chmod -c 755 /usr/local/bin/certbot</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Assuming <code>/usr/local/bin/</code> is in your <code>$PATH</code>, we can test this:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ certbot register --agree-tos -m 'le@example.com' -n
+</span><span class='line'>Saving debug log to /var/log/letsencrypt/letsencrypt.log
+</span><span class='line'>
+</span><span class='line'>IMPORTANT NOTES:
+</span><span class='line'> - Your account credentials have been saved in your Certbot
+</span><span class='line'>   configuration directory at /etc/letsencrypt. You should make a
+</span><span class='line'>   secure backup of this folder now. This configuration directory will
+</span><span class='line'>   also contain certificates and private keys obtained by Certbot so
+</span><span class='line'>   making regular backups of this folder is ideal.
+</span><span class='line'>
+</span><span class='line'>$ find /etc/letsencrypt \! -type d
+</span><span class='line'>/etc/letsencrypt/accounts/acme-v01.api.letsencrypt.org/directory/a1b2c3d4e5f6a7b8a1b2c3d4e5f6a7b8/meta.json
+</span><span class='line'>/etc/letsencrypt/accounts/acme-v01.api.letsencrypt.org/directory/a1bx2c3d4e5f6a7b8a1b2c3d4e5f6a7b8/regr.json
+</span><span class='line'>/etc/letsencrypt/accounts/acme-v01.api.letsencrypt.org/directory/a1b2c3d4e5f6a7b8a1b2c3d4e5f6a7b8/private_key.json</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Now you have <code>certbot</code> on CentOS 6 from PyPi and without <code>certbot-auto</code> (Nothing wrong with <code>certbot-auto</code>, I just prefer to have more control over the installation process). Let me know how it goes for you!</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Python 3 and uWSGI on CentOS 7]]></title>
@@ -3383,293 +3536,6 @@ Reference 2: <a href="http://jsdelfino.blogspot.com/2012/08/autoconf-and-automak
 <h2>Favorite Cause</h2>
 
 <p>It wasn&rsquo;t new to 2011, but I think 2011 is when <a href="http://kickstarter.com">Kickstarter</a> really became huge. It&rsquo;s amazing to see peoples&#8217; dreams come to life.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[OS X 10.7 Lion Development: MacPorts]]></title>
-    <link href="http://alanthing.com/blog/2011/10/11/os-x-107-lion-development-macports/"/>
-    <updated>2011-10-11T14:13:00-04:00</updated>
-    <id>http://alanthing.com/blog/2011/10/11/os-x-107-lion-development-macports</id>
-    <content type="html"><![CDATA[<p><em>This post originally featured on the <a href="http://echo.co/blog/os-x-107-lion-development-macports">Echo &amp; Co. blog</a></em>.</p>
-
-<p>OS X Lion comes with most of the tools you would need to do &ldquo;MAMP&rdquo; (Mac OS X, Apache, MySQL/MariaDB, PHP) development, as outlined in my <a href="http://echodittolabs.org/blog/2011/08/os-x-107-lion-development-native-mamp-mysql-installer">previous</a> <a href="http://echodittolabs.org/blog/2011/09/os-x-107-lion-development-native-apache-php-homebrew-mysql-or-mariadb">posts</a> once you add a database. So then why would you want to use MacPorts? Setting your development environment up in MacPorts isolates the binaries, libraries, and configuration files, completely separate from the existing OS X install (with the exception of startup scripts). You can also tweak the configuration files on your own, apply your own patches, and apply updates that MacPorts may get before Apple pushes them. It will take more time because you&rsquo;ll be compiling everything, but you have all of the control. Read on for how to get things set up.</p>
-
-<h2>Prerequisites</h2>
-
-<p>We&rsquo;ll going to be compiling a lot of source code so you&rsquo;ll need to have <a href="http://itunes.apple.com/us/app/xcode/id448457090">Xcode 4</a> installed. I initially tried with the <a href="https://github.com/kennethreitz/osx-gcc-installer">OS X GCC Installer</a> but eventually ran into a problem where a portfile was expecting an Xcode binary to check to a prerequisite. I&rsquo;m sure some hacking could&rsquo;ve resolved it to avoid having to install the very large Xcode package, but at the end of the day it&rsquo;s better to just know that it&rsquo;ll work as expected.</p>
-
-<p>Once you have Xcode 4 installed, you&rsquo;ll need to <a href="http://www.macports.org/install.php">install MacPorts</a>. It&rsquo;s a simple click-through installer. Come back to this guide once MacPorts is ready.</p>
-
-<p>Note that for all commands before that are starting with a $, the dollar sign is showing a command-line prompt in <a href="http://www.apple.com/macosx/apps/all.html#terminal">Terminal</a>, and you should not actually type it as part of the commands.</p>
-
-<h2>Install packages</h2>
-
-<p>Update the ports tree to get the latest from the MacPorts server in case the installer had an older tree:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>sudo /opt/local/bin/port selfupdate
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>All of the packages that we need can be installed with a single command:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>sudo /opt/local/bin/port install apache2 php5 php5-mysql mysql5-server php5-gd php5-mbstring php5-apc lynx phpmyadmin
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Compiling all of these tools will take a while, so grab a book and come back when the command is completed.</p>
-
-<h2>Configure PHP</h2>
-
-<p>The following will set up PHP with some development-friendly settings.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sudo cp -av /opt/local/etc/php5/php.ini-development /opt/local/etc/php5/php.ini
-</span><span class='line'><span class="nv">$ </span>sudo sed -i <span class="s2">&quot;&quot;</span> <span class="s1">&#39;s/\(default_socket[ ]\{0,1\}=\)/\1 \/opt\/local\/var\/run\/mysql5\/mysqld.sock/g&#39;</span> /opt/local/etc/php5/php.ini
-</span><span class='line'><span class="nv">$ </span>sudo sh -c <span class="s2">&quot;cat &gt;&gt; /opt/local/etc/php5/php.ini &lt;&lt;&#39;EOF&#39;</span>
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'><span class="s2">;;</span>
-</span><span class='line'><span class="s2">;; User customizations below</span>
-</span><span class='line'><span class="s2">;;</span>
-</span><span class='line'>
-</span><span class='line'><span class="s2">; Original - memory_limit = 128M</span>
-</span><span class='line'><span class="s2">memory_limit = 196M</span>
-</span><span class='line'><span class="s2">; Original - post_max_size = 8M</span>
-</span><span class='line'><span class="s2">post_max_size = 200M</span>
-</span><span class='line'><span class="s2">; Original - upload_max_filesize = 2M</span>
-</span><span class='line'><span class="s2">upload_max_filesize = 100M</span>
-</span><span class='line'><span class="s2">; Original - default_socket_timeout = 60</span>
-</span><span class='line'><span class="s2">default_socket_timeout = 600</span>
-</span><span class='line'><span class="s2">; Original - max_execution_time = 30</span>
-</span><span class='line'><span class="s2">max_execution_time = 300</span>
-</span><span class='line'><span class="s2">; Original - max_input_time = 60</span>
-</span><span class='line'><span class="s2">max_input_time = 600</span>
-</span><span class='line'><span class="s2">; Original - ;date.timezone =</span>
-</span><span class='line'><span class="s2">date.timezone = &#39;America/New_York&#39;</span>
-</span><span class='line'><span class="s2">EOF&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Now configure the APC extension (installed above with php5-apc) which will increase PHP performance dramatically.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sudo sh -c <span class="s2">&quot;cat &gt; /opt/local/var/db/php5/apc-config.ini &lt;&lt;&#39;EOF&#39;</span>
-</span><span class='line'><span class="s2">[apc]</span>
-</span><span class='line'><span class="s2">apc.enabled = 1</span>
-</span><span class='line'><span class="s2">apc.shm_segments = 1</span>
-</span><span class='line'><span class="s2">apc.shm_size = 96M</span>
-</span><span class='line'><span class="s2">apc.cache_by_default = 1</span>
-</span><span class='line'><span class="s2">apc.stat = 1</span>
-</span><span class='line'><span class="s2">apc.rfc1867 = 1</span>
-</span><span class='line'><span class="s2">apc.stat = 7200</span>
-</span><span class='line'><span class="s2">EOF&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>Configure Apache</h2>
-
-<p>Start by setting up PHP to work with Apache properly:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sudo cp -av /opt/local/apache2/conf/httpd.conf /opt/local/apache2/conf/httpd.conf-default
-</span><span class='line'><span class="nv">$ </span>sudo /opt/local/apache2/bin/apxs -a -e -n <span class="s2">&quot;php5&quot;</span> /opt/local/apache2/modules/libphp5.so
-</span><span class='line'><span class="nv">$ </span>sudo bash -c <span class="s2">&quot;cat &gt;&gt; /opt/local/apache2/conf/httpd.conf &lt;&lt;&#39;EOF&#39;</span>
-</span><span class='line'>
-</span><span class='line'><span class="s2">## Add mod_php information</span>
-</span><span class='line'><span class="s2">Include conf/extra/mod_php.conf</span>
-</span><span class='line'><span class="s2"># Add index.php to the list of files that will be served as directory indexes.</span>
-</span><span class='line'><span class="s2">&lt;IfModule dir_module&gt;</span>
-</span><span class='line'><span class="s2">  DirectoryIndex index.php index.html</span>
-</span><span class='line'><span class="s2">&lt;/IfModule&gt;</span>
-</span><span class='line'><span class="s2">EOF&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Now we&rsquo;ll move httpd-vhosts.conf to ~/Sites for easy editing of new virtual hosts, as well as create a ~/Sites/logs folder:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sudo mv -v /opt/local/apache2/conf/extra/httpd-vhosts.conf /opt/local/apache2/conf/extra/httpd-vhosts.conf-default &lt;/br&gt;
-</span><span class='line'><span class="nv">$ </span><span class="o">[</span> ! -d ~/Sites <span class="o">]</span> <span class="o">&amp;&amp;</span> mkdir -v ~/Sites
-</span><span class='line'><span class="nv">$ </span>cp -av /opt/local/apache2/conf/extra/httpd-vhosts.conf-default ~/Sites/httpd-vhosts.conf
-</span><span class='line'><span class="nv">$ </span>sudo ln -s ~/Sites/httpd-vhosts.conf /opt/local/apache2/conf/extra/httpd-vhosts.conf
-</span><span class='line'><span class="nv">$ </span>sudo sed -i <span class="s2">&quot;&quot;</span> <span class="s1">&#39;s/\#\(.*httpd-vhosts\.conf\)/\1/&#39;</span> /opt/local/apache2/conf/httpd.conf
-</span><span class='line'><span class="nv">$ </span><span class="o">[</span> ! -d ~/Sites/logs <span class="o">]</span> <span class="o">&amp;&amp;</span> mkdir ~/Sites/logs
-</span><span class='line'><span class="nv">$ </span>sudo perl -pi -e <span class="s1">&#39;BEGIN{undef $/;} s/\&lt;VirtualHost .*\n//sg;&#39;</span> <span class="k">${</span><span class="nv">USERHOME</span><span class="k">}</span>/Sites/httpd-vhosts.conf &lt;/br&gt;
-</span><span class='line'><span class="nv">$ </span>sudo sh -c <span class="s2">&quot;cat &gt;&gt; ~/Sites/httpd-vhosts.conf &lt;&lt;&#39;EOF&#39; &lt;/br&gt;</span>
-</span><span class='line'><span class="s2"> &lt;/br&gt;</span>
-</span><span class='line'><span class="s2">## Change /Users/name to the path of your home folder &lt;/br&gt;</span>
-</span><span class='line'><span class="s2">#&lt;VirtualHost *:80&gt; &lt;/br&gt;</span>
-</span><span class='line'><span class="s2">#  ServerName project.local &lt;/br&gt;</span>
-</span><span class='line'><span class="s2">#  CustomLog &quot;</span>/Users/name/Sites/logs/project.local-access_log<span class="s2">&quot; combined &lt;/br&gt;</span>
-</span><span class='line'><span class="s2">#  ErrorLog &quot;</span>/Users/name/Sites/logs/project.local-error_log<span class="s2">&quot; &lt;/br&gt;</span>
-</span><span class='line'><span class="s2">#  DocumentRoot &quot;</span>/Users/name/Sites/project.local<span class="s2">&quot; &lt;/br&gt;</span>
-</span><span class='line'><span class="s2">#&lt;/VirtualHost&gt; &lt;/br&gt;</span>
-</span><span class='line'><span class="s2">EOF&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Allow userdirs so the MacPorts Apache &ldquo;feels&rdquo; more like the built-in Apache:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>sudo sed -i <span class="s2">&quot;&quot;</span> <span class="s1">&#39;s/\#\(.*httpd-userdir\.conf\)/\1/&#39;</span> /opt/local/apache2/conf/httpd.conf
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Start Apache and set it to load on boot:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>sudo /opt/local/bin/port load apache2
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>Configure MySQL</h2>
-
-<p>Set up the configuration file:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>sudo cp -av /opt/local/share/mysql5/mysql/my-small.cnf /opt/local/etc/mysql5/my.cnf
-</span><span class='line'>sudo sed -i <span class="s2">&quot;&quot;</span> <span class="s1">&#39;s/max_allowed_packet = 1.*M/max_allowed_packet = 1G/g&#39;</span> /opt/local/etc/mysql5/my.cnf
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Initialize MySQL and run the secure installation script:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>sudo -u _mysql /opt/local/bin/mysql_install_db5
-</span><span class='line'>sudo /opt/local/bin/port load mysql5-server
-</span><span class='line'>sudo /opt/local/lib/mysql5/bin/mysql_secure_installation
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>Configure phpMyAdmin</h2>
-
-<p>Add a config file for Apache and reload Apache:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sudo sh -c <span class="s2">&quot;cat &gt;&gt; /opt/local/apache2/conf/httpd.conf &lt;&lt;&#39;EOF&#39;</span>
-</span><span class='line'>
-</span><span class='line'><span class="s2"># phpMyAdmin</span>
-</span><span class='line'><span class="s2">Include conf/extra/phpmyadmin.conf</span>
-</span><span class='line'><span class="s2">EOF&quot;</span>
-</span><span class='line'><span class="nv">$ </span>sudo sh -c <span class="s2">&quot;cat &gt;&gt; /opt/local/apache2/conf/extra/phpmyadmin.conf &lt;&lt;&#39;EOF&#39;</span>
-</span><span class='line'><span class="s2">AliasMatch ^/phpmyadmin(?:/)?(/.*)?$ /opt/local/www/phpmyadmin$1</span>
-</span><span class='line'><span class="s2">AliasMatch ^/phpMyAdmin(?:/)?(/.*)?$ /opt/local/www/phpmyadmin$1</span>
-</span><span class='line'>
-</span><span class='line'><span class="s2">&lt;Directory &quot;</span>/opt/local/www/phpmyadmin<span class="s2">&quot;&gt;</span>
-</span><span class='line'><span class="s2"> Options -Indexes</span>
-</span><span class='line'><span class="s2"> AllowOverride None</span>
-</span><span class='line'><span class="s2"> Order allow,deny</span>
-</span><span class='line'><span class="s2"> Allow from all</span>
-</span><span class='line'>
-</span><span class='line'><span class="s2"> LanguagePriority en de es fr ja ko pt-br ru</span>
-</span><span class='line'><span class="s2"> ForceLanguagePriority Prefer Fallback</span>
-</span><span class='line'><span class="s2">&lt;/Directory&gt;</span>
-</span><span class='line'><span class="s2">EOF&quot;</span>
-</span><span class='line'><span class="nv">$ </span>sudo /opt/local/bin/port unload apache2
-</span><span class='line'><span class="nv">$ </span>sudo /opt/local/bin/port load apache2
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Basic set up of phpMyAdmin:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>sudo sed -i <span class="s2">&quot;&quot;</span> <span class="s2">&quot;s/blowfish_secret\&#39;\] = \&#39;/blowfish_secret\&#39;\] = \&#39;`cat /dev/urandom | strings | grep -o &#39;[[:alnum:]]&#39; | head -n 50 | tr -d &#39;\n&#39;`/&quot;</span> /opt/local/www/phpmyadmin/config.inc.php
-</span><span class='line'>sudo /opt/local/bin/mysql5 -uroot -proot &lt; /opt/local/www/phpmyadmin/scripts/create_tables.sql
-</span><span class='line'>sudo /opt/local/bin/mysql5 -uroot -proot -e<span class="s2">&quot;CREATE USER &#39;pma&#39;@&#39;localhost&#39; IDENTIFIED BY &#39;pmapass&#39;; GRANT SELECT, INSERT, DELETE, UPDATE ON phpmyadmin.* TO pma@localhost;&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>Hooray!</h2>
-
-<p>Now you can edit ~/Sites/httpd-vhosts.conf and add a new virtual host. You&rsquo;d need to reload Apache after doing so by running <code>sudo port unload apache2 &amp;&amp; sudo port load apache2</code>. phpMyAdmin or the mysql5 binary should provide you a way to create new databases and database users and you can then set up a local site.</p>
-
-<p>If you find MacPorts too heavy a separation from OSX, or too slow to compile, you should check out my previous blog posts on setting up a MAMP environment with as many built-in tools as possible only by adding a <a href="http://echodittolabs.org/blog/2011/08/os-x-107-lion-development-native-mamp-mysql-installer">MySQL installer</a> or <a href="http://echodittolabs.org/blog/2011/09/os-x-107-lion-development-native-apache-php-homebrew-mysql-or-mariadb">MySQL/MariaDB via Homebrew</a>.</p>
 ]]></content>
   </entry>
   

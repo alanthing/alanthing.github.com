@@ -9,7 +9,7 @@
   <meta name="author" content="Alan Ivey">
 
   
-  <meta name="description" content="This post originally featured on the Echo &amp; Co. blog. OS X Lion ships with Apache and PHP, which both require a little bit of tweaking to get &hellip;">
+  <meta name="description" content="This post originally featured on the Echo &amp; Co. blog. OS X Lion comes with most of the tools you would need to do &ldquo;MAMP&rdquo; (Mac OS X, &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -77,6 +77,320 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2011/10/11/os-x-107-lion-development-macports/">OS X 10.7 Lion Development: MacPorts</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-10-11T14:13:00-04:00" pubdate data-updated="true">Oct 11<span>th</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><em>This post originally featured on the <a href="http://echo.co/blog/os-x-107-lion-development-macports">Echo &amp; Co. blog</a></em>.</p>
+
+<p>OS X Lion comes with most of the tools you would need to do &ldquo;MAMP&rdquo; (Mac OS X, Apache, MySQL/MariaDB, PHP) development, as outlined in my <a href="http://echodittolabs.org/blog/2011/08/os-x-107-lion-development-native-mamp-mysql-installer">previous</a> <a href="http://echodittolabs.org/blog/2011/09/os-x-107-lion-development-native-apache-php-homebrew-mysql-or-mariadb">posts</a> once you add a database. So then why would you want to use MacPorts? Setting your development environment up in MacPorts isolates the binaries, libraries, and configuration files, completely separate from the existing OS X install (with the exception of startup scripts). You can also tweak the configuration files on your own, apply your own patches, and apply updates that MacPorts may get before Apple pushes them. It will take more time because you&rsquo;ll be compiling everything, but you have all of the control. Read on for how to get things set up.</p>
+
+<h2>Prerequisites</h2>
+
+<p>We&rsquo;ll going to be compiling a lot of source code so you&rsquo;ll need to have <a href="http://itunes.apple.com/us/app/xcode/id448457090">Xcode 4</a> installed. I initially tried with the <a href="https://github.com/kennethreitz/osx-gcc-installer">OS X GCC Installer</a> but eventually ran into a problem where a portfile was expecting an Xcode binary to check to a prerequisite. I&rsquo;m sure some hacking could&rsquo;ve resolved it to avoid having to install the very large Xcode package, but at the end of the day it&rsquo;s better to just know that it&rsquo;ll work as expected.</p>
+
+<p>Once you have Xcode 4 installed, you&rsquo;ll need to <a href="http://www.macports.org/install.php">install MacPorts</a>. It&rsquo;s a simple click-through installer. Come back to this guide once MacPorts is ready.</p>
+
+<p>Note that for all commands before that are starting with a $, the dollar sign is showing a command-line prompt in <a href="http://www.apple.com/macosx/apps/all.html#terminal">Terminal</a>, and you should not actually type it as part of the commands.</p>
+
+<h2>Install packages</h2>
+
+<p>Update the ports tree to get the latest from the MacPorts server in case the installer had an older tree:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>sudo /opt/local/bin/port selfupdate
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>All of the packages that we need can be installed with a single command:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>sudo /opt/local/bin/port install apache2 php5 php5-mysql mysql5-server php5-gd php5-mbstring php5-apc lynx phpmyadmin
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Compiling all of these tools will take a while, so grab a book and come back when the command is completed.</p>
+
+<h2>Configure PHP</h2>
+
+<p>The following will set up PHP with some development-friendly settings.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sudo cp -av /opt/local/etc/php5/php.ini-development /opt/local/etc/php5/php.ini
+</span><span class='line'><span class="nv">$ </span>sudo sed -i <span class="s2">&quot;&quot;</span> <span class="s1">&#39;s/\(default_socket[ ]\{0,1\}=\)/\1 \/opt\/local\/var\/run\/mysql5\/mysqld.sock/g&#39;</span> /opt/local/etc/php5/php.ini
+</span><span class='line'><span class="nv">$ </span>sudo sh -c <span class="s2">&quot;cat &gt;&gt; /opt/local/etc/php5/php.ini &lt;&lt;&#39;EOF&#39;</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="s2">;;</span>
+</span><span class='line'><span class="s2">;; User customizations below</span>
+</span><span class='line'><span class="s2">;;</span>
+</span><span class='line'>
+</span><span class='line'><span class="s2">; Original - memory_limit = 128M</span>
+</span><span class='line'><span class="s2">memory_limit = 196M</span>
+</span><span class='line'><span class="s2">; Original - post_max_size = 8M</span>
+</span><span class='line'><span class="s2">post_max_size = 200M</span>
+</span><span class='line'><span class="s2">; Original - upload_max_filesize = 2M</span>
+</span><span class='line'><span class="s2">upload_max_filesize = 100M</span>
+</span><span class='line'><span class="s2">; Original - default_socket_timeout = 60</span>
+</span><span class='line'><span class="s2">default_socket_timeout = 600</span>
+</span><span class='line'><span class="s2">; Original - max_execution_time = 30</span>
+</span><span class='line'><span class="s2">max_execution_time = 300</span>
+</span><span class='line'><span class="s2">; Original - max_input_time = 60</span>
+</span><span class='line'><span class="s2">max_input_time = 600</span>
+</span><span class='line'><span class="s2">; Original - ;date.timezone =</span>
+</span><span class='line'><span class="s2">date.timezone = &#39;America/New_York&#39;</span>
+</span><span class='line'><span class="s2">EOF&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Now configure the APC extension (installed above with php5-apc) which will increase PHP performance dramatically.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sudo sh -c <span class="s2">&quot;cat &gt; /opt/local/var/db/php5/apc-config.ini &lt;&lt;&#39;EOF&#39;</span>
+</span><span class='line'><span class="s2">[apc]</span>
+</span><span class='line'><span class="s2">apc.enabled = 1</span>
+</span><span class='line'><span class="s2">apc.shm_segments = 1</span>
+</span><span class='line'><span class="s2">apc.shm_size = 96M</span>
+</span><span class='line'><span class="s2">apc.cache_by_default = 1</span>
+</span><span class='line'><span class="s2">apc.stat = 1</span>
+</span><span class='line'><span class="s2">apc.rfc1867 = 1</span>
+</span><span class='line'><span class="s2">apc.stat = 7200</span>
+</span><span class='line'><span class="s2">EOF&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Configure Apache</h2>
+
+<p>Start by setting up PHP to work with Apache properly:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sudo cp -av /opt/local/apache2/conf/httpd.conf /opt/local/apache2/conf/httpd.conf-default
+</span><span class='line'><span class="nv">$ </span>sudo /opt/local/apache2/bin/apxs -a -e -n <span class="s2">&quot;php5&quot;</span> /opt/local/apache2/modules/libphp5.so
+</span><span class='line'><span class="nv">$ </span>sudo bash -c <span class="s2">&quot;cat &gt;&gt; /opt/local/apache2/conf/httpd.conf &lt;&lt;&#39;EOF&#39;</span>
+</span><span class='line'>
+</span><span class='line'><span class="s2">## Add mod_php information</span>
+</span><span class='line'><span class="s2">Include conf/extra/mod_php.conf</span>
+</span><span class='line'><span class="s2"># Add index.php to the list of files that will be served as directory indexes.</span>
+</span><span class='line'><span class="s2">&lt;IfModule dir_module&gt;</span>
+</span><span class='line'><span class="s2">  DirectoryIndex index.php index.html</span>
+</span><span class='line'><span class="s2">&lt;/IfModule&gt;</span>
+</span><span class='line'><span class="s2">EOF&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Now we&rsquo;ll move httpd-vhosts.conf to ~/Sites for easy editing of new virtual hosts, as well as create a ~/Sites/logs folder:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sudo mv -v /opt/local/apache2/conf/extra/httpd-vhosts.conf /opt/local/apache2/conf/extra/httpd-vhosts.conf-default &lt;/br&gt;
+</span><span class='line'><span class="nv">$ </span><span class="o">[</span> ! -d ~/Sites <span class="o">]</span> <span class="o">&amp;&amp;</span> mkdir -v ~/Sites
+</span><span class='line'><span class="nv">$ </span>cp -av /opt/local/apache2/conf/extra/httpd-vhosts.conf-default ~/Sites/httpd-vhosts.conf
+</span><span class='line'><span class="nv">$ </span>sudo ln -s ~/Sites/httpd-vhosts.conf /opt/local/apache2/conf/extra/httpd-vhosts.conf
+</span><span class='line'><span class="nv">$ </span>sudo sed -i <span class="s2">&quot;&quot;</span> <span class="s1">&#39;s/\#\(.*httpd-vhosts\.conf\)/\1/&#39;</span> /opt/local/apache2/conf/httpd.conf
+</span><span class='line'><span class="nv">$ </span><span class="o">[</span> ! -d ~/Sites/logs <span class="o">]</span> <span class="o">&amp;&amp;</span> mkdir ~/Sites/logs
+</span><span class='line'><span class="nv">$ </span>sudo perl -pi -e <span class="s1">&#39;BEGIN{undef $/;} s/\&lt;VirtualHost .*\n//sg;&#39;</span> <span class="k">${</span><span class="nv">USERHOME</span><span class="k">}</span>/Sites/httpd-vhosts.conf &lt;/br&gt;
+</span><span class='line'><span class="nv">$ </span>sudo sh -c <span class="s2">&quot;cat &gt;&gt; ~/Sites/httpd-vhosts.conf &lt;&lt;&#39;EOF&#39; &lt;/br&gt;</span>
+</span><span class='line'><span class="s2"> &lt;/br&gt;</span>
+</span><span class='line'><span class="s2">## Change /Users/name to the path of your home folder &lt;/br&gt;</span>
+</span><span class='line'><span class="s2">#&lt;VirtualHost *:80&gt; &lt;/br&gt;</span>
+</span><span class='line'><span class="s2">#  ServerName project.local &lt;/br&gt;</span>
+</span><span class='line'><span class="s2">#  CustomLog &quot;</span>/Users/name/Sites/logs/project.local-access_log<span class="s2">&quot; combined &lt;/br&gt;</span>
+</span><span class='line'><span class="s2">#  ErrorLog &quot;</span>/Users/name/Sites/logs/project.local-error_log<span class="s2">&quot; &lt;/br&gt;</span>
+</span><span class='line'><span class="s2">#  DocumentRoot &quot;</span>/Users/name/Sites/project.local<span class="s2">&quot; &lt;/br&gt;</span>
+</span><span class='line'><span class="s2">#&lt;/VirtualHost&gt; &lt;/br&gt;</span>
+</span><span class='line'><span class="s2">EOF&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Allow userdirs so the MacPorts Apache &ldquo;feels&rdquo; more like the built-in Apache:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>sudo sed -i <span class="s2">&quot;&quot;</span> <span class="s1">&#39;s/\#\(.*httpd-userdir\.conf\)/\1/&#39;</span> /opt/local/apache2/conf/httpd.conf
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Start Apache and set it to load on boot:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>sudo /opt/local/bin/port load apache2
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Configure MySQL</h2>
+
+<p>Set up the configuration file:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>sudo cp -av /opt/local/share/mysql5/mysql/my-small.cnf /opt/local/etc/mysql5/my.cnf
+</span><span class='line'>sudo sed -i <span class="s2">&quot;&quot;</span> <span class="s1">&#39;s/max_allowed_packet = 1.*M/max_allowed_packet = 1G/g&#39;</span> /opt/local/etc/mysql5/my.cnf
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Initialize MySQL and run the secure installation script:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>sudo -u _mysql /opt/local/bin/mysql_install_db5
+</span><span class='line'>sudo /opt/local/bin/port load mysql5-server
+</span><span class='line'>sudo /opt/local/lib/mysql5/bin/mysql_secure_installation
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Configure phpMyAdmin</h2>
+
+<p>Add a config file for Apache and reload Apache:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sudo sh -c <span class="s2">&quot;cat &gt;&gt; /opt/local/apache2/conf/httpd.conf &lt;&lt;&#39;EOF&#39;</span>
+</span><span class='line'>
+</span><span class='line'><span class="s2"># phpMyAdmin</span>
+</span><span class='line'><span class="s2">Include conf/extra/phpmyadmin.conf</span>
+</span><span class='line'><span class="s2">EOF&quot;</span>
+</span><span class='line'><span class="nv">$ </span>sudo sh -c <span class="s2">&quot;cat &gt;&gt; /opt/local/apache2/conf/extra/phpmyadmin.conf &lt;&lt;&#39;EOF&#39;</span>
+</span><span class='line'><span class="s2">AliasMatch ^/phpmyadmin(?:/)?(/.*)?$ /opt/local/www/phpmyadmin$1</span>
+</span><span class='line'><span class="s2">AliasMatch ^/phpMyAdmin(?:/)?(/.*)?$ /opt/local/www/phpmyadmin$1</span>
+</span><span class='line'>
+</span><span class='line'><span class="s2">&lt;Directory &quot;</span>/opt/local/www/phpmyadmin<span class="s2">&quot;&gt;</span>
+</span><span class='line'><span class="s2"> Options -Indexes</span>
+</span><span class='line'><span class="s2"> AllowOverride None</span>
+</span><span class='line'><span class="s2"> Order allow,deny</span>
+</span><span class='line'><span class="s2"> Allow from all</span>
+</span><span class='line'>
+</span><span class='line'><span class="s2"> LanguagePriority en de es fr ja ko pt-br ru</span>
+</span><span class='line'><span class="s2"> ForceLanguagePriority Prefer Fallback</span>
+</span><span class='line'><span class="s2">&lt;/Directory&gt;</span>
+</span><span class='line'><span class="s2">EOF&quot;</span>
+</span><span class='line'><span class="nv">$ </span>sudo /opt/local/bin/port unload apache2
+</span><span class='line'><span class="nv">$ </span>sudo /opt/local/bin/port load apache2
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Basic set up of phpMyAdmin:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>sudo sed -i <span class="s2">&quot;&quot;</span> <span class="s2">&quot;s/blowfish_secret\&#39;\] = \&#39;/blowfish_secret\&#39;\] = \&#39;`cat /dev/urandom | strings | grep -o &#39;[[:alnum:]]&#39; | head -n 50 | tr -d &#39;\n&#39;`/&quot;</span> /opt/local/www/phpmyadmin/config.inc.php
+</span><span class='line'>sudo /opt/local/bin/mysql5 -uroot -proot &lt; /opt/local/www/phpmyadmin/scripts/create_tables.sql
+</span><span class='line'>sudo /opt/local/bin/mysql5 -uroot -proot -e<span class="s2">&quot;CREATE USER &#39;pma&#39;@&#39;localhost&#39; IDENTIFIED BY &#39;pmapass&#39;; GRANT SELECT, INSERT, DELETE, UPDATE ON phpmyadmin.* TO pma@localhost;&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Hooray!</h2>
+
+<p>Now you can edit ~/Sites/httpd-vhosts.conf and add a new virtual host. You&rsquo;d need to reload Apache after doing so by running <code>sudo port unload apache2 &amp;&amp; sudo port load apache2</code>. phpMyAdmin or the mysql5 binary should provide you a way to create new databases and database users and you can then set up a local site.</p>
+
+<p>If you find MacPorts too heavy a separation from OSX, or too slow to compile, you should check out my previous blog posts on setting up a MAMP environment with as many built-in tools as possible only by adding a <a href="http://echodittolabs.org/blog/2011/08/os-x-107-lion-development-native-mamp-mysql-installer">MySQL installer</a> or <a href="http://echodittolabs.org/blog/2011/09/os-x-107-lion-development-native-apache-php-homebrew-mysql-or-mariadb">MySQL/MariaDB via Homebrew</a>.</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1617,115 +1931,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2010/12/07/combined-apache-logs-for-load-balanced-web-servers/">Combined Apache Logs for Load Balanced Web Servers</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2010-12-07T14:34:00-05:00" pubdate data-updated="true">Dec 7<span>th</span>, 2010</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>When dealing with a load spike or unexplained poor performance, once of the first things to do is to check the Apache web server logs. However, when dealing with multiple web servers behind a load balancer, it can be cumbersome to check through multiple logs on different machines.</p>
-
-<p>Luckily, if you have shared storage, it’s pretty simple to write to a single log file. Apache allows for log file locations to go to a pipe, which means you can redirect the output anywhere else. This was initially done to allow Apache to release open file descriptors since it can begin to create problems with more than 300 domains. But you don’t need to have 300 websites to see the benefits of using a pipe for logging.</p>
-
-<p>In your VirtualHost declaration, change your logging options from:</p>
-
-<pre><code>CustomLog logs/domain.com-access_log combined
-</code></pre>
-
-<p>to:</p>
-
-<pre><code>CustomLog "|/bin/cat » /var/www/vhosts/_logs/domain.com-access_log" combined
-</code></pre>
-
-<p>In this example, /var/www/vhosts is the shared SAN storage device, and by using “cat »” we append Apache output in real-time to the log file. As multiple machines do this simultaneously, you begin to have a single log file from multiple machines. You can do the same thing with your ErrorLog:</p>
-
-<pre><code>ErrorLog  "|/bin/cat » /var/www/vhosts/_logs/domain.com-error_log"
-</code></pre>
-
-<p>There is a slight problem with this approach: it doesn’t give us enough information. If one of the 4 servers behind the load balancer was the source of a problem, it would be helpful to determine which server each log entry is coming from.</p>
-
-<p>For CustomLog, we can create a new LogType that adds the server’s IP address at the end of the line, and the LogType name will be “combinedIP”:</p>
-
-<pre><code>LogFormat "%h %l %u %t "%r" %&gt;s %b "%{Referer}i" "%{User-Agent}i" %A" combinedIP
-</code></pre>
-
-<p>This format is identical to “combined” and just adds %A at the end. Then, simply change the end of the CustomLog line:</p>
-
-<pre><code>CustomLog "|/bin/cat » /var/www/vhosts/_logs/domain.com-access_log" combinedIP
-</code></pre>
-
-<p>Here’s an example of what your log file will look like, showing entries from two servers:</p>
-
-<pre><code>1.2.3.4 - - [07/Dec/2010:11:22:08 -0500] "GET /blog/feed HTTP/1.1" 304 - "-" "-" 192.168.1.6
-5.6.7.8 - - [07/Dec/2010:11:22:08 -0500] "GET /blog/feed HTTP/1.1" 304 - "-" "-" 192.168.1.8
-</code></pre>
-
-<p>These log entries are the same as the typical “combined” LogType but with the addition of the IP address at the end.</p>
-
-<p>But what about the ErrorLog? There is no way to define a LogType for the ErrorLog, and it would be helpful to know which server originated error, say, if MaxClients was reached, or there is a misconfiguration in a configuration file. Since we’re piping the ErrorLog output to /bin/cat, we can instead pipe it to a script that simply adds the server hostname on the end (I chose not to use an IP address because 1) some servers have multiple IP addresses, and 2) I cannot insert the VirtualHost’s IP address automatically. Better to know the server and then determine the IP address is necessary). We’ll start by creating a simple script at /usr/local/bin/httpd_errors (I’m not using bash since I was not able to get it to write to the log file in real time, it would only write once Apache was reloaded. I did not spend much time to determine why, and I knew it would work in PHP):</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">#!/usr/bin/php -q</span>
-</span><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="nv">$stdin</span> <span class="o">=</span> <span class="nb">fopen</span> <span class="p">(</span><span class="err">‘</span><span class="nx">php</span><span class="o">://</span><span class="nx">stdin</span><span class="err">’</span><span class="p">,</span> <span class="err">‘</span><span class="nx">r</span><span class="err">’</span><span class="p">);</span>
-</span><span class='line'><span class="nb">ob_implicit_flush</span> <span class="p">(</span><span class="k">true</span><span class="p">);</span> <span class="c1">// Use unbuffered output</span>
-</span><span class='line'><span class="k">while</span> <span class="p">(</span><span class="nv">$line</span> <span class="o">=</span> <span class="nb">fgets</span> <span class="p">(</span><span class="nv">$stdin</span><span class="p">))</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>    <span class="k">print</span> <span class="nb">chop</span><span class="p">(</span><span class="nv">$line</span><span class="p">)</span><span class="o">.</span><span class="err">”</span> <span class="o">-</span> <span class="err">“</span><span class="o">.</span><span class="nb">system</span><span class="p">(</span><span class="err">‘</span><span class="nx">hostname</span> <span class="o">-</span><span class="nx">f</span><span class="err">’</span><span class="p">)</span><span class="o">.</span><span class="err">”</span><span class="nx">\n</span><span class="err">”</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Make the script executable with “chmod +x /usr/local/bin/httpd_errors”, and then change your ErrorLog in your Apache configuration:</p>
-
-<pre><code>ErrorLog  ”|/usr/local/bin/httpd_errors » /var/www/vhosts/_logs/domain.com-error_log”
-</code></pre>
-
-<p>And your error logs will now reveal which server the error originated from:</p>
-
-<pre><code>[Tue Dec 07 11:20:51 2010] [error] [client 1.2.3.4] File does not exist: /var/www/vhosts/domain.com/favicon.ico - wsrv1
-[Tue Dec 07 11:24:27 2010] [error] [client 5.6.7.8] File does not exist: /var/www/vhosts/domain.com/favicon.ico - wsrv2
-</code></pre>
-
-<p>There you have it, combined Apache logs for multiple web servers. If you have any suggestions, questions, tips, etc, leave a comment!</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/4/">&larr; Older</a>
@@ -1743,6 +1948,10 @@
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2017/09/20/certbot-on-centos-6/">Certbot on CentOS 6</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2017/06/21/python-3-and-uwsgi-on-centos-7/">Python 3 and uWSGI on CentOS 7</a>
       </li>
     
@@ -1756,10 +1965,6 @@
     
       <li class="post">
         <a href="/blog/2014/12/22/os-x-1010-yosemite-local-development-environment-apache-php-and-mysql-homebrew/">OS X 10.10 Yosemite Local Development Environment: Apache, PHP, and MySQL With Homebrew</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/06/09/os-x-109-local-development-environment-apache-php-and-mysql-homebrew/">OS X 10.9 Local Development Environment: Apache, PHP, and MySQL With Homebrew</a>
       </li>
     
   </ul>
