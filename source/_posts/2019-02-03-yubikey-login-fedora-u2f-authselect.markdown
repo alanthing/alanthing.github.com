@@ -66,8 +66,8 @@ for FILE in README REQUIREMENTS password-auth system-auth; do
   # diff \
   #   --ignore-all-space \
   #   --unified \
-  #   "/usr/share/authselect/default/sssd/$$FILE" \
-  #   "/etc/authselect/custom/sssd-u2f/$$FILE"
+  #   "/usr/share/authselect/default/sssd/$FILE" \
+  #   "/etc/authselect/custom/sssd-u2f/$FILE"
 done
 
 # Capture the options your current authselect profile might be using. My system had
