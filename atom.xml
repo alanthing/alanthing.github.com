@@ -4,7 +4,7 @@
   <title><![CDATA[alanthing]]></title>
   <link href="http://alanthing.com/atom.xml" rel="self"/>
   <link href="http://alanthing.com/"/>
-  <updated>2019-02-03T16:11:18-05:00</updated>
+  <updated>2019-02-03T16:25:23-05:00</updated>
   <id>http://alanthing.com/</id>
   <author>
     <name><![CDATA[Alan Ivey]]></name>
@@ -134,8 +134,8 @@
 </span><span class='line'>  <span class="c"># diff \</span>
 </span><span class='line'>  <span class="c">#   --ignore-all-space \</span>
 </span><span class='line'>  <span class="c">#   --unified \</span>
-</span><span class='line'>  <span class="c">#   &quot;/usr/share/authselect/default/sssd/$$FILE&quot; \</span>
-</span><span class='line'>  <span class="c">#   &quot;/etc/authselect/custom/sssd-u2f/$$FILE&quot;</span>
+</span><span class='line'>  <span class="c">#   &quot;/usr/share/authselect/default/sssd/$FILE&quot; \</span>
+</span><span class='line'>  <span class="c">#   &quot;/etc/authselect/custom/sssd-u2f/$FILE&quot;</span>
 </span><span class='line'><span class="k">done</span>
 </span><span class='line'>
 </span><span class='line'><span class="c"># Capture the options your current authselect profile might be using. My system had</span>
@@ -155,6 +155,8 @@
 
 
 <p>On my system, I was able to use my Yubikey&rsquo;s U2F mode to login after a reboot with Gnome, and for issuing <code>sudo</code>. To make the U2F required as part of a two-factor login or similar, you&rsquo;ll need to dig into the <em>/etc/pam.d/</em> files. Rather than edit directly, edit the files in <em>/etc/authselect/custom/sssd-u2f/</em> and apply with <code>authselect</code>.</p>
+
+<p>For some further reading, the <a href="https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8-beta/html/installing_identity_management_and_access_control/using-authselect">RHEL 8 Beta page on authselect</a> has a ton of great information. I&rsquo;m glad to see <code>authselect</code> will make it from Fedora to RHEL!</p>
 
 <p><em>(I haven&rsquo;t used Fedora 29 as a desktop for long, so please let me know <a href="https://twitter.com/alanthing">@alanthing</a> if you have any feedback!)</em></p>
 ]]></content>
