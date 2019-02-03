@@ -8,7 +8,7 @@ categories:
 
 If you're managing an environment similar to a production and want to keep bots from indexing traffic, it's customary to add a _robots.txt_ file at the root of your website to [disallow all](http://www.robotstxt.org/faq/prevent.html). Instead of creating a two-line plain text file, you can do this with only nginx:
 
-``` nginx
+```nginx
 location = /robots.txt {
   add_header  Content-Type  text/plain;
   return 200 "User-agent: *\nDisallow: /\n";
