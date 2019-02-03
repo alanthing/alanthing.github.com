@@ -87,4 +87,6 @@ authselect \
 
 On my system, I was able to use my Yubikey's U2F mode to login after a reboot with Gnome, and for issuing `sudo`. To make the U2F required as part of a two-factor login or similar, you'll need to dig into the _/etc/pam.d/_ files. Rather than edit directly, edit the files in _/etc/authselect/custom/sssd-u2f/_ and apply with `authselect`.
 
+For some further reading, the [RHEL 8 Beta page on authselect](https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8-beta/html/installing_identity_management_and_access_control/using-authselect) has a ton of great information. I'm glad to see `authselect` will make it from Fedora to RHEL!
+
 _(I haven't used Fedora 29 as a desktop for long, so please let me know [@alanthing](https://twitter.com/alanthing) if you have any feedback!)_
