@@ -9,7 +9,7 @@
   <meta name="author" content="Alan Ivey">
 
   
-  <meta name="description" content="CentOS 6 is getting updates through November 30, 2020, but it&rsquo;s getting more and more difficult to find newer packages for the operating system &hellip;">
+  <meta name="description" content="If you have a Yubikey with U2F support for Linux, you can use its U2F functionality for a 2nd factor or single factor for logins, sudo passwords, and &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -77,6 +77,180 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2019/02/03/yubikey-login-fedora-u2f-authselect/">Yubikey Login to Fedora With U2F via Authselect</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2019-02-03T16:54:00-05:00" pubdate data-updated="true">Feb 3<span>rd</span>, 2019</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>If you have a <a href="https://support.yubico.com/support/solutions/articles/15000011356-ubuntu-linux-login-guide-u2f#Applicable_Productsb6c8j5">Yubikey with U2F support for Linux</a>, you can use its U2F functionality for a 2nd factor or single factor for logins, sudo passwords, and more. This is accomplished by the <a href="https://developers.yubico.com/pam-u2f/">pam-u2f</a> module, and the instructions commonly returned in searches aren&rsquo;t for the faint of heart, especially when get into editing the files in <em>/etc/pam.d/</em>. Recent versions of <a href="https://fedoraproject.org/wiki/Changes/Authselect">Fedora ship with <code>authselect</code></a> which can make this process a lot easier. U2F support isn&rsquo;t baked in,s but it&rsquo;s easy enough to find on GitHub. Grab your Yubikey<u>s</u> <em>(you do have a primary and a backup, right?)</em> and follow along.</p>
+
+<p>The main packages required are <code>authselect</code>, <code>pam-u2f</code>, and <code>pamu2fcfg</code>. The following will cover the bases in case you have a minimal install:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>dnf install authselect bash gawk pam pam-u2f pamu2fcfg sssd systemd-udev
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Create the <em>u2f_keys</em> file and include values from as many U2F devices as applicable (<a href="https://wiki.gentoo.org/wiki/Pam_u2f#Registration">additional background here</a>):</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># pam-u2f looks in this directory</span>
+</span><span class='line'>mkdir -pv ~/.config/Yubico/
+</span><span class='line'>
+</span><span class='line'>pamu2fcfg --username<span class="o">=</span><span class="s2">&quot;$USER&quot;</span> | tee ~/.config/Yubico/u2f_keys ; <span class="nb">echo</span>
+</span><span class='line'><span class="c"># touch device</span>
+</span><span class='line'>
+</span><span class='line'>pamu2fcfg --nouser | tee -a ~/.config/Yubico/u2f_keys ; <span class="nb">echo</span>
+</span><span class='line'><span class="c"># touch 2nd device</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># Repeat the previous command as necessary</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Grab a udev rules file to allow access for non-root users (<a href="https://support.yubico.com/support/solutions/articles/15000006449-using-your-u2f-yubikey-with-linux">additional background here</a>):</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>curl <span class="se">\</span>
+</span><span class='line'>  --output <span class="s1">&#39;/etc/udev/rules.d/70-u2f.rules&#39;</span> <span class="se">\</span>
+</span><span class='line'>  <span class="s1">&#39;https://raw.githubusercontent.com/Yubico/libu2f-host/master/70-u2f.rules&#39;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># Take effect without reboot:</span>
+</span><span class='line'>udevadm trigger
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>With <code>pam-u2f</code> installed and the keys added in <em>u2f_keys</em>, the final step is adding configurations to files in <em>/etc/pam.d/</em>; thankfully <a href="https://github.com/pbrezina/authselect">authselect</a> makes this less intimidating. The version that ships with Fedora 29 (as of this writing) does not include the U2F option, so we&rsquo;ll create a custom profile based on <em>sssd</em> and grab the files from GitHub. Uncomment the <code>diff</code> command to see how minimal the changes are that we are getting:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># Create a profile based on the built-in &quot;sssd&quot; and use symlinks for the files we won&#39;t</span>
+</span><span class='line'><span class="c"># be changing</span>
+</span><span class='line'>authselect <span class="se">\</span>
+</span><span class='line'>  create-profile <span class="se">\</span>
+</span><span class='line'>  <span class="s1">&#39;sssd-u2f&#39;</span> <span class="se">\</span>
+</span><span class='line'>  --base-on<span class="o">=</span>sssd <span class="se">\</span>
+</span><span class='line'>  --symlink-nsswitch <span class="se">\</span>
+</span><span class='line'>  --symlink-dconf <span class="se">\</span>
+</span><span class='line'>  --symlink<span class="o">=</span>fingerprint-auth <span class="se">\</span>
+</span><span class='line'>  --symlink<span class="o">=</span>postlogin <span class="se">\</span>
+</span><span class='line'>  --symlink<span class="o">=</span>smartcard-auth
+</span><span class='line'>
+</span><span class='line'><span class="c"># Grab 4 updated files from GitHub. Uncomment `diff` to see the changes from the &quot;sssd&quot;</span>
+</span><span class='line'><span class="c"># profile</span>
+</span><span class='line'><span class="k">for </span>FILE in README REQUIREMENTS password-auth system-auth; <span class="k">do</span>
+</span><span class='line'><span class="k">  </span>curl <span class="se">\</span>
+</span><span class='line'>    --silent <span class="se">\</span>
+</span><span class='line'>    --output <span class="s2">&quot;/etc/authselect/custom/sssd-u2f/$FILE&quot;</span> <span class="se">\</span>
+</span><span class='line'>    <span class="s2">&quot;https://raw.githubusercontent.com/pbrezina/authselect/297f48d/profiles/sssd/$FILE&quot;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c"># diff \</span>
+</span><span class='line'>  <span class="c">#   --ignore-all-space \</span>
+</span><span class='line'>  <span class="c">#   --unified \</span>
+</span><span class='line'>  <span class="c">#   &quot;/usr/share/authselect/default/sssd/$$FILE&quot; \</span>
+</span><span class='line'>  <span class="c">#   &quot;/etc/authselect/custom/sssd-u2f/$$FILE&quot;</span>
+</span><span class='line'><span class="k">done</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># Capture the options your current authselect profile might be using. My system had</span>
+</span><span class='line'><span class="c"># &quot;with-fingerprint&quot; and &quot;with-silent-lastlog&quot; after a standard Fedora 29 install</span>
+</span><span class='line'>mapfile -t AUTHSELECT_CURRENT_OPTIONS &lt; &lt;<span class="o">(</span> authselect current | awk <span class="s1">&#39;/^- with-/ {gsub(&quot;^- &quot;, &quot;&quot;); print $0}&#39;</span> <span class="o">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># If you want, show the captured options, which might be blank</span>
+</span><span class='line'><span class="c">#printf &#39;%s\n&#39; &quot;${AUTHSELECT_CURRENT_OPTIONS[@]}&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># Select the custom &quot;sssd-u2f&quot; profile and add the &quot;with-pam-u2f&quot; option</span>
+</span><span class='line'>authselect <span class="se">\</span>
+</span><span class='line'>  <span class="k">select</span> <span class="se">\</span>
+</span><span class='line'>  <span class="s1">&#39;custom/sssd-u2f&#39;</span> <span class="se">\</span>
+</span><span class='line'>  <span class="k">$(</span> <span class="nb">printf</span> <span class="s1">&#39;%s &#39;</span> <span class="s2">&quot;${AUTHSELECT_CURRENT_OPTIONS[@]}&quot;</span> <span class="k">)</span> <span class="se">\</span>
+</span><span class='line'>  <span class="s1">&#39;with-pam-u2f&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>On my system, I was able to use my Yubikey&rsquo;s U2F mode to login after a reboot with Gnome, and for issuing <code>sudo</code>. To make the U2F required as part of a two-factor login or similar, you&rsquo;ll need to dig into the <em>/etc/pam.d/</em> files. Rather than edit directly, edit the files in <em>/etc/authselect/custom/sssd-u2f/</em> and apply with <code>authselect</code>.</p>
+
+<p><em>(I haven&rsquo;t used Fedora 29 as a desktop for long, so please let me know <a href="https://twitter.com/alanthing">@alanthing</a> if you have any feedback!)</em></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -2860,48 +3034,6 @@ createrepo -v -d ~/rpmbuild/RPMS/repo/el6/x86_64
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/03/17/virtualbox-extension-pack-with-one-line/">VirtualBox Extension Pack With One Line</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-03-17T20:46:00-04:00" pubdate data-updated="true">Mar 17<span>th</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Just installed <a href="http://www.virtualbox.org">VirtualBox</a> on OS X and need the <a href="http://www.virtualbox.org/wiki/Downloads">Extension Pack</a>? This (really long) one-liner will download and install it for you. Run in terminal and enter your password once and you&rsquo;re off to the races!</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>export version=$(/usr/bin/vboxmanage -v) && export var1=$(echo ${version} | cut -d 'r' -f 1) && export var2=$(echo ${version} | cut -d 'r' -f 2) && export file="Oracle_VM_VirtualBox_Extension_Pack-${var1}-${var2}.vbox-extpack" && curl --silent --location http://download.virtualbox.org/virtualbox/${var1}/${file} -o ~/Downloads/${file} && VBoxManage extpack install ~/Downloads/${file} --replace && rm ~/Downloads/${file} && unset version var1 var2 file</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Note that VirtualBox must be installed first :)</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/2/">&larr; Older</a>
@@ -2917,6 +3049,10 @@ createrepo -v -d ~/rpmbuild/RPMS/repo/el6/x86_64
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2019/02/03/yubikey-login-fedora-u2f-authselect/">Yubikey Login to Fedora With U2F via Authselect</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2017/09/20/certbot-on-centos-6/">Certbot on CentOS 6</a>
       </li>
     
@@ -2930,10 +3066,6 @@ createrepo -v -d ~/rpmbuild/RPMS/repo/el6/x86_64
     
       <li class="post">
         <a href="/blog/2017/05/03/auto-restart-tomcat-with-systemd/">Auto-restart Tomcat With Systemd</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/12/22/os-x-1010-yosemite-local-development-environment-apache-php-and-mysql-homebrew/">OS X 10.10 Yosemite Local Development Environment: Apache, PHP, and MySQL With Homebrew</a>
       </li>
     
   </ul>
@@ -2978,7 +3110,7 @@ createrepo -v -d ~/rpmbuild/RPMS/repo/el6/x86_64
     </div>
   </div>
   <footer role="contentinfo"><p>
-  Copyright &copy; 2017 - Alan Ivey -
+  Copyright &copy; 2019 - Alan Ivey -
   <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
 </p>
 

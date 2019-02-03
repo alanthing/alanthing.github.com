@@ -4,7 +4,7 @@
   <title><![CDATA[alanthing]]></title>
   <link href="http://alanthing.com/atom.xml" rel="self"/>
   <link href="http://alanthing.com/"/>
-  <updated>2017-09-20T21:16:10-04:00</updated>
+  <updated>2019-02-03T16:11:18-05:00</updated>
   <id>http://alanthing.com/</id>
   <author>
     <name><![CDATA[Alan Ivey]]></name>
@@ -12,6 +12,153 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Yubikey login to Fedora with U2F via Authselect]]></title>
+    <link href="http://alanthing.com/blog/2019/02/03/yubikey-login-fedora-u2f-authselect/"/>
+    <updated>2019-02-03T16:54:00-05:00</updated>
+    <id>http://alanthing.com/blog/2019/02/03/yubikey-login-fedora-u2f-authselect</id>
+    <content type="html"><![CDATA[<p>If you have a <a href="https://support.yubico.com/support/solutions/articles/15000011356-ubuntu-linux-login-guide-u2f#Applicable_Productsb6c8j5">Yubikey with U2F support for Linux</a>, you can use its U2F functionality for a 2nd factor or single factor for logins, sudo passwords, and more. This is accomplished by the <a href="https://developers.yubico.com/pam-u2f/">pam-u2f</a> module, and the instructions commonly returned in searches aren&rsquo;t for the faint of heart, especially when get into editing the files in <em>/etc/pam.d/</em>. Recent versions of <a href="https://fedoraproject.org/wiki/Changes/Authselect">Fedora ship with <code>authselect</code></a> which can make this process a lot easier. U2F support isn&rsquo;t baked in,s but it&rsquo;s easy enough to find on GitHub. Grab your Yubikey<u>s</u> <em>(you do have a primary and a backup, right?)</em> and follow along.</p>
+
+<p>The main packages required are <code>authselect</code>, <code>pam-u2f</code>, and <code>pamu2fcfg</code>. The following will cover the bases in case you have a minimal install:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>dnf install authselect bash gawk pam pam-u2f pamu2fcfg sssd systemd-udev
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Create the <em>u2f_keys</em> file and include values from as many U2F devices as applicable (<a href="https://wiki.gentoo.org/wiki/Pam_u2f#Registration">additional background here</a>):</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># pam-u2f looks in this directory</span>
+</span><span class='line'>mkdir -pv ~/.config/Yubico/
+</span><span class='line'>
+</span><span class='line'>pamu2fcfg --username<span class="o">=</span><span class="s2">&quot;$USER&quot;</span> | tee ~/.config/Yubico/u2f_keys ; <span class="nb">echo</span>
+</span><span class='line'><span class="c"># touch device</span>
+</span><span class='line'>
+</span><span class='line'>pamu2fcfg --nouser | tee -a ~/.config/Yubico/u2f_keys ; <span class="nb">echo</span>
+</span><span class='line'><span class="c"># touch 2nd device</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># Repeat the previous command as necessary</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Grab a udev rules file to allow access for non-root users (<a href="https://support.yubico.com/support/solutions/articles/15000006449-using-your-u2f-yubikey-with-linux">additional background here</a>):</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>curl <span class="se">\</span>
+</span><span class='line'>  --output <span class="s1">&#39;/etc/udev/rules.d/70-u2f.rules&#39;</span> <span class="se">\</span>
+</span><span class='line'>  <span class="s1">&#39;https://raw.githubusercontent.com/Yubico/libu2f-host/master/70-u2f.rules&#39;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># Take effect without reboot:</span>
+</span><span class='line'>udevadm trigger
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>With <code>pam-u2f</code> installed and the keys added in <em>u2f_keys</em>, the final step is adding configurations to files in <em>/etc/pam.d/</em>; thankfully <a href="https://github.com/pbrezina/authselect">authselect</a> makes this less intimidating. The version that ships with Fedora 29 (as of this writing) does not include the U2F option, so we&rsquo;ll create a custom profile based on <em>sssd</em> and grab the files from GitHub. Uncomment the <code>diff</code> command to see how minimal the changes are that we are getting:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># Create a profile based on the built-in &quot;sssd&quot; and use symlinks for the files we won&#39;t</span>
+</span><span class='line'><span class="c"># be changing</span>
+</span><span class='line'>authselect <span class="se">\</span>
+</span><span class='line'>  create-profile <span class="se">\</span>
+</span><span class='line'>  <span class="s1">&#39;sssd-u2f&#39;</span> <span class="se">\</span>
+</span><span class='line'>  --base-on<span class="o">=</span>sssd <span class="se">\</span>
+</span><span class='line'>  --symlink-nsswitch <span class="se">\</span>
+</span><span class='line'>  --symlink-dconf <span class="se">\</span>
+</span><span class='line'>  --symlink<span class="o">=</span>fingerprint-auth <span class="se">\</span>
+</span><span class='line'>  --symlink<span class="o">=</span>postlogin <span class="se">\</span>
+</span><span class='line'>  --symlink<span class="o">=</span>smartcard-auth
+</span><span class='line'>
+</span><span class='line'><span class="c"># Grab 4 updated files from GitHub. Uncomment `diff` to see the changes from the &quot;sssd&quot;</span>
+</span><span class='line'><span class="c"># profile</span>
+</span><span class='line'><span class="k">for </span>FILE in README REQUIREMENTS password-auth system-auth; <span class="k">do</span>
+</span><span class='line'><span class="k">  </span>curl <span class="se">\</span>
+</span><span class='line'>    --silent <span class="se">\</span>
+</span><span class='line'>    --output <span class="s2">&quot;/etc/authselect/custom/sssd-u2f/$FILE&quot;</span> <span class="se">\</span>
+</span><span class='line'>    <span class="s2">&quot;https://raw.githubusercontent.com/pbrezina/authselect/297f48d/profiles/sssd/$FILE&quot;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c"># diff \</span>
+</span><span class='line'>  <span class="c">#   --ignore-all-space \</span>
+</span><span class='line'>  <span class="c">#   --unified \</span>
+</span><span class='line'>  <span class="c">#   &quot;/usr/share/authselect/default/sssd/$$FILE&quot; \</span>
+</span><span class='line'>  <span class="c">#   &quot;/etc/authselect/custom/sssd-u2f/$$FILE&quot;</span>
+</span><span class='line'><span class="k">done</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># Capture the options your current authselect profile might be using. My system had</span>
+</span><span class='line'><span class="c"># &quot;with-fingerprint&quot; and &quot;with-silent-lastlog&quot; after a standard Fedora 29 install</span>
+</span><span class='line'>mapfile -t AUTHSELECT_CURRENT_OPTIONS &lt; &lt;<span class="o">(</span> authselect current | awk <span class="s1">&#39;/^- with-/ {gsub(&quot;^- &quot;, &quot;&quot;); print $0}&#39;</span> <span class="o">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># If you want, show the captured options, which might be blank</span>
+</span><span class='line'><span class="c">#printf &#39;%s\n&#39; &quot;${AUTHSELECT_CURRENT_OPTIONS[@]}&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># Select the custom &quot;sssd-u2f&quot; profile and add the &quot;with-pam-u2f&quot; option</span>
+</span><span class='line'>authselect <span class="se">\</span>
+</span><span class='line'>  <span class="k">select</span> <span class="se">\</span>
+</span><span class='line'>  <span class="s1">&#39;custom/sssd-u2f&#39;</span> <span class="se">\</span>
+</span><span class='line'>  <span class="k">$(</span> <span class="nb">printf</span> <span class="s1">&#39;%s &#39;</span> <span class="s2">&quot;${AUTHSELECT_CURRENT_OPTIONS[@]}&quot;</span> <span class="k">)</span> <span class="se">\</span>
+</span><span class='line'>  <span class="s1">&#39;with-pam-u2f&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>On my system, I was able to use my Yubikey&rsquo;s U2F mode to login after a reboot with Gnome, and for issuing <code>sudo</code>. To make the U2F required as part of a two-factor login or similar, you&rsquo;ll need to dig into the <em>/etc/pam.d/</em> files. Rather than edit directly, edit the files in <em>/etc/authselect/custom/sssd-u2f/</em> and apply with <code>authselect</code>.</p>
+
+<p><em>(I haven&rsquo;t used Fedora 29 as a desktop for long, so please let me know <a href="https://twitter.com/alanthing">@alanthing</a> if you have any feedback!)</em></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Certbot on CentOS 6]]></title>
@@ -3491,51 +3638,6 @@ Reference 2: <a href="http://jsdelfino.blogspot.com/2012/08/autoconf-and-automak
 </code></pre>
 
 <p>Now I&rsquo;m able to install anything I need to with NPM and run my Node.js applications with Forever. I&rsquo;m still very new to Node, so if you think I should be doing things a better way, let me know in the comments!</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Alan's 2011 Favorites]]></title>
-    <link href="http://alanthing.com/blog/2012/01/30/alans-2011-favorites/"/>
-    <updated>2012-01-30T17:00:00-05:00</updated>
-    <id>http://alanthing.com/blog/2012/01/30/alans-2011-favorites</id>
-    <content type="html"><![CDATA[<p><em>This post originally featured on the <a href="http://echo.co/blog/alans-2011-favorites">Echo &amp; Co. blog</a></em>.</p>
-
-<h2>Favorite Links of 2011</h2>
-
-<p><a href="http://www.google.com/reader">Google Reader</a> &ndash; between the Android app, Reeder for iPad, and the website, keeps me up to date on the news.</p>
-
-<p><a href="http://stackoverflow.com/">Stack Overflow</a> and other Stack Exchange sites &ndash; one of the best ways to get help and help others.</p>
-
-<p><a href="http://9gag.com/">9GAG</a> &ndash; thanks to (our summer intern) Vicky for showing this to me, I waste a lot of time looking at internet memes.</p>
-
-<h2>Best Entertainment of 2011</h2>
-
-<p><a href="http://www.nbc.com/friday-night-lights/">Friday Night Lights</a> &ndash; the final season was aired on NBC in the first half of the year. It gets my vote for the best drama of all time.</p>
-
-<p><a href="http://www.nbc.com/community/">Community</a> &ndash; one of the smartest and most brilliant comedies in recent memory. It&rsquo;s a shame NBC doesn&rsquo;t get it and has decided to &ldquo;bench&rdquo; it for the immediate future. It doesn&rsquo;t get good Nielson rating because a majority of their audience watches it on Netflix/Hulu/DVR/etc.</p>
-
-<p><a href="http://www.imdb.com/title/tt0800369/">Thor</a> &ndash; it won&rsquo;t win any awards for best screenplay, but 1) it was a beautiful movie with great special effects, and 2) the closer we get to an Avengers movie, the more this geek gets excited!</p>
-
-<h2>Favorite Restaurant</h2>
-
-<p><a href="http://www.rachelscreperie.com">Rachel&rsquo;s Creperie</a> &ndash; at the end of the block of my new co-working space, offers a new way to try many kinds of foods you&rsquo;d normally just slap in between two pieces of boring bread.</p>
-
-<h2>Favorite Game</h2>
-
-<p><a href="http://youtube.com/watch?v=lPVgqEd8noA">Farkle!</a> &ndash; the link explains all of the rules.  All it requires is 6 dice and 1 or more friends. It channels Yahtzee but has some fun twists.</p>
-
-<h2>Favorite Mobile App</h2>
-
-<p><a href="http://www.wordswithfriends.com/">Words With Friends</a> &ndash; I know it&rsquo;s more like the game of 2010, but this year they added the Android version so I can play Facebook and iPhone friends, and it gives my brain a quick puzzle when I have some downtime.</p>
-
-<h2>Favorite Technology Innovation</h2>
-
-<p>Music in the Cloud, either <a href="http://music.google.com/about/">Google Music</a>, <a href="http://www.amazon.com/b?ie=UTF8&amp;node=2658409011">Amazon Cloud Player</a>, or <a href="https://www.icloud.com/">iCloud</a> &ndash; they make listening to the same music on my laptop and my phone a snap. Sync-less bliss&hellip;</p>
-
-<h2>Favorite Cause</h2>
-
-<p>It wasn&rsquo;t new to 2011, but I think 2011 is when <a href="http://kickstarter.com">Kickstarter</a> really became huge. It&rsquo;s amazing to see peoples&#8217; dreams come to life.</p>
 ]]></content>
   </entry>
   

@@ -152,7 +152,7 @@
     </url>
     <url>
         <loc>http://alanthing.com/blog/2017/05/15/robots-dot-txt-disallow-all-with-nginx/</loc>
-        <lastmod>2017-09-20T20:32:16-04:00</lastmod>
+        <lastmod>2019-02-03T15:40:43-05:00</lastmod>
     </url>
     <url>
         <loc>http://alanthing.com/blog/2017/06/21/python-3-and-uwsgi-on-centos-7/</loc>
@@ -163,8 +163,16 @@
         <lastmod>2017-09-20T21:13:54-04:00</lastmod>
     </url>
     <url>
+        <loc>http://alanthing.com/blog/2019/02/03/yubikey-login-fedora-u2f-authselect/</loc>
+        <lastmod>2019-02-03T16:11:18-05:00</lastmod>
+    </url>
+    <url>
+        <loc>http://alanthing.com/</loc>
+        <lastmod>2019-02-03T16:11:18-05:00</lastmod>
+    </url>
+    <url>
         <loc>http://alanthing.com/blog/archives/</loc>
-        <lastmod>2017-09-20T21:13:54-04:00</lastmod>
+        <lastmod>2019-02-03T16:11:18-05:00</lastmod>
     </url>
     <url>
         <loc>http://alanthing.com/files/php-pear_scl.diff</loc>
@@ -172,10 +180,6 @@
     </url>
     <url>
         <loc>http://alanthing.com/files/php-pecl-apc_scl.diff</loc>
-        <lastmod>2017-09-20T20:32:16-04:00</lastmod>
-    </url>
-    <url>
-        <loc>http://alanthing.com/files/php-pecl-memcache_scl.diff</loc>
         <lastmod>2017-09-20T20:32:16-04:00</lastmod>
     </url>
     <url>
@@ -187,8 +191,8 @@
         <lastmod>2017-09-20T20:32:16-04:00</lastmod>
     </url>
     <url>
-        <loc>http://alanthing.com/</loc>
-        <lastmod>2017-09-20T21:13:54-04:00</lastmod>
+        <loc>http://alanthing.com/files/php-pecl-memcache_scl.diff</loc>
+        <lastmod>2017-09-20T20:32:16-04:00</lastmod>
     </url>
     <url>
         <loc>http://alanthing.com/robots.txt</loc>
